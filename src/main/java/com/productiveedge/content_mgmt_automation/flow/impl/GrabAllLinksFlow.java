@@ -33,10 +33,6 @@ public class GrabAllLinksFlow implements Flow<GrabAllLinksResponse, GrabAllLinks
     private static final String JPEG_HREF = ".jpeg";
     private static final String ZIP_HREF = ".zip";
 
-    private enum REQUEST_PARAMETER {
-        URL, DOMAIN_NAME, URL_PROTOCOL, URL_PORT, MAXIMUM_AMOUNT_INTERNAL_URL_TO_PROCESS, ALLOW_REDIRECT
-    }
-
 
     private static final Predicate<String> isAnchorHref = href -> href.equals(ANCHOR_SYMBOL);
     private static final Predicate<String> isJavascriptHref = href -> href.startsWith(JAVASCRIPT_HREF);
@@ -68,11 +64,11 @@ public class GrabAllLinksFlow implements Flow<GrabAllLinksResponse, GrabAllLinks
 
 
     private String createHomePageUrl(Map<String, String> request) {
-        String homePageUrl = request.get(REQUEST_PARAMETER.URL.name().toLowerCase());
+        String homePageUrl = request.get(GrabAllLinksRequest.REQUEST_PARAMETER.URL.name().toLowerCase());
         if (homePageUrl == null) {
-            homePageUrl = request.get(REQUEST_PARAMETER.URL_PROTOCOL.name().toLowerCase()) + "://" + request.get(REQUEST_PARAMETER.DOMAIN_NAME.name().toLowerCase());
-            if (!"".equals(request.get(REQUEST_PARAMETER.URL_PORT.name().toLowerCase()))) {
-                homePageUrl = homePageUrl + ":" + request.get(REQUEST_PARAMETER.URL_PORT.name().toLowerCase());
+            homePageUrl = request.get(GrabAllLinksRequest.REQUEST_PARAMETER.URL_PROTOCOL.name().toLowerCase()) + "://" + request.get(GrabAllLinksRequest.REQUEST_PARAMETER.DOMAIN_NAME.name().toLowerCase());
+            if (!"".equals(request.get(GrabAllLinksRequest.REQUEST_PARAMETER.URL_PORT.name().toLowerCase()))) {
+                homePageUrl = homePageUrl + ":" + request.get(GrabAllLinksRequest.REQUEST_PARAMETER.URL_PORT.name().toLowerCase());
             }
         }
         return homePageUrl;
@@ -81,7 +77,7 @@ public class GrabAllLinksFlow implements Flow<GrabAllLinksResponse, GrabAllLinks
 
     @Override
     public void validateClientRequest(GrabAllLinksRequest request) throws InvalidJarRequestException {
-        for (REQUEST_PARAMETER parameter : REQUEST_PARAMETER.values()) {
+        for (GrabAllLinksRequest.REQUEST_PARAMETER parameter : GrabAllLinksRequest.REQUEST_PARAMETER.values()) {
             String value = request.get(parameter.name().toLowerCase());
             if (value == null) {
                 throw new InvalidJarRequestException("There isn't '" + parameter + "' parameter in request");
@@ -216,7 +212,7 @@ public class GrabAllLinksFlow implements Flow<GrabAllLinksResponse, GrabAllLinks
         initPageContainer(request);
 
 
-        int processCount = Integer.valueOf(request.get(REQUEST_PARAMETER.MAXIMUM_AMOUNT_INTERNAL_URL_TO_PROCESS.name().toLowerCase()));
+        int processCount = Integer.valueOf(request.get(GrabAllLinksRequest.REQUEST_PARAMETER.MAXIMUM_AMOUNT_INTERNAL_URL_TO_PROCESS.name().toLowerCase()));
         Page page;
 
         while (PageContainer.isUnprocessedPageExist() && PageContainer.processedCacheWebsitesCount() < processCount) {
