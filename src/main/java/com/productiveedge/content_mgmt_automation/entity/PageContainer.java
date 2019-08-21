@@ -8,13 +8,14 @@ import lombok.Data;
 import java.net.MalformedURLException;
 import java.util.Map;
 import java.util.Set;
+import java.util.SortedMap;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
 
 @Data
 public final class PageContainer {
 
-    private static final Map<String, Page> cache = new TreeMap<>();
+    private static final SortedMap<String, Page> cache = new TreeMap<>();
 
     private PageContainer() {
 
@@ -49,10 +50,10 @@ public final class PageContainer {
         return null;
     }
 
-    public static Page getUnprocessedPage() {
+    public static Map.Entry<String, Page> getUnprocessedPageEntry() {
         for (Map.Entry<String, Page> pageEntry : cache.entrySet()) {
             if (!pageEntry.getValue().isProcessed()) {
-                return pageEntry.getValue();
+                return pageEntry;
             }
         }
         return null;

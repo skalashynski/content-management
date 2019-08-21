@@ -176,17 +176,18 @@ public class GrabAllLinksFlow implements Flow<GrabAllLinksResponse, GrabAllLinks
         PageContainer.put(key, page);
     }
 
-    private Page processPage(Page page, String unprocessedPageUrlItr, Map<String, String> request) throws MalformedURLException, ApacheHttpClientException {
-        Set<String> allValidHrefSet = extractHrefsFromWebsite(unprocessedPageUrlItr, request);
+    private Page processPage(Page page , Map<String, String> request) throws MalformedURLException, ApacheHttpClientException {
+        String webPageUrl = page.getUrl();
+        Set<String> allValidHrefSet = extractHrefsFromWebsite(webPageUrl, request);
         Set<String> emailHrefSet = getHrefs(allValidHrefSet, isMailHref);
         Set<String> pdfHrefSet = getHrefs(allValidHrefSet, isPdfHref);
         Set<String> pngHrefSet = getHrefs(allValidHrefSet, isPictureHref);
-        Set<String> internalHrefSet = getInternalHrefs(allValidHrefSet, unprocessedPageUrlItr);
+        Set<String> internalHrefSet = getInternalHrefs(allValidHrefSet, webPageUrl);
         Set<String> externalHrefSet = getExternalHrefs(allValidHrefSet, internalHrefSet);
-        internalHrefSet = convertInternalHrefs(internalHrefSet, unprocessedPageUrlItr);
+        internalHrefSet = convertInternalHrefs(internalHrefSet, webPageUrl);
 
-        addParentUrlToWebsites(internalHrefSet, unprocessedPageUrlItr);
-        addInternalLinkToUnprocessedCache(internalHrefSet, unprocessedPageUrlItr);
+        addParentUrlToWebsites(internalHrefSet, webPageUrl);
+        addInternalLinkToUnprocessedCache(internalHrefSet, webPageUrl);
 
         //website = PageContainer.getPage(cacheKeyURL);
         PageBuilder pageBuilder;
@@ -195,7 +196,7 @@ public class GrabAllLinksFlow implements Flow<GrabAllLinksResponse, GrabAllLinks
         } else {
             pageBuilder = new PageBuilder();
         }
-        page = pageBuilder.setUrl(unprocessedPageUrlItr)
+        page = pageBuilder.setUrl(webPageUrl)
                 .setProcessed(true)
                 .setStatus(PROCESSED)
                 .setEmailHrefs(emailHrefSet)
@@ -219,17 +220,16 @@ public class GrabAllLinksFlow implements Flow<GrabAllLinksResponse, GrabAllLinks
         Page page;
 
         while (PageContainer.isUnprocessedPageExist() && PageContainer.processedCacheWebsitesCount() < processCount) {
-            //Page unprocessedPage = PageContainer.getUnprocessedPage();
-            String unprocessedPageUrlItr = PageContainer.getUnprocessedWebsiteLinkFromCache();
-            String cacheKeyURL = convertURLKey(unprocessedPageUrlItr);
-            page = PageContainer.getPage(cacheKeyURL);
+            Map.Entry<String, Page> unprocessedPageEntry = PageContainer.getUnprocessedPageEntry();
+            String cacheKeyURL = unprocessedPageEntry.getKey();
+            page = unprocessedPageEntry.getValue();
             try {
-                page = processPage(page, unprocessedPageUrlItr, request);
+                page = processPage(page, request);
             } catch (MalformedURLException e) {
                 System.out.println(e.getMessage());
 
             } catch (ApacheHttpClientException e) {
-                page = new Page(unprocessedPageUrlItr);
+                page = new Page(page.getUrl());
                 page.setProcessed(true);
                 page.setStatus(REDIRECT_OR_INVALID_URL);
             } finally {
