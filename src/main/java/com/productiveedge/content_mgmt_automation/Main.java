@@ -5,20 +5,24 @@ import com.productiveedge.content_mgmt_automation.entity.request.Request;
 import com.productiveedge.content_mgmt_automation.entity.response.Response;
 import com.productiveedge.content_mgmt_automation.flow.Flow;
 import com.productiveedge.content_mgmt_automation.flow.exception.InvalidJarRequestException;
+import com.productiveedge.content_mgmt_automation.flow.impl.CreateLocalFoldersFlow;
+
+import java.util.HashMap;
+import java.util.Map;
 
 
 public class Main {
     public static void main(String[] args) throws InvalidJarRequestException {
         //String a[] = {"command=CREATE_FOLDERS", "ROOT_FOLDER_PATH=C://folder"};
-        Request request = makeRequest(args);
-        Flow flow = CommandFlowStrategy.getCommand(request);
-        Response response = flow.run(request);
+        Map<String, String> request = makeRequest(args);
+        Flow flow = CommandFlowStrategy.getFlow(request);
+        Response response = flow.run();
         System.out.println(response.toString());
     }
 
     //works only if the key doesn't have any '='
-    private static Request makeRequest(String[] args) {
-        Request request = new Request();
+    private static Map<String, String> makeRequest(String[] args) {
+        Map<String, String> request = new HashMap<>();
         for (String arg : args) {
             if (arg.contains("=")) {
                 String key = arg.substring(0, arg.indexOf('='));
@@ -26,6 +30,7 @@ public class Main {
                 request.put(key, value);
             }
         }
+
         return request;
     }
 }

@@ -53,7 +53,7 @@
                         <manifest>
                             <!--<addClasspath>true</addClasspath>-->
                             <!--<classpathPrefix>lib/</classpathPrefix>-->
-                            <mainClass>com.productiveedge.content_mgmt_automation.ProcessTest</mainClass>
+                            <mainClass>com.productiveedge.content_mgmt_automation.Main</mainClass>
                         </manifest>
                     </archive>
                 </configuration>

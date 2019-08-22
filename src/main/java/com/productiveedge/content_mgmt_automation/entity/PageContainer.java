@@ -3,9 +3,11 @@ package com.productiveedge.content_mgmt_automation.entity;
 
 
 import com.productiveedge.content_mgmt_automation.flow.impl.GrabAllLinksFlow;
+import com.productiveedge.content_mgmt_automation.flow.impl.helper.GrabAllLInksHelper;
 import lombok.Data;
 
 import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.Map;
 import java.util.Set;
 import java.util.SortedMap;
@@ -76,7 +78,7 @@ public final class PageContainer {
                 .stream()
                 .anyMatch(e -> {
                             try {
-                                return GrabAllLinksFlow.convertUrlToCacheKey(e.getValue().getUrl()).equals(link);
+                                return GrabAllLInksHelper.cutOffUrlProtocol(e.getValue().getUrl()).equals(link);
                             } catch (MalformedURLException ex) {
                                 return false;
                             }

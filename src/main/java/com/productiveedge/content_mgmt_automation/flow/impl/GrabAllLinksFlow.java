@@ -4,6 +4,7 @@ import com.productiveedge.content_mgmt_automation.entity.Page;
 import com.productiveedge.content_mgmt_automation.entity.PageBuilder;
 import com.productiveedge.content_mgmt_automation.entity.PageContainer;
 import com.productiveedge.content_mgmt_automation.entity.request.GrabAllLinksRequest;
+import com.productiveedge.content_mgmt_automation.entity.request.Request;
 import com.productiveedge.content_mgmt_automation.entity.response.GrabAllLinksResponse;
 import com.productiveedge.content_mgmt_automation.flow.Flow;
 import com.productiveedge.content_mgmt_automation.flow.exception.InvalidJarRequestException;
@@ -16,9 +17,11 @@ import java.net.URL;
 import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static com.productiveedge.content_mgmt_automation.entity.Page.Status.PROCESSED;
 import static com.productiveedge.content_mgmt_automation.entity.Page.Status.REDIRECT_OR_INVALID_URL;
+import static com.productiveedge.content_mgmt_automation.flow.impl.helper.GrabAllLInksHelper.convertURLKey;
 
 public class GrabAllLinksFlow implements Flow<GrabAllLinksResponse, GrabAllLinksRequest> {
 
@@ -42,48 +45,35 @@ public class GrabAllLinksFlow implements Flow<GrabAllLinksResponse, GrabAllLinks
 
     private final Predicate<String> isPictureHref = href -> href.endsWith(PNG_HREF) || href.endsWith(GIF_HREF) || href.endsWith(JPEG_HREF) || href.endsWith(ZIP_HREF);
 
+    private GrabAllLinksRequest request;
+
+    public GrabAllLinksFlow(GrabAllLinksRequest request) {
+        this.request = request;
+    }
+
+
+
     private static boolean isRubbishHref(String href) {
         return isPhoneNumberHref.or(isAnchorHref).or(isJavascriptHref).test(href);
     }
 
-
-    /**
-     * this condition is used to avoid redirect pages fot URL which ends with '/'
-     */
-    private String convertURLKey(String url) {
-        if (url.endsWith("/")) {
-            url = url.substring(0, url.length() - 1);
-        }
-        return url;
-    }
-
-    public static String convertUrlToCacheKey(String urlLink) throws MalformedURLException {
-        URL url = new URL(urlLink);
-        return getDomain(urlLink) + url.getPath();
+    private static <T> Set<T> combine(Set<T>...sets) {
+        return Stream.of(sets).flatMap(Set::stream).collect(Collectors.toSet());
     }
 
 
-    private String createHomePageUrl(Map<String, String> request) {
-        String homePageUrl = request.get(GrabAllLinksRequest.REQUEST_PARAMETER.URL.name().toLowerCase());
+    private String createHomePageUrl() {
+        String homePageUrl = request.getUrl();
         if (homePageUrl == null) {
-            homePageUrl = request.get(GrabAllLinksRequest.REQUEST_PARAMETER.URL_PROTOCOL.name().toLowerCase()) + "://" + request.get(GrabAllLinksRequest.REQUEST_PARAMETER.DOMAIN_NAME.name().toLowerCase());
-            if (!"".equals(request.get(GrabAllLinksRequest.REQUEST_PARAMETER.URL_PORT.name().toLowerCase()))) {
-                homePageUrl = homePageUrl + ":" + request.get(GrabAllLinksRequest.REQUEST_PARAMETER.URL_PORT.name().toLowerCase());
+            homePageUrl = request.getUrlProtocol() + "://" + request.getDomainName();
+            if (!"".equals(request.getUrlPort())) {
+                homePageUrl = homePageUrl + ":" + request.getUrlPort();
             }
         }
         return homePageUrl;
     }
 
 
-    @Override
-    public void validateClientRequest(GrabAllLinksRequest request) throws InvalidJarRequestException {
-        for (GrabAllLinksRequest.REQUEST_PARAMETER parameter : GrabAllLinksRequest.REQUEST_PARAMETER.values()) {
-            String value = request.get(parameter.name().toLowerCase());
-            if (value == null) {
-                throw new InvalidJarRequestException("There isn't '" + parameter + "' parameter in request");
-            }
-        }
-    }
 
     private String validateWebsiteURL(String grabbedHref, String websiteURLIterator) throws MalformedURLException {
         grabbedHref = grabbedHref.trim().toLowerCase();
@@ -111,7 +101,7 @@ public class GrabAllLinksFlow implements Flow<GrabAllLinksResponse, GrabAllLinks
                 url = mergedURL.toString();
             }
             return url;
-        } catch (Exception e) {
+        } catch (MalformedURLException e) {
   /*          logStatus << "Error during validating daughter url: " + websiteURL + "\r\n";
             logStatus << "Parent url: " + websiteURLIterator + "\r\n";
             logStatus << e.getMessage() + "\r\n";*/
@@ -119,14 +109,14 @@ public class GrabAllLinksFlow implements Flow<GrabAllLinksResponse, GrabAllLinks
         return null;
     }
 
-    private Set<String> getInternalHrefs(Set<String> daughterHrefs, String parentUrl) throws MalformedURLException {
+    private Set<String> filterInternalHrefs(Set<String> daughterHrefs, String parentUrl) throws MalformedURLException {
         URL url = null;
-        final String parentDomain = getDomain(parentUrl);
+        final String parentDomain = GrabAllLInksHelper.getDomain(parentUrl);
         return daughterHrefs
                 .stream()
                 .filter(it -> {
                             try {
-                                String daughterDomain = getDomain(it);
+                                String daughterDomain = GrabAllLInksHelper.getDomain(it);
                                 return parentDomain.equals(daughterDomain);
                             } catch (MalformedURLException e) {
                                 return false;
@@ -135,26 +125,26 @@ public class GrabAllLinksFlow implements Flow<GrabAllLinksResponse, GrabAllLinks
                 ).collect(Collectors.toSet());
     }
 
-    private static String getDomain(String url) throws MalformedURLException {
-        String domain = new URL(url).getHost();
-        return domain.startsWith("www.") ? domain.substring(4) : domain;
-    }
 
-    private Set<String> getExternalHrefs(Set<String> hrefs, Set<String> internalHrefs) {
+
+    private Set<String> findDifferenceHrefs(Set<String> hrefs, Set<String> internalHrefs) {
         Set<String> difference = new HashSet<>(hrefs);
         difference.removeAll(internalHrefs);
         return difference;
     }
 
 
-    private Set<String> getHrefs(Set<String> hrefs, Predicate<String> predicate) {
+    private Set<String> filterHrefs(Set<String> hrefs, Predicate<String> predicate) {
         Set<String> emailHrefSet = hrefs
                 .stream()
                 .filter(predicate)
                 .collect(Collectors.toCollection(TreeSet::new));
-        hrefs.removeAll(emailHrefSet);
+        //hrefs.removeAll(emailHrefSet);
         return emailHrefSet;
     }
+
+
+
 
     private Set<String> convertInternalHrefs(Set<String> internalHrefSet, String pageUrl) {
         return internalHrefSet
@@ -163,29 +153,29 @@ public class GrabAllLinksFlow implements Flow<GrabAllLinksResponse, GrabAllLinks
                 .collect(Collectors.toSet());
     }
 
-    private void initPageContainer(Map<String, String> request) {
+    private void initPageContainer() {
         //название метода не валидно
         //да и сам логика не валидна
-        String homePageUrl = createHomePageUrl(request);
+        String homePageUrl = createHomePageUrl();
         String key = convertURLKey(homePageUrl);
         Page page = new Page(homePageUrl);
         PageContainer.put(key, page);
     }
 
-    private Page processPage(Page page , Map<String, String> request) throws MalformedURLException, ApacheHttpClientException {
+    private Page processPage(Page page) throws MalformedURLException, ApacheHttpClientException {
         String webPageUrl = page.getUrl();
-        Set<String> allValidHrefSet = extractHrefsFromWebsite(webPageUrl, request);
-        Set<String> emailHrefSet = getHrefs(allValidHrefSet, isMailHref);
-        Set<String> pdfHrefSet = getHrefs(allValidHrefSet, isPdfHref);
-        Set<String> pngHrefSet = getHrefs(allValidHrefSet, isPictureHref);
-        Set<String> internalHrefSet = getInternalHrefs(allValidHrefSet, webPageUrl);
-        Set<String> externalHrefSet = getExternalHrefs(allValidHrefSet, internalHrefSet);
+        Set<String> allValidHrefSet = extractHrefsFromWebsite(webPageUrl);
+        Set<String> emailHrefSet = filterHrefs(allValidHrefSet, isMailHref);
+        Set<String> pdfHrefSet = filterHrefs(allValidHrefSet, isPdfHref);
+        Set<String> pngHrefSet = filterHrefs(allValidHrefSet, isPictureHref);
+        Set<String> internalAndExternalHrefSet = findDifferenceHrefs(allValidHrefSet, combine(emailHrefSet, pdfHrefSet, pngHrefSet));
+        Set<String> internalHrefSet = filterInternalHrefs(internalAndExternalHrefSet, webPageUrl);
+        Set<String> externalHrefSet = findDifferenceHrefs(internalAndExternalHrefSet, internalHrefSet);
         internalHrefSet = convertInternalHrefs(internalHrefSet, webPageUrl);
 
         addParentUrlToWebsites(internalHrefSet, webPageUrl);
         addInternalLinkToUnprocessedCache(internalHrefSet, webPageUrl);
 
-        //website = PageContainer.getPage(cacheKeyURL);
         PageBuilder pageBuilder;
         if (page != null) {
             pageBuilder = new PageBuilder(page);
@@ -206,13 +196,12 @@ public class GrabAllLinksFlow implements Flow<GrabAllLinksResponse, GrabAllLinks
 
 
     @Override
-    public GrabAllLinksResponse run(GrabAllLinksRequest request) throws InvalidJarRequestException {
-        validateClientRequest(request);
+    public GrabAllLinksResponse run() throws InvalidJarRequestException {
 
-        initPageContainer(request);
+        initPageContainer();
 
 
-        int processCount = Integer.valueOf(request.get(GrabAllLinksRequest.REQUEST_PARAMETER.MAXIMUM_AMOUNT_INTERNAL_URL_TO_PROCESS.name().toLowerCase()));
+        int processCount = Integer.parseInt(request.getProcessUrlCount());
         Page page;
 
         while (PageContainer.isUnprocessedPageExist() && PageContainer.processedCacheWebsitesCount() < processCount) {
@@ -220,7 +209,7 @@ public class GrabAllLinksFlow implements Flow<GrabAllLinksResponse, GrabAllLinks
             String cacheKeyURL = unprocessedPageEntry.getKey();
             page = unprocessedPageEntry.getValue();
             try {
-                page = processPage(page, request);
+                page = processPage(page);
             } catch (MalformedURLException e) {
                 System.out.println(e.getMessage());
 
@@ -237,8 +226,15 @@ public class GrabAllLinksFlow implements Flow<GrabAllLinksResponse, GrabAllLinks
         return response;
     }
 
-    public Set<String> extractHrefsFromWebsite(String url, Map<String, String> headers) throws ApacheHttpClientException {
-        String html = ApacheHttpClient.sendGet(url, headers, null);
+    private Map<String, String> generateHttpHeaders() {
+        return new HashMap<String, String>(){{
+            put("allow_redirect", request.getAllowRedirect());
+        }};
+
+    }
+
+    public Set<String> extractHrefsFromWebsite(String url) throws ApacheHttpClientException {
+        String html = ApacheHttpClient.sendGet(url, generateHttpHeaders());
         Set<String> hrefs = GrabAllLInksHelper.extractHtmlHrefs(html);
         return hrefs
                 .stream()
@@ -270,7 +266,7 @@ public class GrabAllLinksFlow implements Flow<GrabAllLinksResponse, GrabAllLinks
     private void addInternalLinkToUnprocessedCache(Set<String> internalLinks, String websiteURLIterator) {
         internalLinks.forEach(it -> {
             try {
-                String itPath = convertUrlToCacheKey(it);
+                String itPath = GrabAllLInksHelper.cutOffUrlProtocol(it);
                 boolean containsLink = PageContainer.containsLink(itPath);
                 if (!containsLink && !websiteURLIterator.equals(it)) {
                     Page website = PageContainer.getPage(convertURLKey(it));

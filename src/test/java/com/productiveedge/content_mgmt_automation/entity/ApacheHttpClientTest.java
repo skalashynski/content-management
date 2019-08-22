@@ -16,13 +16,13 @@ public class ApacheHttpClientTest {
         String url = "https://www.productiveedge.com/blog";
         Map<String, String> headers = new HashMap<>();
         headers.put("allow_redirect", "false");
-        ApacheHttpClient.sendGet(url, headers, null);
+        ApacheHttpClient.sendGet(url, headers);
     }
 
     @Test()
     public void allowRedirectSendGet() throws ApacheHttpClientException {
         String url = "https://www.productiveedge.com";
-        String html = ApacheHttpClient.sendGet(url, null, null);
+        String html = ApacheHttpClient.sendGet(url, null);
         assertNotNull(html);
         System.out.println(html);
     }

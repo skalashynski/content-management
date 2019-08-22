@@ -1,5 +1,7 @@
 package com.productiveedge.content_mgmt_automation.flow.impl.helper;
 
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.regex.Matcher;
@@ -21,4 +23,28 @@ public class GrabAllLInksHelper {
                 .map(e -> e.substring(e.indexOf("href=\""), e.length() - 1).substring(6))
                 .collect(Collectors.toSet());
     }
+
+    /**
+     * this condition is used to avoid redirect pages fot URL which ends with '/'
+     */
+
+
+    public static String convertURLKey(String url) {
+        if (url.endsWith("/")) {
+            url = url.substring(0, url.length() - 1);
+        }
+        return url;
+    }
+    public static String getDomain(String url) throws MalformedURLException {
+        String domain = new URL(url).getHost();
+        return domain.startsWith("www.") ? domain.substring(4) : domain;
+    }
+
+
+
+    public static String cutOffUrlProtocol(String urlLink) throws MalformedURLException {
+        URL url = new URL(urlLink);
+        return getDomain(urlLink) + url.getPath();
+    }
+
 }

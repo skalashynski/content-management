@@ -6,7 +6,5 @@ import com.productiveedge.content_mgmt_automation.flow.exception.InvalidJarReque
 
 
 public interface Flow<K extends Response, T extends Request> {
-    K run(T request) throws InvalidJarRequestException;
-
-    void validateClientRequest(T request) throws InvalidJarRequestException;
+    K run() throws InvalidJarRequestException;
 }
