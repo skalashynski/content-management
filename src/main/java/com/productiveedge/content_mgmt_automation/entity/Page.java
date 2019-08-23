@@ -30,6 +30,7 @@ public class Page {
         this.url = url;
         isProcessed = false;
         status = Status.UNPROCESSED;
+        externalHrefs = new HashSet<>();
         emailHrefs = new HashSet<>();
         internalHrefs = new HashSet<>();
         pdfHrefs = new HashSet<>();

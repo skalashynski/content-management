@@ -1,9 +1,11 @@
 package com.productiveedge.content_mgmt_automation.flow.impl;
 
 
+import com.productiveedge.content_mgmt_automation.entity.PageContainer;
 import com.productiveedge.content_mgmt_automation.entity.request.GrabAllLinksRequest;
 import com.productiveedge.content_mgmt_automation.flow.exception.InvalidJarRequestException;
 import com.productiveedge.content_mgmt_automation.flow.impl.helper.GrabAllLinksHelper;
+import com.productiveedge.content_mgmt_automation.repository.GrabAllLinksExcelRepository;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -24,7 +26,7 @@ public class GrabAllLinksFlowTest {
         headers.put("domain_name", "productiveedge.com");
         headers.put("url_protocol", "https");
         headers.put("url_port", "");
-        headers.put("maximum_amount_internal_url_to_process", "10");
+        headers.put("maximum_amount_internal_url_to_process", "100");
         headers.put("allow_redirect", "false");
         headers.put("url", "https://www.productiveedge.com/");
 
@@ -51,6 +53,15 @@ public class GrabAllLinksFlowTest {
     public void run() throws Exception {
         System.out.println(flow.run().toString());
     }
+
+
+    @Test
+    public void saveAll() throws Exception {
+        System.out.println(flow.run().toString());
+        GrabAllLinksExcelRepository.saveAll(PageContainer.getCache().values());
+    }
+
+
 
     @Test
     public void createHomePage() throws Exception {
