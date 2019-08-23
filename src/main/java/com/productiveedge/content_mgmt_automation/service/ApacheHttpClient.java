@@ -1,30 +1,28 @@
 package com.productiveedge.content_mgmt_automation.service;
 
+import com.productiveedge.content_mgmt_automation.flow.exception.HttpRedirectException;
 import com.productiveedge.content_mgmt_automation.service.exception.ApacheHttpClientException;
 import org.apache.http.HttpResponse;
-import org.apache.http.NameValuePair;
 import org.apache.http.client.HttpClient;
-import org.apache.http.client.RedirectException;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.impl.client.HttpClientBuilder;
-import org.apache.http.message.BasicNameValuePair;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 
-import static com.productiveedge.content_mgmt_automation.service.ApacheHttpClient.Header.ALLOW_REDIRECT;
+import static com.productiveedge.content_mgmt_automation.service.ApacheHttpClient.HttpHeader.ALLOW_REDIRECT;
 
 public class ApacheHttpClient {
+    private static final Logger LOGGER = LoggerFactory.getLogger(ApacheHttpClient.class);
+
     private static final String USER_AGENT_VALUE = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/56.0.2924.87 Safari/537.36";
-    public enum Header {
+
+    public enum HttpHeader {
         ALLOW_REDIRECT
     }
 
@@ -38,7 +36,7 @@ public class ApacheHttpClient {
                 if (allowRedirect != null && !Boolean.valueOf(allowRedirect)) {
                     builder.disableRedirectHandling();
                 }
-                // add request header
+                // add request headerHttpRequestBase
                 addRequestHeaders(request, headers);
 
             }
@@ -47,7 +45,7 @@ public class ApacheHttpClient {
             HttpResponse response = client.execute(request);
             int statusCode = response.getStatusLine().getStatusCode();
             if (statusCode != 200) {
-                throw new RedirectException("The url=" + url + " was moved or doesn't exist.");
+                throw new HttpRedirectException("The url=" + url + " was moved or doesn't exist.");
             }
             BufferedReader rd = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
             StringBuilder result = new StringBuilder();
@@ -56,7 +54,8 @@ public class ApacheHttpClient {
                 result.append(line);
             }
             return result.toString();
-        } catch (RedirectException | IOException e) {
+        } catch (HttpRedirectException | IOException e) {
+            //LOGGER.error();
             throw new ApacheHttpClientException(e.getMessage());
         }
 

@@ -4,6 +4,7 @@ import java.util.Set;
 
 public class PageBuilder {
     private final Page page;
+
     public PageBuilder() {
         this.page = new Page();
     }
@@ -31,25 +32,28 @@ public class PageBuilder {
         page.setEmailHrefs(emailHrefs);
         return this;
     }
+
     public PageBuilder setExternalHrefs(Set<String> externalHrefs) {
         page.setExternalHrefs(externalHrefs);
         return this;
     }
 
-    public PageBuilder setInternalHrefs(Set<String> internalHrefs){
+    public PageBuilder setInternalHrefs(Set<String> internalHrefs) {
         page.setInternalHrefs(internalHrefs);
         return this;
     }
 
-    public PageBuilder setPdfHrefs(Set<String> pdfHrefs){
+    public PageBuilder setPdfHrefs(Set<String> pdfHrefs) {
         page.setPdfHrefs(pdfHrefs);
         return this;
     }
-    public PageBuilder setPngHrefs(Set<String> pngHrefs){
+
+    public PageBuilder setPngHrefs(Set<String> pngHrefs) {
         page.setPngHrefs(pngHrefs);
         return this;
     }
-    public PageBuilder setParentHrefs(Set<String> parentHrefs){
+
+    public PageBuilder setParentHrefs(Set<String> parentHrefs) {
         page.setParentURLs(parentHrefs);
         return this;
     }

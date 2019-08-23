@@ -7,8 +7,6 @@ import lombok.NoArgsConstructor;
 import java.util.HashSet;
 import java.util.Set;
 
-import static java.util.Collections.EMPTY_SET;
-
 @AllArgsConstructor
 @Data
 @NoArgsConstructor
@@ -16,6 +14,7 @@ public class Page {
     private String url;
     private boolean isProcessed;
     private Status status;
+    private String messageDescription;
     private Set<String> emailHrefs;
     private Set<String> externalHrefs;
     private Set<String> internalHrefs;
@@ -36,5 +35,6 @@ public class Page {
         pdfHrefs = new HashSet<>();
         pngHrefs = new HashSet<>();
         parentURLs = new HashSet<>();
+        messageDescription = "";
     }
 }

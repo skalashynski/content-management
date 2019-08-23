@@ -15,16 +15,21 @@ public class GrabAllLinksRequest extends Request {
     private String domainName;
     private String urlProtocol;
     private String urlPort;
-    private String processUrlCount;
+    private int processUrlCount;
     private String allowRedirect;
 
-    public GrabAllLinksRequest(Map<String, String> request) throws InvalidJarRequestException{
+    public GrabAllLinksRequest(Map<String, String> request) throws InvalidJarRequestException {
         validate(request);
         this.url = request.get(REQUEST_PARAMETER.URL.name().toLowerCase());
         this.domainName = request.get(REQUEST_PARAMETER.DOMAIN_NAME.name().toLowerCase());
         this.urlProtocol = request.get(REQUEST_PARAMETER.URL_PROTOCOL.name().toLowerCase());
         this.urlPort = request.get(REQUEST_PARAMETER.URL_PORT.name().toLowerCase());
-        this.processUrlCount = request.get(REQUEST_PARAMETER.MAXIMUM_AMOUNT_INTERNAL_URL_TO_PROCESS.name().toLowerCase());
+        try {
+            this.processUrlCount = Integer.parseInt(request.get(REQUEST_PARAMETER.MAXIMUM_AMOUNT_INTERNAL_URL_TO_PROCESS.name().toLowerCase()));
+        } catch (NumberFormatException e) {
+            throw new InvalidJarRequestException("Incorrect request parameter");
+        }
+
         this.allowRedirect = request.get(REQUEST_PARAMETER.ALLOW_REDIRECT.name().toLowerCase());
     }
 
