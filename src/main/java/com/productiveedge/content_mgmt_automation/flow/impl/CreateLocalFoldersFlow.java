@@ -5,7 +5,8 @@ import com.productiveedge.content_mgmt_automation.entity.FolderName;
 import com.productiveedge.content_mgmt_automation.entity.request.CreateLocalFolderRequest;
 import com.productiveedge.content_mgmt_automation.entity.response.CreateFolderResponse;
 import com.productiveedge.content_mgmt_automation.flow.Flow;
-import com.productiveedge.content_mgmt_automation.flow.exception.InvalidJarRequestException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.nio.file.Path;
@@ -13,7 +14,7 @@ import java.nio.file.Paths;
 import java.util.Arrays;
 
 public class CreateLocalFoldersFlow implements Flow<CreateFolderResponse> {
-
+    private static final Logger logger = LoggerFactory.getLogger(CreateLocalFolderRequest.class);
 
     private CreateLocalFolderRequest request;
 
@@ -24,7 +25,12 @@ public class CreateLocalFoldersFlow implements Flow<CreateFolderResponse> {
     private static void createFolder(Path folderPath) {
         File folder = new File(folderPath.toString());
         if (!folder.exists()) {
-            folder.mkdirs();
+            if (folder.mkdirs()) {
+                logger.info("Folder " + folderPath + " is created.");
+            }
+        } else {
+            System.out.println(folderPath);
+            logger.info("Folder " + folderPath + " already exist.");
         }
     }
 

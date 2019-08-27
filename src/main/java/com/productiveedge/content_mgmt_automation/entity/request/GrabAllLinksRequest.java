@@ -20,23 +20,23 @@ public class GrabAllLinksRequest extends Request {
 
     public GrabAllLinksRequest(Map<String, String> request) throws InvalidJarRequestException {
         validate(request);
-        this.url = request.get(REQUEST_PARAMETER.URL.name().toLowerCase());
-        this.domainName = request.get(REQUEST_PARAMETER.DOMAIN_NAME.name().toLowerCase());
-        this.urlProtocol = request.get(REQUEST_PARAMETER.URL_PROTOCOL.name().toLowerCase());
-        this.urlPort = request.get(REQUEST_PARAMETER.URL_PORT.name().toLowerCase());
+        this.url = request.get(REQUEST_PARAMETER.URL.name());
+        this.domainName = request.get(REQUEST_PARAMETER.DOMAIN_NAME.name());
+        this.urlProtocol = request.get(REQUEST_PARAMETER.URL_PROTOCOL.name());
+        this.urlPort = request.get(REQUEST_PARAMETER.URL_PORT.name());
         try {
-            this.processUrlCount = Integer.parseInt(request.get(REQUEST_PARAMETER.MAXIMUM_AMOUNT_INTERNAL_URL_TO_PROCESS.name().toLowerCase()));
+            this.processUrlCount = Integer.parseInt(request.get(REQUEST_PARAMETER.MAXIMUM_AMOUNT_INTERNAL_URL_TO_PROCESS.name()));
         } catch (NumberFormatException e) {
             throw new InvalidJarRequestException("Incorrect request parameter");
         }
 
-        this.allowRedirect = request.get(REQUEST_PARAMETER.ALLOW_REDIRECT.name().toLowerCase());
+        this.allowRedirect = request.get(REQUEST_PARAMETER.ALLOW_REDIRECT.name());
     }
 
     @Override
     public void validate(Map<String, String> request) throws InvalidJarRequestException {
-        for (GrabAllLinksRequest.REQUEST_PARAMETER parameter : GrabAllLinksRequest.REQUEST_PARAMETER.values()) {
-            String value = request.get(parameter.name().toLowerCase());
+        for (REQUEST_PARAMETER parameter : REQUEST_PARAMETER.values()) {
+            String value = request.get(parameter.name().toUpperCase());
             if (value == null) {
                 throw new InvalidJarRequestException("There isn't '" + parameter + "' parameter in request");
             }

@@ -15,15 +15,15 @@ public class CreateLocalFolderRequest extends Request {
 
     public CreateLocalFolderRequest(Map<String, String> request) throws InvalidJarRequestException {
         validate(request);
-        this.rootFolderPath = request.get(REQUEST_PARAMETER.ROOT_FOLDER_PATH.name().toLowerCase());
+        this.rootFolderPath = request.get(REQUEST_PARAMETER.ROOT_FOLDER_PATH.name());
     }
 
     @Override
     public void validate(Map<String, String> request) throws InvalidJarRequestException {
         for (REQUEST_PARAMETER parameter : REQUEST_PARAMETER.values()) {
-            String value = request.get(parameter.name().toLowerCase());
+            String value = request.get(parameter.name().toUpperCase());
             if (value == null) {
-                throw new InvalidJarRequestException("There isn't '" + parameter + "' parameter in request to create local folder");
+                throw new InvalidJarRequestException("There isn't '" + parameter + "' parameter in request to create local folders");
             }
         }
     }

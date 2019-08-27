@@ -17,6 +17,7 @@ public class GrabAllLinksHelper {
     private static final Pattern A_TAG_PATTERN = Pattern.compile(A_TAG_REGEX);
     private static final String EXTRACT_DOMAIN_REGEX = "^(?:https?:\\/\\/)?(?:[^@\\/\\n]+@)?(?:www\\.)?([^:\\/?\\n]+)";
     private static final Pattern EXTRACT_DOMAIN_PATTERN = Pattern.compile(EXTRACT_DOMAIN_REGEX);
+    private static final String GENERATE_KEY_REGEX = "(http(s)?://)|(www\\.)";
 
     public static Set<String> extractHtmlHrefs(String html) {
         Set<String> result = new HashSet<>();
@@ -30,19 +31,6 @@ public class GrabAllLinksHelper {
                 .collect(Collectors.toSet());
     }
 
-    /**
-     * this condition is used to avoid redirect pages fot URL which ends with '/'
-     */
-/*
-
-    public static String convertURLKey(String url) {
-        if (url.endsWith("/")) {
-            url = url.substring(0, url.length() - 1);
-        }
-        return url;
-    }
-    */
-
     public static String getDomain(String url) throws InvalidHrefException {
         try {
             Matcher matcher = EXTRACT_DOMAIN_PATTERN.matcher(url);
@@ -50,8 +38,7 @@ public class GrabAllLinksHelper {
             String domain = matcher.group(1);
             return domain.startsWith("www.") ? domain.substring(4) : domain;
         } catch (IllegalArgumentException e) {
-            //log.info
-            throw new InvalidHrefException("", e);
+            throw new InvalidHrefException(e);
         }
 
     }
@@ -67,7 +54,7 @@ public class GrabAllLinksHelper {
     }
 
     public static String generateKey(String url) {
-        url = url.replaceAll("(http(s)?://)|(www\\.)", "");
+        url = url.replaceAll(GENERATE_KEY_REGEX, "");
         if (url.contains("?")) {
             url = url.substring(0, url.indexOf("?"));
 

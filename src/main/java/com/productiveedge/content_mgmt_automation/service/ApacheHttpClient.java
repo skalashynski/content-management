@@ -18,7 +18,7 @@ import java.util.Map;
 import static com.productiveedge.content_mgmt_automation.service.ApacheHttpClient.HttpHeader.ALLOW_REDIRECT;
 
 public class ApacheHttpClient {
-    private static final Logger LOGGER = LoggerFactory.getLogger(ApacheHttpClient.class);
+    private static final Logger logger = LoggerFactory.getLogger(ApacheHttpClient.class);
 
     private static final String USER_AGENT_VALUE = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/56.0.2924.87 Safari/537.36";
 
@@ -55,7 +55,6 @@ public class ApacheHttpClient {
             }
             return result.toString();
         } catch (HttpRedirectException | IOException e) {
-            //LOGGER.error();
             throw new ApacheHttpClientException(e.getMessage());
         }
 

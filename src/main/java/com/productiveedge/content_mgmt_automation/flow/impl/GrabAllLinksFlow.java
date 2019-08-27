@@ -2,7 +2,6 @@ package com.productiveedge.content_mgmt_automation.flow.impl;
 
 import com.productiveedge.content_mgmt_automation.entity.Page;
 import com.productiveedge.content_mgmt_automation.entity.PageBuilder;
-import com.productiveedge.content_mgmt_automation.entity.PageContainer;
 import com.productiveedge.content_mgmt_automation.entity.request.GrabAllLinksRequest;
 import com.productiveedge.content_mgmt_automation.entity.response.GrabAllLinksResponse;
 import com.productiveedge.content_mgmt_automation.flow.Flow;
@@ -10,8 +9,11 @@ import com.productiveedge.content_mgmt_automation.flow.exception.InvalidHrefExce
 import com.productiveedge.content_mgmt_automation.flow.exception.InvalidJarRequestException;
 import com.productiveedge.content_mgmt_automation.flow.exception.ProcessPageException;
 import com.productiveedge.content_mgmt_automation.flow.impl.helper.GrabAllLinksHelper;
+import com.productiveedge.content_mgmt_automation.repository.PageContainer;
 import com.productiveedge.content_mgmt_automation.service.ApacheHttpClient;
 import com.productiveedge.content_mgmt_automation.service.exception.ApacheHttpClientException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -23,9 +25,11 @@ import java.util.stream.Stream;
 
 import static com.productiveedge.content_mgmt_automation.entity.Page.Status.PROCESSED;
 import static com.productiveedge.content_mgmt_automation.entity.Page.Status.REDIRECT_OR_INVALID_URL;
-import static com.productiveedge.content_mgmt_automation.flow.impl.helper.GrabAllLinksHelper.*;
+import static com.productiveedge.content_mgmt_automation.flow.impl.helper.GrabAllLinksHelper.createHomePageUrl;
+import static com.productiveedge.content_mgmt_automation.flow.impl.helper.GrabAllLinksHelper.generateKey;
 
 public class GrabAllLinksFlow implements Flow<GrabAllLinksResponse> {
+    private static final Logger logger = LoggerFactory.getLogger(GrabAllLinksFlow.class);
 
     private static final String ANCHOR_SYMBOL = "#";
     private static final String QUESTION_SYMBOL = "?";
@@ -174,6 +178,7 @@ public class GrabAllLinksFlow implements Flow<GrabAllLinksResponse> {
     }
 
     private Page processPage(Page page) throws ProcessPageException {
+        logger.info("Processing page " + page.getUrl());
         String webPageUrl = page.getUrl();
         Set<String> allValidHrefSet = extractHrefsFromWebsite(webPageUrl);
         Set<String> emailHrefSet = filterHrefs(allValidHrefSet, isMailHref);
@@ -199,6 +204,7 @@ public class GrabAllLinksFlow implements Flow<GrabAllLinksResponse> {
                 .setPdfHrefs(pdfHrefSet)
                 .setPngHrefs(pngHrefSet)
                 .build();
+        logger.info("Page " + page.getUrl() + "is processed successfully");
         return page;
     }
 
@@ -216,6 +222,7 @@ public class GrabAllLinksFlow implements Flow<GrabAllLinksResponse> {
             try {
                 page = processPage(page);
             } catch (ProcessPageException e) {
+                logger.error("Page " + page.getUrl() + "is unprocessed. " + e.getMessage());
                 page = new Page(page.getUrl());
                 page.setProcessed(true);
                 page.setStatus(REDIRECT_OR_INVALID_URL);
