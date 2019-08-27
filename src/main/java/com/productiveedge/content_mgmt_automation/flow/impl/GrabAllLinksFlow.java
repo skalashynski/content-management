@@ -116,6 +116,7 @@ public class GrabAllLinksFlow implements Flow<GrabAllLinksResponse> {
                                     String daughterDomain = GrabAllLinksHelper.getDomain(it);
                                     return parentDomain.equals(daughterDomain);
                                 } catch (InvalidHrefException e) {
+                                    logger.warn("Can't extract domain from url " + it + ".\n" + e.getMessage());
                                     return false;
                                 }
                             }
@@ -222,7 +223,7 @@ public class GrabAllLinksFlow implements Flow<GrabAllLinksResponse> {
             try {
                 page = processPage(page);
             } catch (ProcessPageException e) {
-                logger.error("Page " + page.getUrl() + "is unprocessed. " + e.getMessage());
+                logger.error("Page " + page.getUrl() + " is unprocessed. " + e.getMessage());
                 page = new Page(page.getUrl());
                 page.setProcessed(true);
                 page.setStatus(REDIRECT_OR_INVALID_URL);
@@ -237,6 +238,7 @@ public class GrabAllLinksFlow implements Flow<GrabAllLinksResponse> {
         return response;
     }
 
+    //bad piece of code
     private Map<String, String> generateHttpHeaders() {
         return new HashMap<String, String>() {{
             put("allow_redirect", request.getAllowRedirect());
@@ -254,7 +256,7 @@ public class GrabAllLinksFlow implements Flow<GrabAllLinksResponse> {
                                 try {
                                     return validateDaughterHref(it, url);
                                 } catch (InvalidHrefException e) {
-                                    //logger.info("Can't validate href " + it + " located on " + url);
+                                    logger.warn("Can't validate href " + it + " located on " + url);
                                     return null;
                                 }
                             }

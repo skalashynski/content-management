@@ -22,13 +22,16 @@ public class Main {
                     "domain_name=www.productiveedge.com",
                     "url_protocol=https",
                     "url_port=80",
-                    "maximum_amount_internal_url_to_process=100",
+                    "maximum_amount_internal_url_to_process=1",
                     "allow_redirect=false",
                     "generate_report=true",
                     "report_name=Page_report",
-                    "take_screenshot=true"
+                    "take_screenshot=true",
+                    "browser_name=chrome",
+                    "page_scroll_value=500",
             };
-            Map<String, String> request = makeRequest(a);
+
+            Map<String, String> request = makeRequest(args);
             Queue<Flow> flows = CommandFlowStrategy.getFlow(request);
             while (!flows.isEmpty()) {
                 Flow flow = flows.poll();

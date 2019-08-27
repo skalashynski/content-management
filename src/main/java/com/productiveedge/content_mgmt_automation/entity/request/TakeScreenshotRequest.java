@@ -10,21 +10,23 @@ import java.util.Map;
 public class TakeScreenshotRequest extends Request {
 
     public enum REQUEST_PARAMETERS {
-        BROWSER_NAME, BROWSER_PATH, ROOT_FOLDER_PATH,
+        PAGE_SCROLL_VALUE, BROWSER_NAME, ROOT_FOLDER_PATH,
     }
 
     private String rootFolderPath;
     private String operationSystem;
     private String browserName;
-    private String browserPath;
+    private String pageScrollValue;
+    //private String browserPath;
     private Collection<String> links;
 
 
     public TakeScreenshotRequest(Map<String, String> request) throws InvalidJarRequestException {
         validate(request);
         this.browserName = request.get(REQUEST_PARAMETERS.BROWSER_NAME.name());
-        this.browserPath = request.get(REQUEST_PARAMETERS.BROWSER_PATH.name());
+        //this.browserPath = request.get(REQUEST_PARAMETERS.BROWSER_PATH.name());
         this.rootFolderPath = request.get(REQUEST_PARAMETERS.ROOT_FOLDER_PATH.name());
+        this.pageScrollValue = request.get(REQUEST_PARAMETERS.PAGE_SCROLL_VALUE.name());
         this.links = links;
     }
 

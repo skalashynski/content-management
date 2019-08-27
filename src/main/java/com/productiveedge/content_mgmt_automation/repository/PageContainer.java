@@ -30,7 +30,7 @@ public final class PageContainer {
         return cache.entrySet().stream().filter(e -> !e.getValue().isProcessed()).collect(Collectors.toSet());
     }
 
-    public static Set<Map.Entry> getAllProcessedWebsiteLinks() {
+    public static Set<Map.Entry<String, Page>> getAllProcessedWebsiteLinks() {
         return cache.entrySet().stream().filter(e -> e.getValue().isProcessed()).collect(Collectors.toSet());
     }
 

@@ -1,8 +1,8 @@
-package com.productiveedge.content_mgmt_automation.flow;
+package com.productiveedge.content_mgmt_automation.flow.impl;
 
 import com.productiveedge.content_mgmt_automation.entity.response.ExcelReportResponse;
+import com.productiveedge.content_mgmt_automation.flow.Flow;
 import com.productiveedge.content_mgmt_automation.flow.exception.InvalidJarRequestException;
-import com.productiveedge.content_mgmt_automation.flow.impl.GrabAllLinksFlow;
 import com.productiveedge.content_mgmt_automation.repository.PageContainer;
 import com.productiveedge.content_mgmt_automation.repository.PageExcelProvider;
 import org.slf4j.Logger;
