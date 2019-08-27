@@ -15,13 +15,11 @@ import static org.junit.Assert.assertEquals;
 
 public class GrabAllLinksFlowTest {
 
-    private Map<String, String> headers;
-
     private GrabAllLinksFlow flow;
 
     @Before
     public void init() throws InvalidJarRequestException {
-        headers = new HashMap<>();
+        Map<String, String> headers = new HashMap<>();
         headers.put("domain_name", "productiveedge.com");
         headers.put("url_protocol", "https");
         headers.put("url_port", "");
@@ -61,7 +59,6 @@ public class GrabAllLinksFlowTest {
     }
 
 
-
     @Test
     public void createHomePage() throws Exception {
         String[][] data = new String[][]{
@@ -95,8 +92,8 @@ public class GrabAllLinksFlowTest {
 
         for (int i = 0; i < data.length; i++) {
             //String res = GrabAllLinksFlow.convertInternalHref.apply(data[i][0], parentHref);
-           // System.out.println(res);
-           // assertEquals("" + i, res, data[i][1]);
+            // System.out.println(res);
+            // assertEquals("" + i, res, data[i][1]);
         }
     }
 

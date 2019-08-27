@@ -14,7 +14,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class PageExcelProvider implements Repositoty<Page>{
+public class PageExcelProvider implements Repositoty<Page> {
     private static final Logger logger = LoggerFactory.getLogger(PageExcelProvider.class);
 
     private List<String> getColumns() {
@@ -23,7 +23,7 @@ public class PageExcelProvider implements Repositoty<Page>{
     }
 
 
-    public void saveAll(Collection<Page> pages) /*throws ExcelException */{
+    public void saveAll(Collection<Page> pages) /*throws ExcelException */ {
         Workbook workbook = new XSSFWorkbook();
         Sheet sheet = workbook.createSheet("Datatypes in Java");
 

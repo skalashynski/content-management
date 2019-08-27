@@ -13,10 +13,11 @@ import java.io.IOException;
 
 public class AppChromeDriverMain {
     private static final String CHROMEDRIVER_NAME = "chromedriver.exe";
-    public static void main(String[] args) throws Exception{
-        final String path = AppChromeDriverMain.class.getClassLoader ()
-                .getResource (CHROMEDRIVER_NAME)
-                .getPath ();
+
+    public static void main(String[] args) throws Exception {
+        final String path = AppChromeDriverMain.class.getClassLoader()
+                .getResource(CHROMEDRIVER_NAME)
+                .getPath();
 
 
         System.setProperty("webdriver.chrome.driver", path);
@@ -28,7 +29,6 @@ public class AppChromeDriverMain {
         options.addArguments("--kiosk");
         DesiredCapabilities capabilities = DesiredCapabilities.chrome();
         capabilities.setCapability(ChromeOptions.CAPABILITY, options);
-
 
 
         //тут, в зависимости от request-а нужно инициализировтаь драйвер

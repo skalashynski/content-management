@@ -1,6 +1,5 @@
 package com.productiveedge.content_mgmt_automation.flow.impl;
 
-import com.productiveedge.content_mgmt_automation.AppChromeDriverMain;
 import com.productiveedge.content_mgmt_automation.entity.FolderName;
 import com.productiveedge.content_mgmt_automation.entity.request.TakeScreenshotRequest;
 import com.productiveedge.content_mgmt_automation.entity.response.TakeScreenshotResponse;
@@ -23,19 +22,17 @@ import java.nio.file.Paths;
 
 public class TakeScreenshotFlow implements Flow<TakeScreenshotResponse> {
     private static final Logger logger = LoggerFactory.getLogger(TakeScreenshotFlow.class);
+    //Тоже нужно переделать.
     private static final String PROPERTY = "webdriver.chrome.driver";
-    private static final String CHROMEDRIVER_NAME = "chromedriver.exe";
-    private static final String CHROME_DRIVER_PATH = AppChromeDriverMain.class.getClassLoader().getResource(CHROMEDRIVER_NAME).getPath();
     private static final String JAVASCRIPT_COMMAND = "window.scrollBy(0,?)";
     private static final String GET_HTML_PAGE_HEIGHT_SCRIPT = "return document.body.scrollHeight";
-    //private String PAGE_SCROLL_VALUE = "";
 
     private WebDriver driver;
     private TakeScreenshotRequest request;
 
     public TakeScreenshotFlow(TakeScreenshotRequest request) {
         this.request = request;
-        System.setProperty(PROPERTY, CHROME_DRIVER_PATH);
+        System.setProperty(PROPERTY, request.getDriverPath());
         ChromeOptions options = new ChromeOptions();
         options.addArguments("--incognito");
         options.addArguments("--start-maximized");

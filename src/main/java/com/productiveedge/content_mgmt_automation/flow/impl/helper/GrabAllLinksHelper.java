@@ -38,19 +38,9 @@ public class GrabAllLinksHelper {
             String domain = matcher.group(1);
             return domain.startsWith("www.") ? domain.substring(4) : domain;
         } catch (IllegalArgumentException e) {
-            throw new InvalidHrefException(e);
+            throw new InvalidHrefException("Can't extract domain from ulr " + url, e);
         }
 
-    }
-
-
-    public static String cutOffUrlProtocol(String urlLink) throws InvalidHrefException {
-        try {
-            URL url = new URL(urlLink);
-            return getDomain(urlLink) + url.getPath();
-        } catch (MalformedURLException e) {
-            throw new InvalidHrefException(e);
-        }
     }
 
     public static String generateKey(String url) {

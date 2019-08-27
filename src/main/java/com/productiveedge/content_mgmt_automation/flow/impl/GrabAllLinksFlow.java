@@ -68,13 +68,13 @@ public class GrabAllLinksFlow implements Flow<GrabAllLinksResponse> {
     }
 
 
-    public static String validateDaughterHref(String grabbedHref, String parentHref) throws InvalidHrefException {
-        grabbedHref = grabbedHref.trim().toLowerCase();
-        if (isRubbishHref(grabbedHref)) {
-            grabbedHref = parentHref;
+    private static String convertDaughterHref(String grabbedDaughterHref, String parentHref) throws InvalidHrefException {
+        grabbedDaughterHref = grabbedDaughterHref.trim().toLowerCase();
+        if (isRubbishHref(grabbedDaughterHref)) {
+            grabbedDaughterHref = parentHref;
         }
         try {
-            URL mergedURL = new URL(new URL(parentHref), grabbedHref);
+            URL mergedURL = new URL(new URL(parentHref), grabbedDaughterHref);
             return mergedURL.toString();
         } catch (MalformedURLException e) {
             throw new InvalidHrefException(e);
@@ -150,7 +150,7 @@ public class GrabAllLinksFlow implements Flow<GrabAllLinksResponse> {
         }
     }
 
-    private static BiFunction<String, String, String> convertInternalHref = (internalHref, pageUrl) -> {
+    private static final BiFunction<String, String, String> convertInternalHref = (internalHref, pageUrl) -> {
         try {
             if (!isAbsoluteHref(internalHref)) {
                 internalHref = concatURLs(pageUrl, internalHref).toString();
@@ -164,13 +164,14 @@ public class GrabAllLinksFlow implements Flow<GrabAllLinksResponse> {
     };
 
 
-    public static Set<String> convertInternalHrefs(Set<String> internalHrefSet, String pageUrl) {
+    private static Set<String> convertInternalHrefs(Set<String> internalHrefSet, String pageUrl) {
         return internalHrefSet
                 .stream()
                 .map(e -> convertInternalHref.apply(e, pageUrl))
                 .filter(e -> !Objects.isNull(e))
                 .collect(Collectors.toSet());
     }
+
     private void initPageContainer() throws InvalidJarRequestException {
         String homePageUrl = createHomePageUrl(request.getUrlProtocol(), request.getDomainName(), request.getUrlPort(), request.getUrl());
         String key = generateKey(homePageUrl);
@@ -252,11 +253,11 @@ public class GrabAllLinksFlow implements Flow<GrabAllLinksResponse> {
             Set<String> hrefs = GrabAllLinksHelper.extractHtmlHrefs(html);
             return hrefs
                     .stream()
-                    .map(it -> {
+                    .map(daughterHref -> {
                                 try {
-                                    return validateDaughterHref(it, url);
+                                    return convertDaughterHref(daughterHref, url);
                                 } catch (InvalidHrefException e) {
-                                    logger.warn("Can't validate href " + it + " located on " + url);
+                                    logger.warn("Can't convert href " + daughterHref + " located on " + url + ".\n" + e.getMessage());
                                     return null;
                                 }
                             }
@@ -264,7 +265,7 @@ public class GrabAllLinksFlow implements Flow<GrabAllLinksResponse> {
                     .filter(Objects::nonNull)
                     .collect(Collectors.toSet());
         } catch (ApacheHttpClientException e) {
-            throw new ProcessPageException("Can't execute http-get request to url " + url, e);
+            throw new ProcessPageException("Can't execute http-get request to url " + url + ".\n" + e.getMessage(), e);
         }
     }
 

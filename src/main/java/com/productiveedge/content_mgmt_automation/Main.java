@@ -16,7 +16,7 @@ public class Main {
 
     public static void main(String[] args) {
         try {
-            String a[] = {
+            String[] a = {
                     "ROOT_FOLDER_PATH=C://folder",
                     "url=https://www.productiveedge.com",
                     "domain_name=www.productiveedge.com",
@@ -29,9 +29,10 @@ public class Main {
                     "take_screenshot=true",
                     "browser_name=chrome",
                     "page_scroll_value=500",
+                    "driver_path=C://folder//chromedriver.exe"
             };
 
-            Map<String, String> request = makeRequest(args);
+            Map<String, String> request = makeRequest(a);
             Queue<Flow> flows = CommandFlowStrategy.getFlow(request);
             while (!flows.isEmpty()) {
                 Flow flow = flows.poll();
