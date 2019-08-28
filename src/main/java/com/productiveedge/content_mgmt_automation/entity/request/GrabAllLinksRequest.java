@@ -8,29 +8,34 @@ import java.util.Map;
 @Data
 public class GrabAllLinksRequest extends Request {
     public enum REQUEST_PARAMETER {
-        URL, DOMAIN_NAME, URL_PROTOCOL, URL_PORT, MAXIMUM_AMOUNT_INTERNAL_URL_TO_PROCESS, ALLOW_REDIRECT
+        PROCESS_URL, MAX_PROCESS_URLS_VALUE, PROCESS_STRANGE_URLS, PROCESS_STRATEGY
     }
 
-    private String url;
-    private String domainName;
-    private String urlProtocol;
-    private String urlPort;
+    private String processUrl;
+    //private String domainName;
+    //private String urlProtocol;
+    //private String urlPort;
     private int processUrlCount;
     private String allowRedirect;
+    private boolean startFromIndexPage;
+    private String processStrategy;
 
     public GrabAllLinksRequest(Map<String, String> request) throws InvalidJarRequestException {
         validate(request);
-        this.url = request.get(REQUEST_PARAMETER.URL.name());
+        this.processUrl = request.get(REQUEST_PARAMETER.PROCESS_URL.name());
+        this.processStrategy = request.get(REQUEST_PARAMETER.PROCESS_STRATEGY.name());
+        /*
         this.domainName = request.get(REQUEST_PARAMETER.DOMAIN_NAME.name());
         this.urlProtocol = request.get(REQUEST_PARAMETER.URL_PROTOCOL.name());
         this.urlPort = request.get(REQUEST_PARAMETER.URL_PORT.name());
+        */
         try {
-            this.processUrlCount = Integer.parseInt(request.get(REQUEST_PARAMETER.MAXIMUM_AMOUNT_INTERNAL_URL_TO_PROCESS.name()));
+            this.processUrlCount = Integer.parseInt(request.get(REQUEST_PARAMETER.MAX_PROCESS_URLS_VALUE.name()));
         } catch (NumberFormatException e) {
             throw new InvalidJarRequestException("Incorrect request parameter");
         }
-
-        this.allowRedirect = request.get(REQUEST_PARAMETER.ALLOW_REDIRECT.name());
+        this.allowRedirect = request.get(REQUEST_PARAMETER.PROCESS_STRANGE_URLS.name());
+        //this.startFromIndexPage = Boolean.valueOf(request.get(REQUEST_PARAMETER.START_FROM_INDEX_PAGE.name()));
     }
 
     @Override
@@ -38,7 +43,7 @@ public class GrabAllLinksRequest extends Request {
         for (REQUEST_PARAMETER parameter : REQUEST_PARAMETER.values()) {
             String value = request.get(parameter.name().toUpperCase());
             if (value == null) {
-                throw new InvalidJarRequestException("There isn't '" + parameter + "' parameter in request");
+                throw new InvalidJarRequestException("There isn't '" + parameter + "' parameter in request to grab hrefs in page.");
             }
         }
     }

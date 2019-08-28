@@ -45,7 +45,7 @@ public class ApacheHttpClient {
             HttpResponse response = client.execute(request);
             int statusCode = response.getStatusLine().getStatusCode();
             if (statusCode != 200) {
-                throw new HttpRedirectException("The url=" + url + " was moved or doesn't exist.");
+                throw new HttpRedirectException("The page " + url + " was moved or doesn't exist.");
             }
             BufferedReader rd = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
             StringBuilder result = new StringBuilder();

@@ -30,7 +30,7 @@ public final class PageContainer {
         return cache.entrySet().stream().filter(e -> !e.getValue().isProcessed()).collect(Collectors.toSet());
     }
 
-    public static Set<Map.Entry<String, Page>> getAllProcessedWebsiteLinks() {
+    public static Set<Map.Entry<String, Page>> getProcessedPageEntries() {
         return cache.entrySet().stream().filter(e -> e.getValue().isProcessed()).collect(Collectors.toSet());
     }
 
@@ -48,7 +48,7 @@ public final class PageContainer {
         return null;
     }
 
-    public static Map.Entry<String, Page> getUnprocessedPageEntry() {
+    public static Map.Entry<String, Page> nextUnprocessedPageEntry() {
         for (Map.Entry<String, Page> pageEntry : cache.entrySet()) {
             if (!pageEntry.getValue().isProcessed()) {
                 return pageEntry;

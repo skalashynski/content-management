@@ -58,6 +58,16 @@ public class PageBuilder {
         return this;
     }
 
+    public PageBuilder setHtmlContent(String htmlContent) {
+        page.setHtmlContent(htmlContent);
+        return this;
+    }
+
+    public PageBuilder setTxtContent(String txtContent) {
+        page.setTxtContent(txtContent);
+        return this;
+    }
+
     public Page build() {
         return page;
     }

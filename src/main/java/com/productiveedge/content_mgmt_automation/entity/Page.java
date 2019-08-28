@@ -21,6 +21,8 @@ public class Page {
     private Set<String> pdfHrefs;
     private Set<String> pngHrefs;
     private Set<String> parentURLs;
+    private String htmlContent;
+    private String txtContent;
 
     public enum Status {
         REDIRECT_OR_INVALID_URL, PROCESSED, UNPROCESSED,
@@ -37,5 +39,7 @@ public class Page {
         pngHrefs = new HashSet<>();
         parentURLs = new HashSet<>();
         messageDescription = "";
+        htmlContent = null;
+        txtContent = null;
     }
 }

@@ -3,8 +3,6 @@ package com.productiveedge.content_mgmt_automation.flow.impl.helper;
 import com.productiveedge.content_mgmt_automation.flow.exception.InvalidHrefException;
 import com.productiveedge.content_mgmt_automation.flow.exception.InvalidJarRequestException;
 
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
@@ -77,5 +75,9 @@ public class GrabAllLinksHelper {
 
         }
         return homePageUrl;
+    }
+
+    public static String generateNameByKey(String key) {
+        return key.replaceAll("\\.", "_").replaceAll("/", "_");
     }
 }

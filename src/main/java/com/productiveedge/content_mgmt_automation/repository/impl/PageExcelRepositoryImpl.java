@@ -1,11 +1,15 @@
-package com.productiveedge.content_mgmt_automation.repository;
+package com.productiveedge.content_mgmt_automation.repository.impl;
 
 import com.productiveedge.content_mgmt_automation.entity.Page;
+import com.productiveedge.content_mgmt_automation.repository.ExcelRepository;
+import com.productiveedge.content_mgmt_automation.repository.exception.ExcelException;
+import org.apache.commons.io.FileUtils;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.lang.reflect.Field;
@@ -14,20 +18,25 @@ import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class PageExcelProvider implements Repositoty<Page> {
-    private static final Logger logger = LoggerFactory.getLogger(PageExcelProvider.class);
+public class PageExcelRepositoryImpl implements ExcelRepository<Page> {
+    private static final Logger logger = LoggerFactory.getLogger(PageExcelRepositoryImpl.class);
+
+    private Workbook workbook;
+    private Sheet sheet;
+    private String xlsxReportFilePath;
+
+    public PageExcelRepositoryImpl(String xlsxReportFilePath, String sheetName) {
+        this.workbook = new XSSFWorkbook();
+        this.xlsxReportFilePath = xlsxReportFilePath;
+        sheet = workbook.createSheet(sheetName);
+    }
 
     private List<String> getColumns() {
         return Arrays.stream(Page.class.getDeclaredFields()).map(Field::getName).collect(Collectors.toList());
 
     }
 
-
-    public void saveAll(Collection<Page> pages) /*throws ExcelException */ {
-        Workbook workbook = new XSSFWorkbook();
-        Sheet sheet = workbook.createSheet("Datatypes in Java");
-
-        // Create a Font for styling header cells
+    private void createColumnHeaders(List<String> columns) {
         Font headerFont = workbook.createFont();
         headerFont.setBold(true);
         headerFont.setFontHeightInPoints((short) 14);
@@ -38,14 +47,20 @@ public class PageExcelProvider implements Repositoty<Page> {
         // Create a Row
         Row headerRow = sheet.createRow(0);
         // Create cells
-        List<String> columns = getColumns();
         for (int i = 0; i < columns.size(); i++) {
             Cell cell = headerRow.createCell(i);
             cell.setCellValue(columns.get(i));
             cell.setCellStyle(headerCellStyle);
         }
 
+    }
 
+
+    public void saveAll(Collection<Page> pages) throws ExcelException {
+
+        List<String> columns = getColumns();
+
+        createColumnHeaders(columns);
         // Create Other rows and cells with page data
         int rowNum = 1;
         for (Page page : pages) {
@@ -58,13 +73,19 @@ public class PageExcelProvider implements Repositoty<Page> {
             sheet.autoSizeColumn(i);
         }
 
-        // Write the output to a file
-        try (FileOutputStream fileOut = new FileOutputStream("productiveedge.xlsx")) {
+        File file = new File(xlsxReportFilePath);
+        try (FileOutputStream fileOut = FileUtils.openOutputStream(file)) {
             workbook.write(fileOut);
-            fileOut.close();
-            workbook.close();
         } catch (IOException e) {
-            //throw new ExcelException("Error of saving xslx file to system.", e);
+            throw new ExcelException("Error of saving xslx file to system." + e.getMessage(), e);
+        } finally {
+            if (workbook != null) {
+                try {
+                    workbook.close();
+                } catch (IOException e) {
+                    logger.error("Error of closing workbook " + xlsxReportFilePath + ".");
+                }
+            }
         }
 
     }

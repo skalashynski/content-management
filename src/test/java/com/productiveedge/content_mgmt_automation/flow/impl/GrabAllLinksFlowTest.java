@@ -25,7 +25,7 @@ public class GrabAllLinksFlowTest {
         headers.put("url_port", "");
         headers.put("maximum_amount_internal_url_to_process", "100");
         headers.put("allow_redirect", "false");
-        headers.put("url", "https://www.productiveedge.com/");
+        headers.put("processUrl", "https://www.productiveedge.com/");
 
 
         flow = new GrabAllLinksFlow(new GrabAllLinksRequest(headers));
@@ -46,18 +46,6 @@ public class GrabAllLinksFlowTest {
         // System.out.println(res);
     }
 
-    @Test
-    public void run() throws Exception {
-        System.out.println(flow.run().toString());
-    }
-
-
-    @Test
-    public void saveAll() throws Exception {
-        System.out.println(flow.run().toString());
-        //PageExcelProvider.saveAll(PageContainer.getCache().values());
-    }
-
 
     @Test
     public void createHomePage() throws Exception {
@@ -69,7 +57,7 @@ public class GrabAllLinksFlowTest {
                 {"https://instagram.com/friends/1", "instagram.com/friends/1"},
                 {"https://www.instagram.com/friends/1?message=1", "instagram.com/friends/1"},
                 {"https://vk.com/feed", "vk.com/feed"},
-                {"https://sitechecker.pro/what-is-url/", "sitechecker.pro/what-is-url"},
+                {"https://sitechecker.pro/what-is-url/", "sitechecker.pro/what-is-processUrl"},
                 {"https://www.instagram.com/friends/1#message", "instagram.com/friends/1"},
         };
         for (String[] datum : data) {

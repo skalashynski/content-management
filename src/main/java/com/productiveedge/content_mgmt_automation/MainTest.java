@@ -11,12 +11,32 @@ import java.util.Map;
 import java.util.Queue;
 
 
-public class Main {
-    private static final Logger logger = LoggerFactory.getLogger(Main.class);
+public class MainTest {
+    private static final Logger logger = LoggerFactory.getLogger(MainTest.class);
 
     public static void main(String[] args) {
         try {
-            Map<String, String> request = makeRequest(args);
+            String[] a = {
+                    "root_folder_path=C://folder",
+                    "process_url=https://www.productiveedge.com/technology/cloud",
+                    "process_strategy=true",
+                    "max_process_urls_value=2",
+                    "process_strange_urls=false",
+                    "process_strategy=hello",
+                    "generate_report=true",
+                    "xlsx_report_name=today_report.xlsx",
+                    "report_sheet_name=report",
+                    "save_html=true",
+                    "save_txt=true",
+                    "take_screenshot=false",
+                    "page_screen_space_value=550",
+                    "browser_name=chrome",
+                    "driver_path=C://folder//chromedriver.exe",
+                    //"operation_system=MAC",
+                    //"browser_path=path",
+            };
+
+            Map<String, String> request = makeRequest(a);
             Queue<Flow> flows = CommandFlowStrategy.getFlow(request);
             while (!flows.isEmpty()) {
                 Flow flow = flows.poll();

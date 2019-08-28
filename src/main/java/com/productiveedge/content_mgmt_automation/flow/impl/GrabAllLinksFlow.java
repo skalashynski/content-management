@@ -3,7 +3,6 @@ package com.productiveedge.content_mgmt_automation.flow.impl;
 import com.productiveedge.content_mgmt_automation.entity.Page;
 import com.productiveedge.content_mgmt_automation.entity.PageBuilder;
 import com.productiveedge.content_mgmt_automation.entity.request.GrabAllLinksRequest;
-import com.productiveedge.content_mgmt_automation.entity.response.GrabAllLinksResponse;
 import com.productiveedge.content_mgmt_automation.flow.Flow;
 import com.productiveedge.content_mgmt_automation.flow.exception.InvalidHrefException;
 import com.productiveedge.content_mgmt_automation.flow.exception.InvalidJarRequestException;
@@ -25,10 +24,9 @@ import java.util.stream.Stream;
 
 import static com.productiveedge.content_mgmt_automation.entity.Page.Status.PROCESSED;
 import static com.productiveedge.content_mgmt_automation.entity.Page.Status.REDIRECT_OR_INVALID_URL;
-import static com.productiveedge.content_mgmt_automation.flow.impl.helper.GrabAllLinksHelper.createHomePageUrl;
 import static com.productiveedge.content_mgmt_automation.flow.impl.helper.GrabAllLinksHelper.generateKey;
 
-public class GrabAllLinksFlow implements Flow<GrabAllLinksResponse> {
+public class GrabAllLinksFlow implements Flow {
     private static final Logger logger = LoggerFactory.getLogger(GrabAllLinksFlow.class);
 
     private static final String ANCHOR_SYMBOL = "#";
@@ -173,52 +171,67 @@ public class GrabAllLinksFlow implements Flow<GrabAllLinksResponse> {
     }
 
     private void initPageContainer() throws InvalidJarRequestException {
-        String homePageUrl = createHomePageUrl(request.getUrlProtocol(), request.getDomainName(), request.getUrlPort(), request.getUrl());
-        String key = generateKey(homePageUrl);
-        Page page = new Page(homePageUrl);
+        String startPageUrl;
+        startPageUrl = request.getProcessUrl();
+        /*
+        if (request.isStartFromIndexPage()) {
+            startPageUrl = createHomePageUrl(request.getUrlProtocol(), request.getDomainName(), request.getUrlPort(), request.getProcessUrl());
+        } else {
+            startPageUrl = request.getProcessUrl();
+        }
+        */
+        String key = generateKey(startPageUrl);
+        Page page = new Page(startPageUrl);
         PageContainer.putPage(key, page);
     }
 
     private Page processPage(Page page) throws ProcessPageException {
         logger.info("Processing page " + page.getUrl());
         String webPageUrl = page.getUrl();
-        Set<String> allValidHrefSet = extractHrefsFromWebsite(webPageUrl);
-        Set<String> emailHrefSet = filterHrefs(allValidHrefSet, isMailHref);
-        Set<String> pdfHrefSet = filterHrefs(allValidHrefSet, isPdfHref);
-        Set<String> pngHrefSet = filterHrefs(allValidHrefSet, isPictureHref);
-        Set<String> internalAndExternalHrefSet = findDifferenceHrefs(allValidHrefSet, combine(emailHrefSet, pdfHrefSet, pngHrefSet));
-        Set<String> internalHrefSet = filterInternalHrefs(internalAndExternalHrefSet, webPageUrl);
-        Set<String> externalHrefSet = findDifferenceHrefs(internalAndExternalHrefSet, internalHrefSet);
+        try {
+            String htmlContent = getHtmlPageContent(webPageUrl);
+            Set<String> allValidHrefSet = extractHrefsFromWebsite(htmlContent, webPageUrl);
+            Set<String> emailHrefSet = filterHrefs(allValidHrefSet, isMailHref);
+            Set<String> pdfHrefSet = filterHrefs(allValidHrefSet, isPdfHref);
+            Set<String> pngHrefSet = filterHrefs(allValidHrefSet, isPictureHref);
+            Set<String> internalAndExternalHrefSet = findDifferenceHrefs(allValidHrefSet, combine(emailHrefSet, pdfHrefSet, pngHrefSet));
+            Set<String> internalHrefSet = filterInternalHrefs(internalAndExternalHrefSet, webPageUrl);
+            Set<String> externalHrefSet = findDifferenceHrefs(internalAndExternalHrefSet, internalHrefSet);
 
-        //cut off parameters of internal hrefs
-        // & add domain name if the internalHref starts with '\'
-        internalHrefSet = convertInternalHrefs(internalHrefSet, webPageUrl);
+            //cut off parameters of internal hrefs
+            // & add domain name if the internalHref starts with '\'
+            internalHrefSet = convertInternalHrefs(internalHrefSet, webPageUrl);
 
-        addParentUrlToCachePages(internalHrefSet, webPageUrl);
-        putURLsToCache(internalHrefSet, webPageUrl);
+            addParentUrlToCachePages(internalHrefSet, webPageUrl);
+            putURLsToCache(internalHrefSet, webPageUrl);
 
-        page = new PageBuilder(page).setUrl(webPageUrl)
-                .setProcessed(true)
-                .setStatus(PROCESSED)
-                .setEmailHrefs(emailHrefSet)
-                .setExternalHrefs(externalHrefSet)
-                .setInternalHrefs(internalHrefSet)
-                .setPdfHrefs(pdfHrefSet)
-                .setPngHrefs(pngHrefSet)
-                .build();
-        logger.info("Page " + page.getUrl() + "is processed successfully");
-        return page;
+            page = new PageBuilder(page).setUrl(webPageUrl)
+                    .setProcessed(true)
+                    .setStatus(PROCESSED)
+                    .setEmailHrefs(emailHrefSet)
+                    .setExternalHrefs(externalHrefSet)
+                    .setInternalHrefs(internalHrefSet)
+                    .setPdfHrefs(pdfHrefSet)
+                    .setPngHrefs(pngHrefSet)
+                    .setHtmlContent(htmlContent)
+                    .build();
+            logger.info("Page " + page.getUrl() + "is processed successfully");
+            return page;
+        } catch (ApacheHttpClientException e) {
+            throw new ProcessPageException("Can't execute http-get request to url " + webPageUrl + ".\n" + e.getMessage(), e);
+        }
+
     }
 
 
     @Override
-    public GrabAllLinksResponse run() throws InvalidJarRequestException {
+    public void run() throws InvalidJarRequestException {
         initPageContainer();
         int processCount = request.getProcessUrlCount();
         Page page;
 
         while (PageContainer.isUnprocessedPageExist() && PageContainer.processedCacheWebsitesCount() < processCount) {
-            Map.Entry<String, Page> unprocessedPageEntry = PageContainer.getUnprocessedPageEntry();
+            Map.Entry<String, Page> unprocessedPageEntry = PageContainer.nextUnprocessedPageEntry();
             String cacheKey = unprocessedPageEntry.getKey();
             page = unprocessedPageEntry.getValue();
             try {
@@ -233,10 +246,6 @@ public class GrabAllLinksFlow implements Flow<GrabAllLinksResponse> {
                 PageContainer.putPage(cacheKey, page);
             }
         }
-
-        GrabAllLinksResponse response = new GrabAllLinksResponse();
-        response.setResult(PageContainer.getCache());
-        return response;
     }
 
     //bad piece of code
@@ -247,26 +256,25 @@ public class GrabAllLinksFlow implements Flow<GrabAllLinksResponse> {
 
     }
 
-    private Set<String> extractHrefsFromWebsite(String url) throws ProcessPageException {
-        try {
-            String html = ApacheHttpClient.sendGet(url, generateHttpHeaders());
-            Set<String> hrefs = GrabAllLinksHelper.extractHtmlHrefs(html);
-            return hrefs
-                    .stream()
-                    .map(daughterHref -> {
-                                try {
-                                    return convertDaughterHref(daughterHref, url);
-                                } catch (InvalidHrefException e) {
-                                    logger.warn("Can't convert href " + daughterHref + " located on " + url + ".\n" + e.getMessage());
-                                    return null;
-                                }
+    private String getHtmlPageContent(String url) throws ApacheHttpClientException {
+        return ApacheHttpClient.sendGet(url, generateHttpHeaders());
+    }
+
+    private Set<String> extractHrefsFromWebsite(String htmlContent, String pageUrl) {
+        Set<String> hrefs = GrabAllLinksHelper.extractHtmlHrefs(htmlContent);
+        return hrefs
+                .stream()
+                .map(daughterHref -> {
+                            try {
+                                return convertDaughterHref(daughterHref, pageUrl);
+                            } catch (InvalidHrefException e) {
+                                logger.warn("Can't convert href " + daughterHref + " located on " + pageUrl + ".\n" + e.getMessage());
+                                return null;
                             }
-                    )
-                    .filter(Objects::nonNull)
-                    .collect(Collectors.toSet());
-        } catch (ApacheHttpClientException e) {
-            throw new ProcessPageException("Can't execute http-get request to url " + url + ".\n" + e.getMessage(), e);
-        }
+                        }
+                )
+                .filter(Objects::nonNull)
+                .collect(Collectors.toSet());
     }
 
     private void addParentUrlToCachePages(Set<String> daughterHrefs, String parentHref) {

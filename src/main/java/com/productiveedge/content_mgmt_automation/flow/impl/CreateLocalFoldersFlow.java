@@ -3,7 +3,6 @@ package com.productiveedge.content_mgmt_automation.flow.impl;
 
 import com.productiveedge.content_mgmt_automation.entity.FolderName;
 import com.productiveedge.content_mgmt_automation.entity.request.CreateLocalFolderRequest;
-import com.productiveedge.content_mgmt_automation.entity.response.CreateFolderResponse;
 import com.productiveedge.content_mgmt_automation.flow.Flow;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,7 +12,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
 
-public class CreateLocalFoldersFlow implements Flow<CreateFolderResponse> {
+public class CreateLocalFoldersFlow implements Flow {
     private static final Logger logger = LoggerFactory.getLogger(CreateLocalFolderRequest.class);
 
     private CreateLocalFolderRequest request;
@@ -35,8 +34,7 @@ public class CreateLocalFoldersFlow implements Flow<CreateFolderResponse> {
     }
 
     @Override
-    public CreateFolderResponse run() {
+    public void run() {
         Arrays.stream(FolderName.values()).forEach(e -> createFolder(Paths.get(request.getRootFolderPath(), e.name())));
-        return null;
     }
 }

@@ -2,8 +2,8 @@ package com.productiveedge.content_mgmt_automation.flow.impl;
 
 import com.productiveedge.content_mgmt_automation.entity.FolderName;
 import com.productiveedge.content_mgmt_automation.entity.request.TakeScreenshotRequest;
-import com.productiveedge.content_mgmt_automation.entity.response.TakeScreenshotResponse;
 import com.productiveedge.content_mgmt_automation.flow.Flow;
+import com.productiveedge.content_mgmt_automation.flow.impl.helper.GrabAllLinksHelper;
 import com.productiveedge.content_mgmt_automation.repository.PageContainer;
 import org.apache.commons.io.FileUtils;
 import org.openqa.selenium.JavascriptExecutor;
@@ -20,10 +20,12 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Paths;
 
-public class TakeScreenshotFlow implements Flow<TakeScreenshotResponse> {
+import static com.productiveedge.content_mgmt_automation.flow.impl.helper.FlowHelper.generateDateFolderName;
+
+public class TakeScreenshotFlow implements Flow {
     private static final Logger logger = LoggerFactory.getLogger(TakeScreenshotFlow.class);
     //Тоже нужно переделать.
-    private static final String PROPERTY = "webdriver.chrome.driver";
+    private static final String CHROME_PROPERTY = "webdriver.chrome.driver";
     private static final String JAVASCRIPT_COMMAND = "window.scrollBy(0,?)";
     private static final String GET_HTML_PAGE_HEIGHT_SCRIPT = "return document.body.scrollHeight";
 
@@ -32,22 +34,29 @@ public class TakeScreenshotFlow implements Flow<TakeScreenshotResponse> {
 
     public TakeScreenshotFlow(TakeScreenshotRequest request) {
         this.request = request;
-        System.setProperty(PROPERTY, request.getDriverPath());
-        ChromeOptions options = new ChromeOptions();
-        options.addArguments("--incognito");
-        options.addArguments("--start-maximized");
-        options.addArguments("--kiosk");
-        DesiredCapabilities capabilities = DesiredCapabilities.chrome();
-        capabilities.setCapability(ChromeOptions.CAPABILITY, options);
+        System.setProperty(CHROME_PROPERTY, request.getDriverPath());
+        String browser = request.getBrowserName().toUpperCase();
+        switch (browser) {
+            case "CHROME":
+                ChromeOptions options = new ChromeOptions();
+                options.addArguments("--incognito");
+                options.addArguments("--start-maximized");
+                options.addArguments("--kiosk");
+                DesiredCapabilities capabilities = DesiredCapabilities.chrome();
+                capabilities.setCapability(ChromeOptions.CAPABILITY, options);
+                driver = new ChromeDriver(options);
+                break;
+            case "SAFARI":
+                break;
+            case "FIREFOX":
+                break;
 
-
-        //тут, в зависимости от request-а нужно инициализировтаь драйвер (Chrome /Safari)
-        driver = new ChromeDriver(options);
+        }
     }
 
     @Override
-    public synchronized TakeScreenshotResponse run() {
-        PageContainer.getAllProcessedWebsiteLinks().forEach(e -> {
+    public synchronized void run() {
+        PageContainer.getProcessedPageEntries().forEach(e -> {
             String url = e.getValue().getUrl();
             try {
                 driver.get(url);
@@ -57,24 +66,23 @@ public class TakeScreenshotFlow implements Flow<TakeScreenshotResponse> {
                     int pageHeight = Integer.parseInt(jsDriver.executeScript(GET_HTML_PAGE_HEIGHT_SCRIPT).toString());
                     int pageScrollValue = Integer.valueOf(request.getPageScrollValue());
                     int amountScreens = pageHeight / pageScrollValue + 1;
-                    String domainFolderName = e.getKey().replaceAll("\\.", "_");
+                    String dateFolderName = generateDateFolderName();
+                    String domainFolderName = GrabAllLinksHelper.generateNameByKey(e.getKey());
                     for (int i = 0; i < amountScreens; i++) {
                         File source = ts.getScreenshotAs(OutputType.FILE);
                         String fileName = (i + 1) + ".png";
-                        File destination = new File(Paths.get(request.getRootFolderPath(), FolderName.SCREEN.name(), domainFolderName, fileName).toString());
+                        File destination = new File(Paths.get(request.getRootFolderPath(), FolderName.SCREEN.name(), dateFolderName, domainFolderName, fileName).toString());
                         FileUtils.copyFile(source, destination);
                         jsDriver.executeScript(JAVASCRIPT_COMMAND.replaceFirst("[?]", request.getPageScrollValue()));
                     }
                     logger.info("Screenshots of site " + e.getValue().getUrl() + " are taken");
+                } else {
+                    logger.error("Driver can't takes screenshots. Please, change to another one driver type.");
                 }
             } catch (IOException ex) {
-                logger.error("Can't take screenshot by url " + url + ".\n" + ex.getMessage());
-                //переделать
-                System.out.println(ex.getMessage());
+                logger.error("Can't take screenshot by processUrl " + url + ".\n" + ex.getMessage());
             }
         });
         driver.quit();
-        //переделать
-        return null;
     }
 }

@@ -2,7 +2,7 @@ package com.productiveedge.content_mgmt_automation.repository;
 
 import org.junit.Test;
 
-public class PageExcelProviderTest {
+public class PageExcelRepositoryImplTest {
 
     @Test
     public void saveAll() {

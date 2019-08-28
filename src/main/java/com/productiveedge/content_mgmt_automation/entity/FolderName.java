@@ -1,5 +1,5 @@
 package com.productiveedge.content_mgmt_automation.entity;
 
 public enum FolderName {
-    HTML, SCREEN, TXT
+    HTML, SCREEN, TXT, REPORT
 }
