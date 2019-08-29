@@ -1,26 +1,28 @@
+:: change paths according to requirements
 set root_folder_path=C://folder
-
-set url=https://www.productiveedge.com
-::browser_name (chrome/safari)
-set browser_name=chrome
-:: path to driver which will manage your browser
 set driver_path=C://folder//chromedriver.exe
-set page_scroll_value=600
+set jar_name=content-mgmt-automation.jar
+:: util's parameters
 
-set take_screenshot=true
-set save_html=true
-set save_txt=true
-
-set report_name=Report_name
-set maximum_amount_internal_url_to_process=1
-::browser_name (chrome/safari)
-set allow_redirect=false
-::browser_name (chrome/safari)
+::starting page to execute
+set process_url=https://www.productiveedge.com
+set max_process_urls_value=2
 set generate_report=true
-::browser_name (chrome/safari)
-set start_process_from_an_index_page=true
-set domain_name=www.productiveedge.com
-set url_protocol=https
-set url_port=80
+:: don't forget to add the 'xlsx' extension to report name
+set xlsx_report_name=today_report.xlsx
+set report_sheet_name=report
+:: true/false
+set save_html=true
+:: true/false
+set save_txt=true
+:: true/false
+set take_screenshot=false
+:: screen height
+set page_screen_space_value=550
 
-java -jar content-mgmt-automation-jar-1.0-SNAPSHOT-jar-with-dependencies.jar ROOT_FOLDER_PATH=%root_folder_path% url=%url% domain_name=%domain_name% url_protocol=%url_protocol% url_port=%url_port% maximum_amount_internal_url_to_process=%maximum_amount_internal_url_to_process% allow_redirect=%allow_redirect% generate_report=%generate_report% report_name=%report_name% take_screenshot=%take_screenshot% browser_name=%browser_name% page_scroll_value=%page_scroll_value% driver_path=%driver_path% save_html=%save_html% save_txt=%save_txt%
+set browser_name=chrome
+set process_strange_urls=false
+set process_strategy=true
+
+:: executable command. Don't change it.
+java -jar %jar_name% root_folder_path=%root_folder_path% process_url=%process_url% process_strategy=%process_strategy% max_process_urls_value=%max_process_urls_value% generate_report=%generate_report% process_strange_urls=%process_strange_urls% xlsx_report_name=%xlsx_report_name% report_sheet_name=%report_sheet_name% save_html=%save_html% save_txt=%save_txt% take_screenshot=%take_screenshot% page_screen_space_value=%page_screen_space_value% browser_name=%browser_name% driver_path=%driver_path%

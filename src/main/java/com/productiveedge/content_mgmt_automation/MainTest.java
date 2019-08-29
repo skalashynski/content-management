@@ -18,20 +18,21 @@ public class MainTest {
         try {
             String[] a = {
                     "root_folder_path=C://folder",
+                    "driver_path=C://folder//chromedriver.exe",
+
                     "process_url=https://www.productiveedge.com/technology/cloud",
-                    "process_strategy=true",
-                    "max_process_urls_value=2",
-                    "process_strange_urls=false",
-                    "process_strategy=hello",
+                    "max_process_urls_value=1",
                     "generate_report=true",
                     "xlsx_report_name=today_report.xlsx",
                     "report_sheet_name=report",
                     "save_html=true",
                     "save_txt=true",
-                    "take_screenshot=false",
+                    "take_screenshot=true",
                     "page_screen_space_value=550",
+
                     "browser_name=chrome",
-                    "driver_path=C://folder//chromedriver.exe",
+                    "process_strange_urls=false",
+                    "process_strategy=true",
                     //"operation_system=MAC",
                     //"browser_path=path",
             };

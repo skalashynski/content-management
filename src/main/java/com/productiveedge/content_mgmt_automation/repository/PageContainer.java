@@ -31,7 +31,7 @@ public final class PageContainer {
     }
 
     public static Set<Map.Entry<String, Page>> getProcessedPageEntries() {
-        return cache.entrySet().stream().filter(e -> e.getValue().isProcessed()).collect(Collectors.toSet());
+        return cache.entrySet().stream().filter(e -> e.getValue().getStatus().equals(Page.Status.PROCESSED)).collect(Collectors.toSet());
     }
 
     public static boolean isUnprocessedPageExist() {
