@@ -2,9 +2,11 @@ package com.productiveedge.content_mgmt_automation.entity.request;
 
 import com.productiveedge.content_mgmt_automation.flow.exception.InvalidJarRequestException;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 import java.util.Map;
 
+@EqualsAndHashCode(callSuper = true)
 @Data
 public class TakeScreenshotRequest extends Request {
 

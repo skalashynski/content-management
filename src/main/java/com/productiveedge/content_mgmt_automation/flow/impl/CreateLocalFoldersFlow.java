@@ -15,7 +15,7 @@ import java.util.Arrays;
 public class CreateLocalFoldersFlow implements Flow {
     private static final Logger logger = LoggerFactory.getLogger(CreateLocalFolderRequest.class);
 
-    private CreateLocalFolderRequest request;
+    private final CreateLocalFolderRequest request;
 
     public CreateLocalFoldersFlow(CreateLocalFolderRequest request) {
         this.request = request;

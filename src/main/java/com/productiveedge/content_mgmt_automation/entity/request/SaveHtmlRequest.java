@@ -3,10 +3,12 @@ package com.productiveedge.content_mgmt_automation.entity.request;
 import com.productiveedge.content_mgmt_automation.entity.FolderName;
 import com.productiveedge.content_mgmt_automation.flow.exception.InvalidJarRequestException;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 import java.nio.file.Paths;
 import java.util.Map;
 
+@EqualsAndHashCode(callSuper = true)
 @Data
 public class SaveHtmlRequest extends Request {
     private String destinationFolder;

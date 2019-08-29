@@ -3,12 +3,14 @@ package com.productiveedge.content_mgmt_automation.entity.request;
 import com.productiveedge.content_mgmt_automation.entity.FolderName;
 import com.productiveedge.content_mgmt_automation.flow.exception.InvalidJarRequestException;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 import java.nio.file.Paths;
 import java.util.Map;
 
 import static com.productiveedge.content_mgmt_automation.flow.impl.helper.FlowHelper.generateDateFolderName;
 
+@EqualsAndHashCode(callSuper = true)
 @Data
 public class GenerateExcelReportRequest extends Request {
 

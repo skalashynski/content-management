@@ -3,6 +3,7 @@ package com.productiveedge.content_mgmt_automation.flow.impl;
 import com.productiveedge.content_mgmt_automation.entity.FolderName;
 import com.productiveedge.content_mgmt_automation.entity.request.TakeScreenshotRequest;
 import com.productiveedge.content_mgmt_automation.flow.Flow;
+import com.productiveedge.content_mgmt_automation.flow.exception.InvalidJarRequestException;
 import com.productiveedge.content_mgmt_automation.flow.impl.helper.GrabAllLinksHelper;
 import com.productiveedge.content_mgmt_automation.repository.PageContainer;
 import org.apache.commons.io.FileUtils;
@@ -24,15 +25,15 @@ import static com.productiveedge.content_mgmt_automation.flow.impl.helper.FlowHe
 
 public class TakeScreenshotFlow implements Flow {
     private static final Logger logger = LoggerFactory.getLogger(TakeScreenshotFlow.class);
-    //Тоже нужно переделать.
+
     private static final String CHROME_PROPERTY = "webdriver.chrome.driver";
-    private static final String JAVASCRIPT_COMMAND = "window.scrollBy(0,?)";
-    private static final String GET_HTML_PAGE_HEIGHT_SCRIPT = "return document.body.scrollHeight";
+    private static final String WINDOW_SCROLL_BY_JS_COMMAND = "window.scrollBy(0,?)";
+    private static final String RETURN_DOCUMENT_BODY_SCROLL_HEIGHT_JS_COMMAND = "return document.body.scrollHeight";
 
     private WebDriver driver;
-    private TakeScreenshotRequest request;
+    private final TakeScreenshotRequest request;
 
-    public TakeScreenshotFlow(TakeScreenshotRequest request) {
+    public TakeScreenshotFlow(TakeScreenshotRequest request) throws InvalidJarRequestException {
         this.request = request;
         System.setProperty(CHROME_PROPERTY, request.getDriverPath());
         String browser = request.getBrowserName().toUpperCase();
@@ -50,7 +51,8 @@ public class TakeScreenshotFlow implements Flow {
                 break;
             case "FIREFOX":
                 break;
-
+            default:
+                throw new InvalidJarRequestException("Incorrect browser name value.");
         }
     }
 
@@ -63,7 +65,7 @@ public class TakeScreenshotFlow implements Flow {
                 TakesScreenshot ts = (TakesScreenshot) driver;
                 if (driver instanceof JavascriptExecutor) {
                     JavascriptExecutor jsDriver = (JavascriptExecutor) driver;
-                    int pageHeight = Integer.parseInt(jsDriver.executeScript(GET_HTML_PAGE_HEIGHT_SCRIPT).toString());
+                    int pageHeight = Integer.parseInt(jsDriver.executeScript(RETURN_DOCUMENT_BODY_SCROLL_HEIGHT_JS_COMMAND).toString());
                     int pageScrollValue = Integer.valueOf(request.getPageScrollValue());
                     int amountScreens = pageHeight / pageScrollValue + 1;
                     String dateFolderName = generateDateFolderName();
@@ -73,7 +75,7 @@ public class TakeScreenshotFlow implements Flow {
                         String fileName = (i + 1) + ".png";
                         File destination = new File(Paths.get(request.getRootFolderPath(), FolderName.SCREEN.name(), dateFolderName, domainFolderName, fileName).toString());
                         FileUtils.copyFile(source, destination);
-                        jsDriver.executeScript(JAVASCRIPT_COMMAND.replaceFirst("[?]", request.getPageScrollValue()));
+                        jsDriver.executeScript(WINDOW_SCROLL_BY_JS_COMMAND.replaceFirst("[?]", request.getPageScrollValue()));
                     }
                     logger.info("Screenshots of site " + e.getValue().getUrl() + " are taken");
                 } else {

@@ -79,7 +79,7 @@ public class GrabAllLinksFlow implements Flow {
         }
     }
 
-    public static URL concatURLs(String absoluteUrl, String relativeUrl) throws InvalidHrefException {
+    private static URL concatURLs(String absoluteUrl, String relativeUrl) throws InvalidHrefException {
         try {
             return new URL(new URL(absoluteUrl), relativeUrl);
         } catch (MalformedURLException e) {
@@ -87,7 +87,7 @@ public class GrabAllLinksFlow implements Flow {
         }
     }
 
-    public static String cutOffURLParameters(String relativeUrl) throws InvalidHrefException {
+    private static String cutOffURLParameters(String relativeUrl) throws InvalidHrefException {
         try {
             if (relativeUrl.contains(QUESTION_SYMBOL)) {
                 relativeUrl = new URL(relativeUrl.substring(0, relativeUrl.indexOf(QUESTION_SYMBOL))).toString();
@@ -139,7 +139,8 @@ public class GrabAllLinksFlow implements Flow {
                 .collect(Collectors.toCollection(TreeSet::new));
     }
 
-    public static boolean isAbsoluteHref(String href) {
+    //нужно пофиксать
+    private static boolean isAbsoluteHref(String href) {
         try {
             new URL(href);
             return true;
@@ -173,13 +174,6 @@ public class GrabAllLinksFlow implements Flow {
     private void initPageContainer() throws InvalidJarRequestException {
         String startPageUrl;
         startPageUrl = request.getProcessUrl();
-        /*
-        if (request.isStartFromIndexPage()) {
-            startPageUrl = createHomePageUrl(request.getUrlProtocol(), request.getDomainName(), request.getUrlPort(), request.getProcessUrl());
-        } else {
-            startPageUrl = request.getProcessUrl();
-        }
-        */
         String key = generateKey(startPageUrl);
         Page page = new Page(startPageUrl);
         PageContainer.putPage(key, page);
@@ -248,6 +242,7 @@ public class GrabAllLinksFlow implements Flow {
         }
     }
 
+    //нужно пофиксать
     //bad piece of code
     private Map<String, String> generateHttpHeaders() {
         return new HashMap<String, String>() {{

@@ -55,7 +55,7 @@ public class ApacheHttpClient {
             }
             return result.toString();
         } catch (HttpRedirectException | IOException e) {
-            throw new ApacheHttpClientException(e.getMessage());
+            throw new ApacheHttpClientException(e.getMessage(), e);
         }
 
     }

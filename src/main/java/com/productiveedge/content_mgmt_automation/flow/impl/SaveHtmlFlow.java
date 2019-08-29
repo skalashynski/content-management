@@ -25,22 +25,15 @@ public class SaveHtmlFlow implements Flow {
     }
 
     @Override
-    public void run() throws InvalidJarRequestException {
+    public void run() {
         PageContainer.getProcessedPageEntries().forEach(e-> {
             String filePath = Paths.get(saveHtmlRequest.getDestinationFolder(), generateDateFolderName(),  GrabAllLinksHelper.generateNameByKey(e.getKey())).toString() + ".html";
             File destinationFile = new File(filePath);
             try {
-                FileUtils.writeStringToFile(destinationFile, e.getValue().getHtmlContent());
+                FileUtils.writeStringToFile(destinationFile, e.getValue().getHtmlContent(), "UTF8");
             } catch (IOException ex) {
                 logger.error("Can't save html file of processUrl " + e.getValue().getUrl() + ".\n" + ex.getMessage());
             }
-            /*
-            try (FileWriter fw = new FileWriter(filePath)) {
-                fw.write(e.getValue().getHtmlContent());
-            } catch (IOException ex) {
-                logger.error("Can't save html file of processUrl " + e.getValue().getUrl() + ".\n" + ex.getMessage());
-            }
-            */
         });
     }
 }

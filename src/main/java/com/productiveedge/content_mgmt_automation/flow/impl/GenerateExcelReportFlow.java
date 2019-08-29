@@ -12,7 +12,7 @@ public class GenerateExcelReportFlow implements Flow {
     private static final Logger logger = LoggerFactory.getLogger(GenerateExcelReportFlow.class);
 
     private final PageExcelRepositoryImpl pageExcelRepositoryImpl;
-    private GenerateExcelReportRequest request;
+    private final GenerateExcelReportRequest request;
 
     public GenerateExcelReportFlow(GenerateExcelReportRequest request) {
         this.request = request;

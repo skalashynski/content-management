@@ -21,9 +21,9 @@ import java.util.stream.Collectors;
 public class PageExcelRepositoryImpl implements ExcelRepository<Page> {
     private static final Logger logger = LoggerFactory.getLogger(PageExcelRepositoryImpl.class);
 
-    private Workbook workbook;
-    private Sheet sheet;
-    private String xlsxReportFilePath;
+    private final Workbook workbook;
+    private final Sheet sheet;
+    private final String xlsxReportFilePath;
 
     public PageExcelRepositoryImpl(String xlsxReportFilePath, String sheetName) {
         this.workbook = new XSSFWorkbook();
