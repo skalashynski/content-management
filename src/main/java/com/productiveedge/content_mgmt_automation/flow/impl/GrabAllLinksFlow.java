@@ -25,6 +25,7 @@ import java.util.stream.Stream;
 import static com.productiveedge.content_mgmt_automation.entity.Page.Status.PROCESSED;
 import static com.productiveedge.content_mgmt_automation.entity.Page.Status.REDIRECT_OR_INVALID_URL;
 import static com.productiveedge.content_mgmt_automation.flow.impl.helper.GrabAllLinksHelper.generateKey;
+import static com.productiveedge.content_mgmt_automation.flow.impl.helper.GrabAllLinksHelper.isUrlValid;
 
 public class GrabAllLinksFlow implements Flow {
     private static final Logger logger = LoggerFactory.getLogger(GrabAllLinksFlow.class);
@@ -156,8 +157,7 @@ public class GrabAllLinksFlow implements Flow {
             }
             return cutOffURLParameters(internalHref);
         } catch (InvalidHrefException ex) {
-            //log
-            System.out.println(ex.getMessage());
+            logger.warn(ex.getMessage());
             return null;
         }
     };
@@ -269,6 +269,15 @@ public class GrabAllLinksFlow implements Flow {
                         }
                 )
                 .filter(Objects::nonNull)
+                .filter(e -> {
+                    try {
+                        return isUrlValid(e);
+                    } catch (InvalidHrefException ex) {
+                        logger.warn("Incorrect url " + e + " . It was skipped and not processed. " + ex.getMessage());
+                        return false;
+                    }
+
+                })
                 .collect(Collectors.toSet());
     }
 

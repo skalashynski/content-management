@@ -3,6 +3,9 @@ package com.productiveedge.content_mgmt_automation.flow.impl.helper;
 import com.productiveedge.content_mgmt_automation.flow.exception.InvalidHrefException;
 import com.productiveedge.content_mgmt_automation.flow.exception.InvalidJarRequestException;
 
+import java.net.MalformedURLException;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
@@ -39,6 +42,15 @@ public class GrabAllLinksHelper {
             throw new InvalidHrefException("Can't extract domain from ulr " + url, e);
         }
 
+    }
+
+    public static boolean isUrlValid(String url) throws InvalidHrefException{
+        try {
+            new URL(url).toURI();
+            return true;
+        } catch (URISyntaxException | MalformedURLException e) {
+            throw new InvalidHrefException(e);
+        }
     }
 
     public static String generateKey(String url) {

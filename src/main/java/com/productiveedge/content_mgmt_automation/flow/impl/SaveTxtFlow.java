@@ -35,7 +35,7 @@ public class SaveTxtFlow implements Flow {
 
     @Override
     public void run() {
-        BodyContentHandler handler = new BodyContentHandler();
+        BodyContentHandler handler = new BodyContentHandler(-1);
         Metadata metadata = new Metadata();
         ParseContext pcontext = new ParseContext();
         HtmlParser htmlparser = new HtmlParser();
