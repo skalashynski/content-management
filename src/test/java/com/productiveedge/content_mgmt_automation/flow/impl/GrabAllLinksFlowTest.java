@@ -5,14 +5,16 @@ import com.productiveedge.content_mgmt_automation.entity.request.GrabAllLinksReq
 import com.productiveedge.content_mgmt_automation.flow.exception.InvalidJarRequestException;
 import com.productiveedge.content_mgmt_automation.flow.impl.helper.GrabAllLinksHelper;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
-import java.net.URL;
+
 import java.util.HashMap;
 import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
 
+@Ignore
 public class GrabAllLinksFlowTest {
 
     private GrabAllLinksFlow flow;

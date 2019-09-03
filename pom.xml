@@ -84,13 +84,6 @@
             <artifactId>selenium-java</artifactId>
             <version>3.141.59</version>
         </dependency>
-        <!-- https://mvnrepository.com/artifact/org.testng/testng -->
-        <dependency>
-            <groupId>org.testng</groupId>
-            <artifactId>testng</artifactId>
-            <version>6.11</version>
-            <scope>test</scope>
-        </dependency>
 
         <!-- https://mvnrepository.com/artifact/org.apache.tika/tika-parsers -->
         <dependency>
@@ -105,22 +98,6 @@
 
     <build>
         <plugins>
-
-            <!-- Build an executable JAR -->
-            <!--            <plugin>
-                            <groupId>org.apache.maven.plugins</groupId>
-                            <artifactId>maven-jar-plugin</artifactId>
-                            <version>2.6</version>
-                            <configuration>
-                                <archive>
-                                    <manifest>
-                                        &lt;!&ndash;<addClasspath>true</addClasspath>&ndash;&gt;
-                                        &lt;!&ndash;<classpathPrefix>lib/</classpathPrefix>&ndash;&gt;
-                                        <mainClass>com.productiveedge.content_mgmt_automation.Main</mainClass>
-                                    </manifest>
-                                </archive>
-                            </configuration>
-                        </plugin>-->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-assembly-plugin</artifactId>
@@ -133,9 +110,11 @@
                     </execution>
                 </executions>
                 <configuration>
+                    <finalName>content-mgmt-automation</finalName>
                     <descriptorRefs>
                         <descriptorRef>jar-with-dependencies</descriptorRef>
                     </descriptorRefs>
+                    <appendAssemblyId>false</appendAssemblyId>
                     <archive>
                         <manifest>
                             <mainClass>com.productiveedge.content_mgmt_automation.Main</mainClass>

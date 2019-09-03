@@ -23,7 +23,7 @@ public class GrabAllLInksHelperTest {
                 {"https://instagram.com/friends/1", "instagram.com/friends/1"},
                 {"https://www.instagram.com/friends/1?message=1", "instagram.com/friends/1"},
                 {"https://vk.com/feed", "vk.com/feed"},
-                {"https://sitechecker.pro/what-is-url/", "sitechecker.pro/what-is-processUrl"},
+                {"https://sitechecker.pro/what-is-url/", "sitechecker.pro/what-is-url"},
                 {"https://www.instagram.com/friends/1#message", "instagram.com/friends/1"},
         };
         for (String[] datum : data) {
@@ -44,8 +44,8 @@ public class GrabAllLInksHelperTest {
                 {"https://vk.com/feed", "vk.com"},
                 {"https://sitechecker.pro/what-is-url/", "sitechecker.pro"},
                 {"https://www.instagram.com/friends/1#message", "instagram.com"},
-                {"", ""},
-                {"fdsfdsfds", ""}
+                //{"", ""},
+                //{"fdsfdsfds", ""}
         };
         for (String[] datum : data) {
             String res = GrabAllLinksHelper.getDomain(datum[0]);

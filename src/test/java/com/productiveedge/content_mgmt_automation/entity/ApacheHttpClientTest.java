@@ -2,6 +2,7 @@ package com.productiveedge.content_mgmt_automation.entity;
 
 import com.productiveedge.content_mgmt_automation.service.ApacheHttpClient;
 import com.productiveedge.content_mgmt_automation.service.exception.ApacheHttpClientException;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.HashMap;
@@ -9,6 +10,7 @@ import java.util.Map;
 
 import static org.junit.Assert.assertNotNull;
 
+@Ignore
 public class ApacheHttpClientTest {
 
     @Test(expected = ApacheHttpClientException.class)
