@@ -267,28 +267,32 @@ public class TextSimilarityAnalyzerFlow implements Flow {
 
 
     private String generateFullXpathBasedOnTags(Element element) {
-        StringBuilder xpath = new StringBuilder(element.tagName());
+        String xpath = "";
+        String itElementXpath = "";
+        //StringBuilder xpath = new StringBuilder(element.tagName());
         Element parent = element.parent();
         while (parent != null) {
             if (!parent.tagName().equalsIgnoreCase("#root")) {
-
+                final String elementTagName = element.tagName();
+                itElementXpath = "//" + elementTagName;
                 List<Element> theSameTagNameElementsOnTheLayer = parent.children().stream()
-                        .filter(e -> e.tagName().equalsIgnoreCase(element.tagName()))
+                        .filter(e -> e.tagName().equalsIgnoreCase(elementTagName))
                         .collect(Collectors.toList());
                 if (theSameTagNameElementsOnTheLayer.size() > 1) {
                     for (int j = 0; j < theSameTagNameElementsOnTheLayer.size(); j++) {
                         if (theSameTagNameElementsOnTheLayer.get(j).equals(element)) {
-                            xpath.insert(0, parent.tagName() + "[" + (j + 1) + "]" + "/");
+                            itElementXpath += "[" + (j + 1) + "]";
                             break;
                         }
                     }
-                } else {
-                    xpath.insert(0, parent.tagName() + "/");
                 }
+                xpath = itElementXpath + xpath;
             }
+            element = parent;
             parent = parent.parent();
+
         }
-        return xpath.toString();
+        return xpath;
     }
 
 }
