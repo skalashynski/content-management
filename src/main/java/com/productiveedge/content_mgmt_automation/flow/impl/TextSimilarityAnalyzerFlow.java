@@ -218,7 +218,7 @@ public class TextSimilarityAnalyzerFlow implements Flow {
                 String tagText = element.text().trim();
                 if (element.children().size() == 0 && !tagText.isEmpty()) {
                     tagText = tagText.length() > 10 ? tagText.substring(0, 10) : tagText;
-                    itElementXpath += "[starts-with(text(), " + tagText + ")]";
+                    itElementXpath += "[starts-with(text(), \'" + tagText + "\')]";
                 }
 
 
