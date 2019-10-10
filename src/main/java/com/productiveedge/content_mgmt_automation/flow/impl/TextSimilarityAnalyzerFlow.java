@@ -206,11 +206,35 @@ public class TextSimilarityAnalyzerFlow implements Flow {
                 itElementXpath = "//" + tagName;
                 String classAttr = element.className();
                 //checking 'class' attribute value
+                List<Element> theSameTagNameOnTheLayerElements = parent.children().stream()
+                        .filter(e -> e.tagName().equalsIgnoreCase(tagName))
+                        .collect(Collectors.toList());
+
+
                 if (classAttr != null) {
                     if (!classAttr.isEmpty()) {
                         //don't add class attribute to 'html' tag name
                         if (!element.tagName().equalsIgnoreCase("html")) {
-                            itElementXpath += "[@class=\'" + classAttr + "\']";
+                            itElementXpath += "[contains(@class, \'" + classAttr + "\')]";
+                            //finding elements
+                            List<Element> tagNameAndClassName = theSameTagNameOnTheLayerElements.stream().filter(e -> e.className().equalsIgnoreCase(classAttr)).collect(Collectors.toList());
+                            if (tagNameAndClassName.size() > 1) {
+                                for (int j = 0; j < tagNameAndClassName.size(); j++) {
+                                    if (tagNameAndClassName.get(j).equals(element)) {
+                                        itElementXpath += "[" + (j + 1) + "]";
+                                        break;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                } else {
+                    if (theSameTagNameOnTheLayerElements.size() > 1) {
+                        for (int j = 0; j < theSameTagNameOnTheLayerElements.size(); j++) {
+                            if (theSameTagNameOnTheLayerElements.get(j).equals(element)) {
+                                itElementXpath += "[" + (j + 1) + "]";
+                                break;
+                            }
                         }
                     }
                 }
@@ -222,17 +246,8 @@ public class TextSimilarityAnalyzerFlow implements Flow {
                 }
 
 
-                List<Element> theSameTagNameOnTheLayerElements = parent.children().stream()
-                        .filter(e -> e.tagName().equalsIgnoreCase(tagName))
-                        .collect(Collectors.toList());
-                if (theSameTagNameOnTheLayerElements.size() > 1) {
-                    for (int j = 0; j < theSameTagNameOnTheLayerElements.size(); j++) {
-                        if (theSameTagNameOnTheLayerElements.get(j).equals(element)) {
-                            itElementXpath += "[" + (j + 1) + "]";
-                            break;
-                        }
-                    }
-                } /*else {
+
+                /*else {
                     itElementXpath += "/" + tagName;
                 }*/
                 resultXpath = itElementXpath + resultXpath;
