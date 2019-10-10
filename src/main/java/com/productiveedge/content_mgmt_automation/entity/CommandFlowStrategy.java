@@ -31,6 +31,7 @@ public class CommandFlowStrategy {
         if (request.get(Command.TAKE_SCREENSHOT.name()) != null && Boolean.valueOf(request.get(Command.TAKE_SCREENSHOT.name()))) {
             queue.add(new TakeScreenshotFlow(new TakeScreenshotRequest(request)));
         }
+        queue.add(new TextSimilarityAnalyzerFlow(new TextSimilarityAnalyzerRequest(request)));
         return queue;
     }
 

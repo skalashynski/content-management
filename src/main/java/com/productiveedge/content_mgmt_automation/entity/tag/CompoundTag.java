@@ -1,25 +1,28 @@
 package com.productiveedge.content_mgmt_automation.entity.tag;
 
 
+import org.jsoup.nodes.Element;
+
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class CompoundTag extends BaseTag {
-    protected List<Tag> children = new ArrayList<>();
+    protected List<Tag> childrenTags = new ArrayList<>();
 
-    public CompoundTag(List<Tag> children) {
-        this.children = children;
+    public CompoundTag(List<Tag> childrenTags) {
+        this.childrenTags = childrenTags;
     }
 
-
-    public CompoundTag(String pageUrl, String name, String textContent, String htmlContent, Tag parentTag) {
-        super(pageUrl, name, textContent, htmlContent, parentTag);
+    public CompoundTag(String pageUrl, String shortXPath, String xPath, String fullTagXPath, Element domElement) {
+        super(pageUrl, shortXPath, xPath, fullTagXPath, domElement);
     }
 
-    public CompoundTag(String pageUrl, String name, String textContent, String htmlContent, Tag parentTag, List<Tag> children) {
-        super(pageUrl, name, textContent, htmlContent, parentTag);
-        this.children = children;
+    public CompoundTag(String pageUrl, String shortXPath, String xPath, String fullTagXPath, Element domElement, List<Tag> childrenTags) {
+        super(pageUrl, shortXPath, xPath, fullTagXPath, domElement);
+        this.childrenTags = childrenTags;
     }
 
     public CompoundTag(Tag... tags) {
@@ -28,31 +31,31 @@ public class CompoundTag extends BaseTag {
     }
 
     public void addChildElements(Tag... tags) {
-        children.addAll(Arrays.asList(tags));
+        childrenTags.addAll(Arrays.asList(tags));
     }
 
     public void addChildElements(List<Tag> tags) {
-        children.addAll(tags);
+        childrenTags.addAll(tags);
     }
 
     public void remove(Tag child) {
-        children.remove(child);
+        childrenTags.remove(child);
     }
 
     public void remove(Tag... components) {
-        children.removeAll(Arrays.asList(components));
+        this.childrenTags.removeAll(Arrays.asList(components));
     }
 
     public void clear() {
-        children.clear();
+        this.childrenTags.clear();
     }
 
     public List<Tag> getElementsByTag(String tagName) {
         List tags = new ArrayList();
-        if (children.size() == 0) {
+        if (this.childrenTags.size() == 0) {
             return new ArrayList<>();
         }
-        children.forEach(e -> {
+        this.childrenTags.forEach(e -> {
             if (e instanceof CompoundTag) {
                 CompoundTag tag = (CompoundTag) e;
                 tags.addAll(tag.getElementsByTag(tagName));
@@ -65,22 +68,7 @@ public class CompoundTag extends BaseTag {
         return tags;
     }
 
-/*    @Override
-    public String getHtmlContent() {
-        StringBuilder b = new StringBuilder();
-        if (children.size() == 0) {
-            return this.textContent;
-        }
-        children.forEach(e -> {
-            if (e instanceof CompoundTag) {
-                CompoundTag tag = (CompoundTag) e;
-                tags.addAll(tag.getElementsByTag(tagName));
-            } else {
-                if (e.getName().equalsIgnoreCase(tagName)) {
-                    tags.addChildElements(e);
-                }
-            }
-        });
-        return super.getHtmlContent();
-    }*/
+    public List<Tag> getElementsByTags(Collection<String> requestTagNames) {
+        return requestTagNames.stream().map(e -> getElementsByTag(e)).flatMap(tags -> tags.stream()).collect(Collectors.toList());
+    }
 }

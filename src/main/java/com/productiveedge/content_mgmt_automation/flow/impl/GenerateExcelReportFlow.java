@@ -8,6 +8,8 @@ import com.productiveedge.content_mgmt_automation.repository.impl.PageExcelRepos
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.stream.Collectors;
+
 public class GenerateExcelReportFlow implements Flow {
     private static final Logger logger = LoggerFactory.getLogger(GenerateExcelReportFlow.class);
 
@@ -23,7 +25,7 @@ public class GenerateExcelReportFlow implements Flow {
     public void run() {
         logger.info("Generating report.");
         try {
-            pageExcelRepositoryImpl.saveAll(PageContainer.getCache().values());
+            pageExcelRepositoryImpl.saveAll(PageContainer.getCache().values().stream().collect(Collectors.toList()));
             logger.info("The report is created.");
         } catch (ExcelException e) {
             logger.error(e.getMessage());

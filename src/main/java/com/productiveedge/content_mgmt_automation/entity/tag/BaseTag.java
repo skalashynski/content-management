@@ -1,14 +1,14 @@
 package com.productiveedge.content_mgmt_automation.entity.tag;
 
 import lombok.Data;
-
-import java.util.Deque;
-import java.util.LinkedList;
+import org.jsoup.nodes.Element;
 
 @Data
 public class BaseTag implements Tag {
     protected String pageUrl;
-    protected String xPath;
+    protected String shortXPath;
+    protected String fullXPath;
+    protected String fullTagXPath;
     protected String name;
     protected String textContent;
     protected String htmlContent;
@@ -17,28 +17,35 @@ public class BaseTag implements Tag {
     public BaseTag() {
     }
 
-    public BaseTag(String pageUrl, String name, String textContent, String htmlContent, Tag parent) {
-        this.pageUrl = pageUrl;
-        this.name = name;
-        this.textContent = textContent;
-        this.htmlContent = htmlContent;
-        this.parent = parent;
+    public BaseTag(String pageUrl, String shortXPath, String fullXPath, String fullTagXPath, String tagName, String textHtml, String htmlContent) {
+        this.pageUrl = TagUtil.validateData(pageUrl);
+        this.shortXPath = TagUtil.validateData(shortXPath);
+        this.fullXPath = TagUtil.validateData(fullXPath);
+        this.fullTagXPath = TagUtil.validateData(fullTagXPath);
+        this.name = TagUtil.validateData(tagName);
+        this.textContent = TagUtil.validateData(textHtml);
+        this.htmlContent = TagUtil.validateData(htmlContent);
     }
 
-    @Override
-    public String getXPath() {
-        if (xPath == null || xPath.isEmpty()) {
-            Deque<Tag> parentsTree = new LinkedList<>();
-            Tag it = parent;
-            while (it != null) {
-                parentsTree.add(it);
-                it = parent.getParent();
+    public BaseTag(String pageUrl, String shortXPath, String fullXPath, String fullTagXPath, Element domElement) {
+        this(pageUrl, shortXPath, fullXPath, fullTagXPath, domElement.tagName(), domElement.text(), domElement.html());
+    }
+
+    public String getFullXPath() {
+        if (fullXPath == null || fullXPath.isEmpty()) {
+            if (parent != null) {
+                String parentXpath = parent.getFullXPath();
+                if (parentXpath != null) {
+                    if (!parentXpath.isEmpty()) {
+                        fullXPath = parentXpath + "/" + name;
+                    }
+                } else {
+                    fullXPath = name;
+                }
+
             }
-            StringBuilder sb = new StringBuilder();
-            parentsTree.forEach(e -> sb.append("/" + e.getName()));
-            xPath = sb.toString();
         }
-        return xPath;
+        return fullXPath;
     }
 
 
@@ -46,4 +53,19 @@ public class BaseTag implements Tag {
         private Tag tag;
         private double persent;
     }
+
+    /*
+    public static class BaseTagGroupBy {
+        private String shortXPath;
+        private String fullXPath;
+        private String fullTagXPath;
+
+        public BaseTagGroupBy() {
+            this.shortXPath = BaseTag.this.shortXPath;
+            this.fullXPath = BaseTag.this.fullXPath;
+            this.fullTagXPath = BaseTag.this.fullTagXPath;
+        }
+
+    }
+    */
 }
