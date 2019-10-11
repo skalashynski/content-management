@@ -2,13 +2,13 @@ package com.productiveedge.content_mgmt_automation.flow.impl;
 
 import com.productiveedge.content_mgmt_automation.entity.Page;
 import com.productiveedge.content_mgmt_automation.entity.PageBuilder;
+import com.productiveedge.content_mgmt_automation.entity.container.impl.PageContainer;
 import com.productiveedge.content_mgmt_automation.entity.request.GrabAllLinksRequest;
 import com.productiveedge.content_mgmt_automation.flow.Flow;
 import com.productiveedge.content_mgmt_automation.flow.exception.InvalidHrefException;
 import com.productiveedge.content_mgmt_automation.flow.exception.InvalidJarRequestException;
 import com.productiveedge.content_mgmt_automation.flow.exception.ProcessPageException;
 import com.productiveedge.content_mgmt_automation.flow.impl.helper.GrabAllLinksHelper;
-import com.productiveedge.content_mgmt_automation.repository.PageContainer;
 import com.productiveedge.content_mgmt_automation.service.ApacheHttpClient;
 import com.productiveedge.content_mgmt_automation.service.exception.ApacheHttpClientException;
 import org.slf4j.Logger;
@@ -47,12 +47,14 @@ public class GrabAllLinksFlow implements Flow {
     private static final Predicate<String> isPhoneNumberHref = href -> href.startsWith(PHONE_HREF);
     private static final Predicate<String> isMailHref = href -> href.startsWith(MAIL_HREF);
     private static final Predicate<String> isPdfHref = href -> href.contains(PDF_HREF);
+    private static final Predicate<String> isPictureHref = href -> href.endsWith(PNG_HREF) || href.endsWith(GIF_HREF) || href.endsWith(JPEG_HREF) || href.endsWith(ZIP_HREF);
 
-    private final Predicate<String> isPictureHref = href -> href.endsWith(PNG_HREF) || href.endsWith(GIF_HREF) || href.endsWith(JPEG_HREF) || href.endsWith(ZIP_HREF);
 
+    private PageContainer pageContainer;
     private final GrabAllLinksRequest request;
 
     public GrabAllLinksFlow(GrabAllLinksRequest request) {
+        pageContainer = new PageContainer();
         this.request = request;
     }
 
@@ -283,7 +285,7 @@ public class GrabAllLinksFlow implements Flow {
 
     private void addParentUrlToCachePages(Set<String> daughterHrefs, String parentHref) {
         for (String href : daughterHrefs) {
-            Page page = PageContainer.getPage(href);
+            Page page = pageContainer.getValue(href);
             if (page != null) {
                 page.getParentURLs().add(parentHref);
             } else {
@@ -299,7 +301,7 @@ public class GrabAllLinksFlow implements Flow {
             String itKey = GrabAllLinksHelper.generateKey(it);
             boolean containsLink = PageContainer.containsLink(itKey);
             if (!containsLink && !parentPageUrl.equals(it)) {
-                Page website = PageContainer.getPage(it);
+                Page website = pageContainer.getValue(it);
                 if (website == null) {
                     website = new Page(it);
                     PageContainer.putPage(it, website);
