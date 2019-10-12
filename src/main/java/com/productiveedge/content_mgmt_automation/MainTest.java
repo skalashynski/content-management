@@ -20,19 +20,20 @@ public class MainTest {
                     "root_folder_path=C://folder",
                     "driver_path=C://folder//chromedriver.exe",
 
-                    "process_url=https://www.workfusion.com/careers/",
-                    "max_process_urls_value=10",
+                    "process_url=https://www.productiveedge.com",
+                    "max_process_urls_value=100",
                     "generate_report=true",
                     "xlsx_report_name=today_report.xlsx",
                     "report_sheet_name=report",
                     "save_html=true",
                     "save_txt=true",
-                    "take_screenshot=true",
+                    "take_screenshot=false",
                     "page_screen_space_value=550",
 
                     "browser_name=chrome",
                     "process_strange_urls=false",
                     "process_strategy=true",
+                    "TAGS_TO_ANALYZE=ALL"
                     //"operation_system=MAC",
                     //"browser_path=path",
             };

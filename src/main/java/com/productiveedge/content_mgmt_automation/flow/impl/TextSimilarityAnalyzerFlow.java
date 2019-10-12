@@ -12,7 +12,7 @@ import com.productiveedge.content_mgmt_automation.flow.impl.helper.GrabAllLinksH
 import com.productiveedge.content_mgmt_automation.flow.util.TagSimilarityAnalyzerFlowUtil;
 import com.productiveedge.content_mgmt_automation.repository.Report;
 import com.productiveedge.content_mgmt_automation.repository.exception.ExcelException;
-import com.productiveedge.content_mgmt_automation.repository.impl.excel.TextSimilarityExcelReportImp;
+import com.productiveedge.content_mgmt_automation.repository.impl.excel.TextSimilarityExcelReportImp2;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -103,24 +103,29 @@ public class TextSimilarityAnalyzerFlow implements Flow {
             }
 
             requestTagsAllPages.addAll(pageRequestTagWithNotEmptyContent);
-            report = new TextSimilarityExcelReportImp(filePath, SHEET_NAME);
-            try {
-                report.saveAll(getSimilarityData());
-                //new TagCsvRepository("data.csv").saveAll(requestTagsAllPages);
-                logger.info("The report" + filePath + " is created.");
-            } catch (ExcelException ex) {
-                logger.error("The report" + filePath + " isn't created. " + ex.getMessage());
-            }
+            report = new TextSimilarityExcelReportImp2(filePath, SHEET_NAME);
+
+
         });
+        // Map<String, List<CompoundTag>> data = getSimilarityData();
+        // System.out.println();
+
+        try {
+            report.saveAll(getSimilarityData());
+            //new TagCsvRepository("data.csv").saveAll(requestTagsAllPages);
+            logger.info("The report" + "filePath" + " is created.");
+        } catch (ExcelException ex) {
+            logger.error("The report" + "filePath" + " isn't created. " + ex.getMessage());
+        }
 
     }
 
-    private List<CompoundTag> getSimilarityData() {
+    private Map<String, List<CompoundTag>> getSimilarityData() {
         return tagContainer.getCache().entrySet().stream()//get tags wit the same textContent
                 .map(e -> TagSimilarityAnalyzerFlowUtil.compactGroupBasedOnTextContent(e.getValue().getTheSameTextContentTags()))
                 .flatMap(List::stream)
-                //.collect(Collectors.groupingBy(CompoundTag::getKey));
-                .collect(Collectors.toList());
+                .collect(Collectors.groupingBy(CompoundTag::getCommonText));
+        //.collect(Collectors.toList());
     }
 
     private String generateShortXpath(Document doc, Element element) {

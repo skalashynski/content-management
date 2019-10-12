@@ -7,9 +7,13 @@ import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
+
+/**
+ * class responsible for compose tags per page which have wrap each other and have the same textContent
+ */
 public class CompoundTag {
     protected List<Tag> theSameTextContentTags = new ArrayList<>();
-    private String key;
+    private String theLongestXPath;
 
     public CompoundTag(List<Tag> theSameTextContentTags) {
         this.theSameTextContentTags = theSameTextContentTags;
@@ -21,7 +25,7 @@ public class CompoundTag {
     }
 
     public CompoundTag(String key, List<Tag> theSameTextContentTags) {
-        this.key = key;
+        this.theLongestXPath = key;
         this.theSameTextContentTags = theSameTextContentTags;
     }
 
@@ -66,11 +70,11 @@ public class CompoundTag {
     }
 
     public String getKey() {
-        return key;
+        return theLongestXPath;
     }
 
     public void setKey(String key) {
-        this.key = key;
+        this.theLongestXPath = key;
     }
 
     public List<Tag> getTheSameTextContentTags() {
@@ -106,6 +110,13 @@ public class CompoundTag {
     public String getCommonText() {
         if (theSameTextContentTags.size() != 0) {
             return theSameTextContentTags.get(0).getTextContent();
+        }
+        return "";
+    }
+
+    public String getPageUrl() {
+        if (theSameTextContentTags.size() != 0) {
+            return theSameTextContentTags.get(0).getPageUrl();
         }
         return "";
     }
