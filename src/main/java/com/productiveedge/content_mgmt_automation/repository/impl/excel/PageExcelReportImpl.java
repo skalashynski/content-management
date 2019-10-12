@@ -1,11 +1,9 @@
-package com.productiveedge.content_mgmt_automation.repository.impl;
+package com.productiveedge.content_mgmt_automation.repository.impl.excel;
 
 import com.productiveedge.content_mgmt_automation.entity.Page;
-import com.productiveedge.content_mgmt_automation.repository.ExcelRepository;
 import com.productiveedge.content_mgmt_automation.repository.exception.ExcelException;
 import org.apache.commons.io.FileUtils;
 import org.apache.poi.ss.usermodel.*;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -14,29 +12,24 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class PageExcelRepositoryImpl implements ExcelRepository<Page> {
-    private static final Logger logger = LoggerFactory.getLogger(PageExcelRepositoryImpl.class);
+public class PageExcelReportImpl extends ExcelReport<List<Page>> {
+    private static final Logger logger = LoggerFactory.getLogger(PageExcelReportImpl.class);
 
-    private final Workbook workbook;
-    private final Sheet sheet;
-    private final String xlsxReportFilePath;
 
-    public PageExcelRepositoryImpl(String xlsxReportFilePath, String sheetName) {
-        this.workbook = new XSSFWorkbook();
-        this.xlsxReportFilePath = xlsxReportFilePath;
-        sheet = workbook.createSheet(sheetName);
+    public PageExcelReportImpl(String xlsxReportFilePath, String sheetName) {
+        super(xlsxReportFilePath, sheetName);
     }
 
-    private List<String> getColumns() {
+    @Override
+    public List<String> getColumns() {
         return Arrays.stream(Page.class.getDeclaredFields()).map(Field::getName).collect(Collectors.toList());
 
     }
 
-    private void createColumnHeaders(List<String> columns) {
+    public void createColumnHeaders(List<String> columns) {
         Font headerFont = workbook.createFont();
         headerFont.setBold(true);
         headerFont.setFontHeightInPoints((short) 14);
@@ -55,8 +48,8 @@ public class PageExcelRepositoryImpl implements ExcelRepository<Page> {
 
     }
 
-
-    public void saveAll(Collection<Page> pages) throws ExcelException {
+    @Override
+    public void saveAll(List<Page> pages) throws ExcelException {
 
         List<String> columns = getColumns();
 

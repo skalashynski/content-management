@@ -13,9 +13,11 @@ public class BaseTag implements Tag {
     protected String textContent;
     protected String htmlContent;
     protected Tag parent;
+    protected int insideLevel;
 
     public BaseTag() {
     }
+
 
     public BaseTag(String pageUrl, String shortXPath, String fullXPath, String fullTagXPath, String tagName, String textHtml, String htmlContent) {
         this.pageUrl = TagUtil.validateData(pageUrl);

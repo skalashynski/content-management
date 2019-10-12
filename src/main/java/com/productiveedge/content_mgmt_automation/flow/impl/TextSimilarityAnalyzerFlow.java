@@ -1,15 +1,18 @@
 package com.productiveedge.content_mgmt_automation.flow.impl;
 
 import com.productiveedge.content_mgmt_automation.entity.Page;
+import com.productiveedge.content_mgmt_automation.entity.container.impl.PageContainer;
+import com.productiveedge.content_mgmt_automation.entity.container.impl.TagContainer;
 import com.productiveedge.content_mgmt_automation.entity.request.TextSimilarityAnalyzerRequest;
 import com.productiveedge.content_mgmt_automation.entity.tag.BaseTag;
+import com.productiveedge.content_mgmt_automation.entity.tag.CompoundTag;
 import com.productiveedge.content_mgmt_automation.entity.tag.Tag;
 import com.productiveedge.content_mgmt_automation.flow.Flow;
 import com.productiveedge.content_mgmt_automation.flow.impl.helper.GrabAllLinksHelper;
-import com.productiveedge.content_mgmt_automation.repository.PageContainer;
+import com.productiveedge.content_mgmt_automation.flow.util.TagSimilarityAnalyzerFlowUtil;
+import com.productiveedge.content_mgmt_automation.repository.Report;
 import com.productiveedge.content_mgmt_automation.repository.exception.ExcelException;
-import com.productiveedge.content_mgmt_automation.repository.impl.TagCsvRepository;
-import com.productiveedge.content_mgmt_automation.repository.impl.TagExcelRepositoryImpl;
+import com.productiveedge.content_mgmt_automation.repository.impl.excel.TextSimilarityExcelReportImp;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -18,8 +21,6 @@ import org.slf4j.LoggerFactory;
 
 import java.nio.file.Paths;
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -30,9 +31,12 @@ public class TextSimilarityAnalyzerFlow implements Flow {
     private static final String IFRAME_TAG_NAME = "iframe";
     private static final String NOSCRIPT_TAG_NAME = "noscript";
     private static final String ROOT_TAG_NAME = "#root";
-    private TagExcelRepositoryImpl repository;
+    private static final String SHEET_NAME = "similarity";
+
+    private Report report;
+    private TagContainer tagContainer;
     private final TextSimilarityAnalyzerRequest textSimilarityAnalyzerRequest;
-    private final String SHEET_NAME = "similarity";
+
     private Comparator<BaseTag> compByLength = Comparator.comparingInt((BaseTag aTag) -> aTag.getTextContent().length());
     private Predicate<BaseTag> badTagsFilter = tag -> !tag.getTextContent().isEmpty() &&
             !tag.getName().equalsIgnoreCase(IFRAME_TAG_NAME) &&
@@ -40,48 +44,12 @@ public class TextSimilarityAnalyzerFlow implements Flow {
             !tag.getName().equalsIgnoreCase(ROOT_TAG_NAME);
 
     public TextSimilarityAnalyzerFlow(TextSimilarityAnalyzerRequest textSimilarityAnalyzerRequest) {
+        this.tagContainer = new TagContainer();
         this.textSimilarityAnalyzerRequest = textSimilarityAnalyzerRequest;
     }
 
     private String getXlsxFilePath(String pageUrl) {
         return Paths.get(textSimilarityAnalyzerRequest.getDestinationFolder(), generateDateFolderName(), SHEET_NAME, GrabAllLinksHelper.generateNameByKey(pageUrl)) + ".xlsx";
-    }
-
-    public static List<Tag> compactGroupBasedOnTextContent(List<Tag> tags) {
-        List<Tag> result = new ArrayList<>();
-
-        return tags.stream().collect(Collectors.groupingBy(Tag::getTextContent))
-                .values()
-                .stream()
-                .map(list -> {
-                    if (list.size() > 1) {
-                        List<Tag> sorted = list.stream().sorted(Comparator.comparingInt((Tag aTag) -> aTag.getFullTagXPath().length())).collect(Collectors.toList());
-                        Tag minFullTanXpathLengthBaseTag = sorted.get(0);
-                        Tag maxFullTanXpathLengthBaseTag = sorted.get(sorted.size() - 1);
-                        return Arrays.asList(minFullTanXpathLengthBaseTag, maxFullTanXpathLengthBaseTag);
-                    }
-                    return list;
-                })
-                .flatMap(List::stream)
-                .collect(Collectors.toList());
-    }
-
-    private static <T> Predicate<T> distinctByKeys(Function<? super T, ?>... keyExtractors) {
-        final Map<List<?>, Boolean> seen = new ConcurrentHashMap<>();
-
-        return t ->
-        {
-            final List<?> keys = Arrays.stream(keyExtractors)
-                    .map(ke -> ke.apply(t))
-                    .collect(Collectors.toList());
-
-            return seen.putIfAbsent(keys, Boolean.TRUE) == null;
-        };
-    }
-
-    public static <T> Predicate<T> distinctByKey(Function<? super T, ?> keyExtractor) {
-        Set<Object> seen = ConcurrentHashMap.newKeySet();
-        return t -> seen.add(keyExtractor.apply(t));
     }
 
     @Override
@@ -109,10 +77,11 @@ public class TextSimilarityAnalyzerFlow implements Flow {
                         */
                         //.sorted(Comparator.comparingInt((BaseTag aTag) -> aTag.getTextContent().length()))
                         //.map(tag -> new )
-                        .filter(distinctByKeys(Tag::getTextContent, Tag::getFullXPath, Tag::getShortXPath, Tag::getName))
+                        .filter(TagSimilarityAnalyzerFlowUtil.distinctByKeys(Tag::getTextContent, Tag::getFullXPath, Tag::getShortXPath, Tag::getName))
                         //.sorted(compByLength)
                         .collect(Collectors.toList());
-                //pageRequestTagWithNotEmptyContent = compactGroupBasedOnTextContent(pageRequestTagWithNotEmptyContent);
+                tagContainer.addTags(pageRequestTagWithNotEmptyContent);
+                //pageRequestTagWithNotEmptyContent = getSimilarityData();
             } else {
                 pageRequestTagWithNotEmptyContent = textSimilarityAnalyzerRequest.getTagsToAnalyze().stream()
                         .map(doc::getElementsByTag)
@@ -134,16 +103,24 @@ public class TextSimilarityAnalyzerFlow implements Flow {
             }
 
             requestTagsAllPages.addAll(pageRequestTagWithNotEmptyContent);
-            repository = new TagExcelRepositoryImpl(filePath, SHEET_NAME);
+            report = new TextSimilarityExcelReportImp(filePath, SHEET_NAME);
             try {
-                //repository.saveAll(requestTagsAllPages);
-                new TagCsvRepository("data.csv").saveAll(requestTagsAllPages);
+                report.saveAll(getSimilarityData());
+                //new TagCsvRepository("data.csv").saveAll(requestTagsAllPages);
                 logger.info("The report" + filePath + " is created.");
             } catch (ExcelException ex) {
                 logger.error("The report" + filePath + " isn't created. " + ex.getMessage());
             }
         });
 
+    }
+
+    private List<CompoundTag> getSimilarityData() {
+        return tagContainer.getCache().entrySet().stream()//get tags wit the same textContent
+                .map(e -> TagSimilarityAnalyzerFlowUtil.compactGroupBasedOnTextContent(e.getValue().getTheSameTextContentTags()))
+                .flatMap(List::stream)
+                //.collect(Collectors.groupingBy(CompoundTag::getKey));
+                .collect(Collectors.toList());
     }
 
     private String generateShortXpath(Document doc, Element element) {

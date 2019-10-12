@@ -4,13 +4,9 @@ public interface Tag extends Cloneable {
 
     String getShortXPath();
 
-    void setParent(Tag parent);
-
     String getTextContent();
 
     String getName();
-
-    String getHtmlContent();
 
     String getPageUrl();
 
@@ -18,5 +14,7 @@ public interface Tag extends Cloneable {
 
     String getFullTagXPath();
 
-    Tag getParent();
+    void setTextContent(String text);
+
+    void setHtmlContent(String html);
 }

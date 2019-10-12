@@ -1,7 +1,8 @@
-package com.productiveedge.content_mgmt_automation.repository;
+package com.productiveedge.content_mgmt_automation.entity.container.impl;
 
 
 import com.productiveedge.content_mgmt_automation.entity.Page;
+import com.productiveedge.content_mgmt_automation.entity.container.Container;
 import lombok.Data;
 
 import java.util.*;
@@ -10,13 +11,10 @@ import java.util.stream.Collectors;
 import static com.productiveedge.content_mgmt_automation.flow.impl.helper.GrabAllLinksHelper.generateKey;
 
 @Data
-public final class PageContainer {
+public final class PageContainer implements Container<String, Page> {
 
     private static final SortedMap<String, Page> cache = new TreeMap<>();
 
-    private PageContainer() {
-
-    }
 
     public static long processedCacheWebsitesCount() {
         return cache.entrySet().stream().filter(e -> e.getValue().isProcessed()).count();
@@ -57,7 +55,7 @@ public final class PageContainer {
         return null;
     }
 
-    public static Page getPage(String url) {
+    public Page getValue(String url) {
         return cache.get(generateKey(url));
     }
 
@@ -65,7 +63,7 @@ public final class PageContainer {
         cache.put(generateKey(url), value);
     }
 
-    public static Map<String, Page> getCache() {
+    public Map<String, Page> getCache() {
         return cache;
     }
 

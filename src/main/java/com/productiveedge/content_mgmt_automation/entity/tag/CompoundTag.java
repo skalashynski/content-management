@@ -1,61 +1,58 @@
 package com.productiveedge.content_mgmt_automation.entity.tag;
 
 
-import org.jsoup.nodes.Element;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class CompoundTag extends BaseTag {
-    protected List<Tag> childrenTags = new ArrayList<>();
+public class CompoundTag {
+    protected List<Tag> theSameTextContentTags = new ArrayList<>();
+    private String key;
 
-    public CompoundTag(List<Tag> childrenTags) {
-        this.childrenTags = childrenTags;
-    }
-
-    public CompoundTag(String pageUrl, String shortXPath, String xPath, String fullTagXPath, Element domElement) {
-        super(pageUrl, shortXPath, xPath, fullTagXPath, domElement);
-    }
-
-    public CompoundTag(String pageUrl, String shortXPath, String xPath, String fullTagXPath, Element domElement, List<Tag> childrenTags) {
-        super(pageUrl, shortXPath, xPath, fullTagXPath, domElement);
-        this.childrenTags = childrenTags;
+    public CompoundTag(List<Tag> theSameTextContentTags) {
+        this.theSameTextContentTags = theSameTextContentTags;
     }
 
     public CompoundTag(Tag... tags) {
         super();
-        addChildElements(tags);
+        add(tags);
     }
 
-    public void addChildElements(Tag... tags) {
-        childrenTags.addAll(Arrays.asList(tags));
+    public CompoundTag(String key, List<Tag> theSameTextContentTags) {
+        this.key = key;
+        this.theSameTextContentTags = theSameTextContentTags;
     }
 
-    public void addChildElements(List<Tag> tags) {
-        childrenTags.addAll(tags);
+    public void add(Tag... tags) {
+        theSameTextContentTags.addAll(Arrays.asList(tags));
+    }
+
+    public void add(List<Tag> tags) {
+        theSameTextContentTags.addAll(tags);
     }
 
     public void remove(Tag child) {
-        childrenTags.remove(child);
+        theSameTextContentTags.remove(child);
     }
 
     public void remove(Tag... components) {
-        this.childrenTags.removeAll(Arrays.asList(components));
+        this.theSameTextContentTags.removeAll(Arrays.asList(components));
     }
 
     public void clear() {
-        this.childrenTags.clear();
+        this.theSameTextContentTags.clear();
     }
 
+
+    @Deprecated
     public List<Tag> getElementsByTag(String tagName) {
         List tags = new ArrayList();
-        if (this.childrenTags.size() == 0) {
+        if (this.theSameTextContentTags.size() == 0) {
             return new ArrayList<>();
         }
-        this.childrenTags.forEach(e -> {
+        this.theSameTextContentTags.forEach(e -> {
             if (e instanceof CompoundTag) {
                 CompoundTag tag = (CompoundTag) e;
                 tags.addAll(tag.getElementsByTag(tagName));
@@ -68,7 +65,50 @@ public class CompoundTag extends BaseTag {
         return tags;
     }
 
+    public String getKey() {
+        return key;
+    }
+
+    public void setKey(String key) {
+        this.key = key;
+    }
+
+    public List<Tag> getTheSameTextContentTags() {
+        return theSameTextContentTags;
+    }
+
+    @Deprecated
     public List<Tag> getElementsByTags(Collection<String> requestTagNames) {
         return requestTagNames.stream().map(e -> getElementsByTag(e)).flatMap(tags -> tags.stream()).collect(Collectors.toList());
     }
+
+    public List<String> getPageUrls() {
+        return theSameTextContentTags.stream().map(Tag::getPageUrl).collect(Collectors.toList());
+    }
+
+
+    public List<String> getShortXpath() {
+        return theSameTextContentTags.stream().map(Tag::getShortXPath).collect(Collectors.toList());
+    }
+
+    public List<String> getFullXPath() {
+        return theSameTextContentTags.stream().map(Tag::getFullXPath).collect(Collectors.toList());
+    }
+
+    public List<String> getFullTagXPath() {
+        return theSameTextContentTags.stream().map(Tag::getFullTagXPath).collect(Collectors.toList());
+    }
+
+    public List<String> getName() {
+        return theSameTextContentTags.stream().map(Tag::getName).collect(Collectors.toList());
+    }
+
+    public String getCommonText() {
+        if (theSameTextContentTags.size() != 0) {
+            return theSameTextContentTags.get(0).getTextContent();
+        }
+        return "";
+    }
+
+
 }

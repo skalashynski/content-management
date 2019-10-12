@@ -1,5 +1,6 @@
 package com.productiveedge.content_mgmt_automation.flow.util;
 
+import com.productiveedge.content_mgmt_automation.entity.tag.CompoundTag;
 import com.productiveedge.content_mgmt_automation.entity.tag.Tag;
 
 import java.util.*;
@@ -20,15 +21,17 @@ public class TagSimilarityAnalyzerFlowUtil {
      * And another one has fullTagXpath like
      * //body//main//div[2]//div[3]//footer//div//div//div[1]//div[5]//div//div[2]//div[5]//a
      * <p>
-     * As result these tags will be compacted to tag, which will has two values (Set).
+     * As result these tags will be compacted to map where key is least-length value, value - List of Tags.
+     * @return Map<String, List < Tag>>
      */
 
     public static long calculateInsideLevelOfTagXPath(Tag tag, List<Tag> pageTags) {
         return pageTags.stream().filter(e -> e.getFullTagXPath().startsWith(tag.getFullTagXPath())).count();
     }
 
-    public static Map<String, List<Tag>> compact(List<Tag> tags) {
-        Map<String, List<Tag>> res = new HashMap<>();
+    public static List<CompoundTag> compact(List<Tag> tags) {
+        //Map<String, List<Tag>> res = new HashMap<>();
+        List<CompoundTag> res = new ArrayList<>();
         List<Tag> sorted = tags.stream().
                 sorted((o1, o2) -> o2.getFullTagXPath().compareTo(o1.getFullTagXPath()))
                 .collect(Collectors.toList());
@@ -45,21 +48,26 @@ public class TagSimilarityAnalyzerFlowUtil {
                     break;
                 }
             }
-            res.put(key, entryValue);
+            res.add(new CompoundTag(key, entryValue));
+            //res.put(key, entryValue);
         } while (i + 1 < sorted.size());
         return res;
     }
 
-    public static List<Tag> compactGroupBasedOnTextContent(List<Tag> tags) {
-        return null;
-        /*
+    /**
+     * Grouping tags from all pages with the same text content
+     * return list of pages
+     * 1 page has a lot of compoundtags
+     */
+
+    public static List<CompoundTag> compactGroupBasedOnTextContent(List<Tag> tags) {
         return tags.stream()
-                /* .collect(Collectors.groupingBy(Tag::getPageUrl))//grouping by pageUrl
-                 .values()
+                .collect(Collectors.groupingBy(Tag::getPageUrl))//grouping by pageUrl
+                .values()
                  .stream()
                 .map(e-> compact(e))
                 .flatMap(List::stream)
-                .collect(Collectors.toList());*/
+                .collect(Collectors.toList());
     }
 
     public static String chooseKey(String key1, String key2) {

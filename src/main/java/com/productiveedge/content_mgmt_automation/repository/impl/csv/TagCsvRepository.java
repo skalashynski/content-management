@@ -1,14 +1,14 @@
-package com.productiveedge.content_mgmt_automation.repository.impl;
+package com.productiveedge.content_mgmt_automation.repository.impl.csv;
 
 import com.productiveedge.content_mgmt_automation.entity.tag.Tag;
-import com.productiveedge.content_mgmt_automation.repository.ExcelRepository;
+import com.productiveedge.content_mgmt_automation.repository.Report;
 import com.productiveedge.content_mgmt_automation.repository.exception.ExcelException;
 
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.List;
 
-public class TagCsvRepository implements ExcelRepository<Tag> {
+public class TagCsvRepository implements Report<List<Tag>> {
     private final String fileName;
 
     public TagCsvRepository(String fileName) {
