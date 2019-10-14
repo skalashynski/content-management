@@ -1,9 +1,10 @@
-package com.productiveedge.content_mgmt_automation.repository.impl.excel;
+package com.productiveedge.content_mgmt_automation.report.impl.excel;
 
-import com.productiveedge.content_mgmt_automation.repository.Report;
+import com.productiveedge.content_mgmt_automation.report.Report;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
+import java.io.File;
 import java.util.List;
 
 public abstract class ExcelReport<T> implements Report<T> {
@@ -11,14 +12,16 @@ public abstract class ExcelReport<T> implements Report<T> {
     protected final Workbook workbook;
     protected final Sheet sheet;
     protected final String xlsxReportFilePath;
+    protected final File file;
 
     public ExcelReport(String xlsxReportFilePath, String sheetName) {
         this.workbook = new XSSFWorkbook();
         this.xlsxReportFilePath = xlsxReportFilePath;
-        sheet = workbook.createSheet(sheetName);
+        this.sheet = workbook.createSheet(sheetName);
+        this.file = new File(xlsxReportFilePath);
     }
 
-    public abstract List<String> getColumns();
+    public abstract List<String> getHeaderNames();
 
     protected void createColumnHeaders(List<String> columns) {
         Font headerFont = workbook.createFont();
@@ -38,7 +41,7 @@ public abstract class ExcelReport<T> implements Report<T> {
         }
     }
 
-    protected void setCellValue(Row row, int columnNumber, String cellValue) {
+    protected void setCellLongValue(Row row, int columnNumber, String cellValue) {
         Cell cell = row.createCell(columnNumber);
         try {
             cell.setCellValue(cellValue);

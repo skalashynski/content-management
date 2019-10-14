@@ -5,15 +5,12 @@ import com.productiveedge.content_mgmt_automation.entity.tag.Tag;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 public class TagSimilarityAnalyzerFlowUtil {
 
-    private BiFunction<Tag, Tag, Boolean> contains = (Tag a, Tag b) -> a.getFullTagXPath().contains(b.getFullTagXPath())
-            || b.getFullTagXPath().contains(a.getFullTagXPath());
 
     /**
      * For example tag has fullTagXpath like
@@ -25,15 +22,11 @@ public class TagSimilarityAnalyzerFlowUtil {
      * @return Map<String, List < Tag>>
      */
 
-    public static long calculateInsideLevelOfTagXPath(Tag tag, List<Tag> pageTags) {
-        return pageTags.stream().filter(e -> e.getFullTagXPath().startsWith(tag.getFullTagXPath())).count();
-    }
-
     public static List<CompoundTag> compact(List<Tag> tags) {
         //Map<String, List<Tag>> res = new HashMap<>();
         List<CompoundTag> res = new ArrayList<>();
-        List<Tag> sorted = tags.stream().
-                sorted((o1, o2) -> o2.getFullTagXPath().compareTo(o1.getFullTagXPath()))
+        List<Tag> sorted = tags.stream()
+                .sorted((o1, o2) -> o2.getFullTagXPath().compareTo(o1.getFullTagXPath()))
                 .collect(Collectors.toList());
         int i = 0;
         do {
@@ -70,15 +63,6 @@ public class TagSimilarityAnalyzerFlowUtil {
                 .collect(Collectors.toList());
     }
 
-    public static String chooseKey(String key1, String key2) {
-        if (key1.contains(key2)) {
-            return key2;
-        }
-        if (key2.contains(key1)) {
-            return key1;
-        }
-        return null;
-    }
 
     /*
             return tags.stream().collect(Collectors.groupingBy(Tag::getTextContent))

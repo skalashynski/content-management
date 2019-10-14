@@ -1,4 +1,4 @@
-package com.productiveedge.content_mgmt_automation.entity.container;
+package com.productiveedge.content_mgmt_automation.repository.container;
 
 import java.util.Map;
 

@@ -1,13 +1,14 @@
-package com.productiveedge.content_mgmt_automation.repository.impl.csv;
+package com.productiveedge.content_mgmt_automation.report.impl.csv;
 
 import com.productiveedge.content_mgmt_automation.entity.tag.Tag;
-import com.productiveedge.content_mgmt_automation.repository.Report;
-import com.productiveedge.content_mgmt_automation.repository.exception.ExcelException;
+import com.productiveedge.content_mgmt_automation.report.Report;
+import com.productiveedge.content_mgmt_automation.report.exception.ExcelReportException;
 
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.List;
 
+@Deprecated
 public class TagCsvRepository implements Report<List<Tag>> {
     private final String fileName;
 
@@ -16,7 +17,7 @@ public class TagCsvRepository implements Report<List<Tag>> {
     }
 
     @Override
-    public void saveAll(List<Tag> elements) throws ExcelException {
+    public void saveAll(List<Tag> elements) throws ExcelReportException {
         int numFiles = elements.size() / 10 + 1;
         for (int i = 0; i < numFiles; i++) {
             int startItr = i * 10;
@@ -30,7 +31,7 @@ public class TagCsvRepository implements Report<List<Tag>> {
                 }
                 csvWriter.flush();
             } catch (IOException e) {
-                throw new ExcelException(e);
+                throw new ExcelReportException(e);
             }
         }
 

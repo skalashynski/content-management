@@ -20,8 +20,8 @@ public class MainTest {
                     "root_folder_path=C://folder",
                     "driver_path=C://folder//chromedriver.exe",
 
-                    "process_url=https://www.productiveedge.com",
-                    "max_process_urls_value=100",
+                    "process_url=https://www.workfusion.com/careers/",
+                    "max_process_urls_value=10",
                     "generate_report=true",
                     "xlsx_report_name=today_report.xlsx",
                     "report_sheet_name=report",

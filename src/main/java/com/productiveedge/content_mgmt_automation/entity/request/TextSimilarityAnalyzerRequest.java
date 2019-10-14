@@ -18,9 +18,11 @@ public class TextSimilarityAnalyzerRequest extends Request {
     private String destinationFolder;
     private boolean analyzeAllTags;
     private Set<String> tagsToAnalyze;
+    private String processUrl;
 
     public TextSimilarityAnalyzerRequest(Map<String, String> request) throws InvalidJarRequestException {
         validate(request);
+        this.processUrl = request.get(TextSimilarityAnalyzerRequest.REQUEST_PARAMETER.PROCESS_URL.name());
         this.destinationFolder = Paths.get(request.get(TextSimilarityAnalyzerRequest.REQUEST_PARAMETER.ROOT_FOLDER_PATH.name()), FolderName.REPORT.name()).toString();
         String tagsToAnalyzeParameter = request.get(TextSimilarityAnalyzerRequest.REQUEST_PARAMETER.TAGS_TO_ANALYZE.name());
         if ("ALL".equalsIgnoreCase(tagsToAnalyzeParameter)) {
@@ -33,7 +35,7 @@ public class TextSimilarityAnalyzerRequest extends Request {
 
     @Override
     public void validate(Map<String, String> request) throws InvalidJarRequestException {
-        for (SaveHtmlRequest.REQUEST_PARAMETER parameter : SaveHtmlRequest.REQUEST_PARAMETER.values()) {
+        for (TextSimilarityAnalyzerRequest.REQUEST_PARAMETER parameter : TextSimilarityAnalyzerRequest.REQUEST_PARAMETER.values()) {
             String value = request.get(parameter.name().toUpperCase());
             if (value == null) {
                 throw new InvalidJarRequestException("There isn't '" + parameter + "' parameter in execute text analyzing.");
@@ -43,6 +45,6 @@ public class TextSimilarityAnalyzerRequest extends Request {
     }
 
     public enum REQUEST_PARAMETER {
-        ROOT_FOLDER_PATH, TAGS_TO_ANALYZE,
+        ROOT_FOLDER_PATH, TAGS_TO_ANALYZE, PROCESS_URL
     }
 }

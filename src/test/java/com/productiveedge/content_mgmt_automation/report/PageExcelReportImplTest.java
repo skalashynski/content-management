@@ -1,4 +1,4 @@
-package com.productiveedge.content_mgmt_automation.repository;
+package com.productiveedge.content_mgmt_automation.report;
 
 import org.junit.Test;
 

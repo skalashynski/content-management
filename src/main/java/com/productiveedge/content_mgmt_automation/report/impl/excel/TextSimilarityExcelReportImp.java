@@ -1,7 +1,7 @@
-package com.productiveedge.content_mgmt_automation.repository.impl.excel;
+package com.productiveedge.content_mgmt_automation.report.impl.excel;
 
 import com.productiveedge.content_mgmt_automation.entity.tag.CompoundTag;
-import com.productiveedge.content_mgmt_automation.repository.exception.ExcelException;
+import com.productiveedge.content_mgmt_automation.report.exception.ExcelReportException;
 import org.apache.commons.io.FileUtils;
 import org.apache.poi.ss.usermodel.Row;
 import org.slf4j.Logger;
@@ -21,8 +21,8 @@ public class TextSimilarityExcelReportImp extends ExcelReport<List<CompoundTag>>
     }
 
     @Override
-    public void saveAll(List<CompoundTag> elements) throws ExcelException {
-        List<String> columns = getColumns();
+    public void saveAll(List<CompoundTag> elements) throws ExcelReportException {
+        List<String> columns = getHeaderNames();
 
         createColumnHeaders(columns);
         // Create Other rows and cells with page data
@@ -43,7 +43,7 @@ public class TextSimilarityExcelReportImp extends ExcelReport<List<CompoundTag>>
             workbook.write(fileOut);
             logger.info("Workbook is saved.");
         } catch (IOException e) {
-            throw new ExcelException("Error of saving xslx file to system." + e.getMessage(), e);
+            throw new ExcelReportException("Error of saving xslx file to system." + e.getMessage(), e);
         } finally {
             if (workbook != null) {
                 try {
@@ -56,7 +56,7 @@ public class TextSimilarityExcelReportImp extends ExcelReport<List<CompoundTag>>
     }
 
     @Override
-    public List<String> getColumns() {
+    public List<String> getHeaderNames() {
         return Arrays.asList("pageUrl", "ShortXpath", "FullXPath", "FullTagXPath", "names");
     }
 
@@ -75,7 +75,7 @@ public class TextSimilarityExcelReportImp extends ExcelReport<List<CompoundTag>>
 
         row.createCell(4)
                 .setCellValue(formatCellValue(tag.getName()));
-        setCellValue(row, 5, tag.getCommonText());
+        setCellLongValue(row, 5, tag.getCommonText());
     }
 
     private String formatCellValue(List<String> values) {

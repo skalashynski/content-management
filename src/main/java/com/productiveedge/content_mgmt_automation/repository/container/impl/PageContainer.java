@@ -1,8 +1,8 @@
-package com.productiveedge.content_mgmt_automation.entity.container.impl;
+package com.productiveedge.content_mgmt_automation.repository.container.impl;
 
 
 import com.productiveedge.content_mgmt_automation.entity.Page;
-import com.productiveedge.content_mgmt_automation.entity.container.Container;
+import com.productiveedge.content_mgmt_automation.repository.container.Container;
 import lombok.Data;
 
 import java.util.*;

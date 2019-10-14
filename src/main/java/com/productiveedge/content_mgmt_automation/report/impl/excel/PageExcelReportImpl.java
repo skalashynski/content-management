@@ -1,13 +1,12 @@
-package com.productiveedge.content_mgmt_automation.repository.impl.excel;
+package com.productiveedge.content_mgmt_automation.report.impl.excel;
 
 import com.productiveedge.content_mgmt_automation.entity.Page;
-import com.productiveedge.content_mgmt_automation.repository.exception.ExcelException;
+import com.productiveedge.content_mgmt_automation.report.exception.ExcelReportException;
 import org.apache.commons.io.FileUtils;
 import org.apache.poi.ss.usermodel.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.lang.reflect.Field;
@@ -24,7 +23,7 @@ public class PageExcelReportImpl extends ExcelReport<List<Page>> {
     }
 
     @Override
-    public List<String> getColumns() {
+    public List<String> getHeaderNames() {
         return Arrays.stream(Page.class.getDeclaredFields()).map(Field::getName).collect(Collectors.toList());
 
     }
@@ -49,9 +48,9 @@ public class PageExcelReportImpl extends ExcelReport<List<Page>> {
     }
 
     @Override
-    public void saveAll(List<Page> pages) throws ExcelException {
+    public void saveAll(List<Page> pages) throws ExcelReportException {
 
-        List<String> columns = getColumns();
+        List<String> columns = getHeaderNames();
 
         createColumnHeaders(columns);
         // Create Other rows and cells with page data
@@ -66,11 +65,10 @@ public class PageExcelReportImpl extends ExcelReport<List<Page>> {
             sheet.autoSizeColumn(i);
         }
 
-        File file = new File(xlsxReportFilePath);
-        try (FileOutputStream fileOut = FileUtils.openOutputStream(file)) {
+        try (FileOutputStream fileOut = FileUtils.openOutputStream(this.file)) {
             workbook.write(fileOut);
         } catch (IOException e) {
-            throw new ExcelException("Error of saving xslx file to system." + e.getMessage(), e);
+            throw new ExcelReportException("Error of saving " + xlsxReportFilePath + " file to system. " + e.getMessage(), e);
         } finally {
             if (workbook != null) {
                 try {

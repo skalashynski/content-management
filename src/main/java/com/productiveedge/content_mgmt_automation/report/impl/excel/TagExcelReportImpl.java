@@ -1,8 +1,8 @@
-package com.productiveedge.content_mgmt_automation.repository.impl.excel;
+package com.productiveedge.content_mgmt_automation.report.impl.excel;
 
 import com.productiveedge.content_mgmt_automation.entity.tag.BaseTag;
 import com.productiveedge.content_mgmt_automation.entity.tag.Tag;
-import com.productiveedge.content_mgmt_automation.repository.exception.ExcelException;
+import com.productiveedge.content_mgmt_automation.report.exception.ExcelReportException;
 import org.apache.commons.io.FileUtils;
 import org.apache.poi.ss.usermodel.Row;
 import org.slf4j.Logger;
@@ -24,13 +24,13 @@ public class TagExcelReportImpl extends ExcelReport<List<Tag>> {
         super(xlsxReportFilePath, sheetName);
     }
 
-    public List<String> getColumns() {
+    public List<String> getHeaderNames() {
         return Arrays.stream(BaseTag.class.getDeclaredFields()).map(Field::getName).collect(Collectors.toList());
     }
 
     @Override
-    public void saveAll(List<Tag> tags) throws ExcelException {
-        List<String> columns = getColumns();
+    public void saveAll(List<Tag> tags) throws ExcelReportException {
+        List<String> columns = getHeaderNames();
 
         createColumnHeaders(columns);
         // Create Other rows and cells with page data
@@ -50,7 +50,7 @@ public class TagExcelReportImpl extends ExcelReport<List<Tag>> {
             workbook.write(fileOut);
             logger.info("Workbook is saved.");
         } catch (IOException e) {
-            throw new ExcelException("Error of saving xslx file to system." + e.getMessage(), e);
+            throw new ExcelReportException("Error of saving xslx file to system." + e.getMessage(), e);
         } finally {
             if (workbook != null) {
                 try {
@@ -77,8 +77,6 @@ public class TagExcelReportImpl extends ExcelReport<List<Tag>> {
 
         row.createCell(4)
                 .setCellValue(tag.getName());
-        setCellValue(row, 5, tag.getTextContent());
-        //setCellValue(row, 5, tag.getHtmlContent());
+        setCellLongValue(row, 5, tag.getTextContent());
     }
-
 }
