@@ -6,8 +6,8 @@ public class TagUtilTest {
 
     @Test
     public void validateData() {
-        System.out.println(TagUtil.validateData("\"Hello world\""));
-        System.out.println(TagUtil.validateData("\"Hello' 'world\""));
+        System.out.println(new BaseTag().validateData("\"Hello world\""));
+        System.out.println(new BaseTag().validateData("\"Hello' 'world\""));
 
     }
 }

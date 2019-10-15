@@ -3,7 +3,6 @@ package com.productiveedge.content_mgmt_automation.entity.tag;
 import lombok.Data;
 import org.jsoup.nodes.Element;
 
-import static com.productiveedge.content_mgmt_automation.entity.tag.TagUtil.*;
 
 @Data
 public class BaseTag implements Tag {
@@ -21,17 +20,13 @@ public class BaseTag implements Tag {
 
 
     public BaseTag(String pageUrl, String shortXPath, String fullXPath, String fullTagXPath, String tagName, String textHtml, String htmlContent) {
-        this.pageUrl = TagUtil.validateData(pageUrl);
-        this.shortXPath = TagUtil.validateData(shortXPath);
-        this.fullXPath = TagUtil.validateData(fullXPath);
-        this.fullTagXPath = TagUtil.validateData(fullTagXPath);
-        this.name = TagUtil.validateData(tagName);
-        this.textContent = TagUtil.validateData(textHtml);
-        this.htmlContent = TagUtil.validateData(htmlContent);
-    }
-
-    public BaseTag(String pageUrl, String shortXPath, String fullXPath, String fullTagXPath, Element domElement) {
-        this(pageUrl, shortXPath, fullXPath, fullTagXPath, domElement.tagName(), domElement.text(), domElement.html());
+        this.pageUrl = validateData(pageUrl);
+        this.shortXPath = validateData(shortXPath);
+        this.fullXPath = validateData(fullXPath);
+        this.fullTagXPath = validateData(fullTagXPath);
+        this.name = validateData(tagName);
+        this.textContent = validateData(textHtml);
+        this.htmlContent = validateData(htmlContent);
     }
 
     public BaseTag(String pageUrl, Element domElement) {

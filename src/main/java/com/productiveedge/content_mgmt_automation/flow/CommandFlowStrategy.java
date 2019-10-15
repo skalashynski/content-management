@@ -1,7 +1,6 @@
-package com.productiveedge.content_mgmt_automation.entity;
+package com.productiveedge.content_mgmt_automation.flow;
 
 import com.productiveedge.content_mgmt_automation.entity.request.*;
-import com.productiveedge.content_mgmt_automation.flow.Flow;
 import com.productiveedge.content_mgmt_automation.flow.exception.InvalidJarRequestException;
 import com.productiveedge.content_mgmt_automation.flow.impl.*;
 

@@ -1,6 +1,6 @@
 package com.productiveedge.content_mgmt_automation;
 
-import com.productiveedge.content_mgmt_automation.entity.CommandFlowStrategy;
+import com.productiveedge.content_mgmt_automation.flow.CommandFlowStrategy;
 import com.productiveedge.content_mgmt_automation.flow.Flow;
 import com.productiveedge.content_mgmt_automation.flow.exception.InvalidJarRequestException;
 import org.slf4j.Logger;
@@ -22,11 +22,11 @@ public class MainTest {
 
                     "process_url=https://www.workfusion.com/careers/",
                     "max_process_urls_value=10",
-                    "generate_report=true",
+                    "generate_report=false",
                     "xlsx_report_name=today_report.xlsx",
                     "report_sheet_name=report",
-                    "save_html=true",
-                    "save_txt=true",
+                    "save_html=false",
+                    "save_txt=false",
                     "take_screenshot=false",
                     "page_screen_space_value=550",
 

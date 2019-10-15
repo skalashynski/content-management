@@ -20,18 +20,18 @@ import org.slf4j.LoggerFactory;
 
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
+import static com.productiveedge.content_mgmt_automation.entity.tag.Tag.*;
 import static com.productiveedge.content_mgmt_automation.flow.impl.helper.FlowHelper.generateDateFolderName;
 
 public class TextSimilarityAnalyzerFlow implements Flow {
     private static final Logger logger = LoggerFactory.getLogger(TextSimilarityAnalyzerFlow.class);
-    private static final String IFRAME_TAG_NAME = "iframe";
-    private static final String NOSCRIPT_TAG_NAME = "noscript";
-    private static final String ROOT_TAG_NAME = "#root";
+
     private static final String[] BAD_TAGS = {IFRAME_TAG_NAME, NOSCRIPT_TAG_NAME, ROOT_TAG_NAME};
 
 
@@ -44,10 +44,7 @@ public class TextSimilarityAnalyzerFlow implements Flow {
     private final TextSimilarityAnalyzerRequest textSimilarityAnalyzerRequest;
     private final String filePath;
 
-    private final Predicate<BaseTag> badTagsFilter = tag -> !tag.getTextContent().isEmpty() &&
-            !tag.getName().equalsIgnoreCase(IFRAME_TAG_NAME) &&
-            !tag.getName().equalsIgnoreCase(NOSCRIPT_TAG_NAME) &&
-            !tag.getName().equalsIgnoreCase(ROOT_TAG_NAME);
+    private final Predicate<BaseTag> badTagsFilter = tag -> !tag.getTextContent().isEmpty() && Arrays.stream(BAD_TAGS).noneMatch(e -> e.equalsIgnoreCase(tag.getName()));
 
     public TextSimilarityAnalyzerFlow(TextSimilarityAnalyzerRequest textSimilarityAnalyzerRequest) {
         this.tagContainer = TagContainer.getInstance();
@@ -68,9 +65,11 @@ public class TextSimilarityAnalyzerFlow implements Flow {
             Page page = e.getValue();
             Document doc = Jsoup.parse(page.getHtmlContent());
             List<Element> pageElements;
+            //grabbing all dom-elements from page
             if (textSimilarityAnalyzerRequest.isAnalyzeAllTags()) {
                 pageElements = doc.getAllElements();
             } else {
+                //grabbing user's specified elements from page
                 pageElements = textSimilarityAnalyzerRequest.getTagsToAnalyze().stream()
                         .map(doc::getElementsByTag)
                         .flatMap(Collection::stream)

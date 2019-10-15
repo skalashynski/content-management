@@ -1,6 +1,6 @@
 package com.productiveedge.content_mgmt_automation;
 
-import com.productiveedge.content_mgmt_automation.entity.CommandFlowStrategy;
+import com.productiveedge.content_mgmt_automation.flow.CommandFlowStrategy;
 import com.productiveedge.content_mgmt_automation.flow.Flow;
 import com.productiveedge.content_mgmt_automation.flow.exception.InvalidJarRequestException;
 import org.slf4j.Logger;

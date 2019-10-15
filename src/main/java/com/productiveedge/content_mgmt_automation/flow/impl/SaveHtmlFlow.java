@@ -1,5 +1,6 @@
 package com.productiveedge.content_mgmt_automation.flow.impl;
 
+import com.productiveedge.content_mgmt_automation.Constant;
 import com.productiveedge.content_mgmt_automation.entity.request.SaveHtmlRequest;
 import com.productiveedge.content_mgmt_automation.flow.Flow;
 import com.productiveedge.content_mgmt_automation.flow.impl.helper.GrabAllLinksHelper;
@@ -11,8 +12,6 @@ import org.slf4j.LoggerFactory;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Paths;
-
-import static com.productiveedge.content_mgmt_automation.flow.impl.helper.FlowHelper.generateDateFolderName;
 
 public class SaveHtmlFlow implements Flow {
     private static final Logger logger = LoggerFactory.getLogger(SaveHtmlFlow.class);
@@ -28,7 +27,7 @@ public class SaveHtmlFlow implements Flow {
     @Override
     public void run() {
         pageContainer.getProcessedPageEntries().forEach(e -> {
-            String filePath = Paths.get(saveHtmlRequest.getDestinationFolder(), generateDateFolderName(),  GrabAllLinksHelper.generateNameByKey(e.getKey())).toString() + ".html";
+            String filePath = Paths.get(saveHtmlRequest.getDestinationFolder(), Constant.generateDate(), GrabAllLinksHelper.generateNameByKey(e.getKey())).toString() + ".html";
             File destinationFile = new File(filePath);
             try {
                 FileUtils.writeStringToFile(destinationFile, e.getValue().getHtmlContent(), "UTF8");

@@ -2,7 +2,7 @@ package com.productiveedge.content_mgmt_automation.flow.impl;
 
 import com.productiveedge.content_mgmt_automation.entity.request.GenerateExcelReportRequest;
 import com.productiveedge.content_mgmt_automation.flow.Flow;
-import com.productiveedge.content_mgmt_automation.report.exception.ExcelReportException;
+import com.productiveedge.content_mgmt_automation.report.exception.ReportException;
 import com.productiveedge.content_mgmt_automation.report.impl.excel.PageExcelReportImpl;
 import com.productiveedge.content_mgmt_automation.repository.container.impl.PageContainer;
 import org.slf4j.Logger;
@@ -28,7 +28,7 @@ public class GenerateExcelReportFlow implements Flow {
         try {
             pageExcelRepositoryImpl.saveAll(new ArrayList<>(pageContainer.getCache().values()));
             logger.info("The report is created.");
-        } catch (ExcelReportException e) {
+        } catch (ReportException e) {
             logger.error(e.getMessage());
         }
     }

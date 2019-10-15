@@ -1,5 +1,6 @@
 package com.productiveedge.content_mgmt_automation.flow.impl;
 
+import com.productiveedge.content_mgmt_automation.Constant;
 import com.productiveedge.content_mgmt_automation.entity.request.SaveTxtRequest;
 import com.productiveedge.content_mgmt_automation.flow.Flow;
 import com.productiveedge.content_mgmt_automation.flow.impl.helper.GrabAllLinksHelper;
@@ -20,8 +21,6 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.Arrays;
-
-import static com.productiveedge.content_mgmt_automation.flow.impl.helper.FlowHelper.generateDateFolderName;
 
 @Data
 public class SaveTxtFlow implements Flow {
@@ -45,7 +44,7 @@ public class SaveTxtFlow implements Flow {
             String pageUrl = e.getValue().getUrl();
             logger.info("Converting html and saving txt content of url: " + pageUrl);
             String htmlContent = e.getValue().getHtmlContent();
-            String destinationTxtFilePath = Paths.get(saveTxtRequest.getDestinationFolder(), generateDateFolderName(), GrabAllLinksHelper.generateNameByKey(e.getKey())).toString();
+            String destinationTxtFilePath = Paths.get(saveTxtRequest.getDestinationFolder(), Constant.generateDate(), GrabAllLinksHelper.generateNameByKey(e.getKey())).toString();
             try {
                 htmlparser.parse(IOUtils.toInputStream(htmlContent, "UTF-8"), handler, metadata, pcontext);
                 saveTxtContent(destinationTxtFilePath + ".txt", handler.toString(), pageUrl);

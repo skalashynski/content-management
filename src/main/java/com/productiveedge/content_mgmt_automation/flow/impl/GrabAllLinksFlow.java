@@ -47,7 +47,7 @@ public class GrabAllLinksFlow implements Flow {
     private static final Predicate<String> isPhoneNumberHref = href -> href.startsWith(PHONE_HREF);
     private static final Predicate<String> isMailHref = href -> href.startsWith(MAIL_HREF);
     private static final Predicate<String> isPdfHref = href -> href.contains(PDF_HREF);
-    private static final Predicate<String> isPictureHref = href -> href.endsWith(PNG_HREF) || href.endsWith(GIF_HREF) || href.endsWith(JPEG_HREF) || href.endsWith(ZIP_HREF);
+    private static final Predicate<String> isPictureHref = href -> Stream.of(PNG_HREF, GIF_HREF, JPEG_HREF, ZIP_HREF).anyMatch(href::endsWith);
 
 
     private PageContainer pageContainer;
@@ -231,6 +231,9 @@ public class GrabAllLinksFlow implements Flow {
             String cacheKey = unprocessedPageEntry.getKey();
             page = unprocessedPageEntry.getValue();
             try {
+                //this method you can run in new thread, but you need to thing through how to do it.
+                // your current page has the status 'unprocessed', so you'll extract the same one from PageContainer
+                // as a solution you can add new status to page, as 'IN_PROGRESS'
                 page = processPage(page);
             } catch (ProcessPageException e) {
                 logger.error("Page " + page.getUrl() + " is unprocessed. " + e.getMessage());
