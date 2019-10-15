@@ -14,6 +14,19 @@ import java.util.stream.Collectors;
 public final class TagContainer implements Container<String, CompoundTag> {
     private static final SortedMap<String, CompoundTag> cache = new TreeMap<>();
 
+
+    private TagContainer() {
+
+    }
+
+    public static TagContainer getInstance() {
+        return TagContainer.SingletonHolder.instance;
+    }
+
+    private static class SingletonHolder {
+        private static TagContainer instance = new TagContainer();
+    }
+
     public void putTag(Tag tag) {
         CompoundTag theSameTextContentTags = cache.get(tag.getTextContent());
         if (theSameTextContentTags != null) {

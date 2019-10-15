@@ -18,14 +18,16 @@ public class SaveHtmlFlow implements Flow {
     private static final Logger logger = LoggerFactory.getLogger(SaveHtmlFlow.class);
 
     private final SaveHtmlRequest saveHtmlRequest;
+    private final PageContainer pageContainer;
 
     public SaveHtmlFlow(SaveHtmlRequest saveHtmlRequest) {
         this.saveHtmlRequest = saveHtmlRequest;
+        this.pageContainer = PageContainer.getInstance();
     }
 
     @Override
     public void run() {
-        PageContainer.getProcessedPageEntries().forEach(e-> {
+        pageContainer.getProcessedPageEntries().forEach(e -> {
             String filePath = Paths.get(saveHtmlRequest.getDestinationFolder(), generateDateFolderName(),  GrabAllLinksHelper.generateNameByKey(e.getKey())).toString() + ".html";
             File destinationFile = new File(filePath);
             try {

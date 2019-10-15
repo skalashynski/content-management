@@ -1,7 +1,7 @@
 package com.productiveedge.content_mgmt_automation.flow.impl;
 
-import com.productiveedge.content_mgmt_automation.entity.Page;
-import com.productiveedge.content_mgmt_automation.entity.PageBuilder;
+import com.productiveedge.content_mgmt_automation.entity.page.Page;
+import com.productiveedge.content_mgmt_automation.entity.page.PageBuilder;
 import com.productiveedge.content_mgmt_automation.entity.request.GrabAllLinksRequest;
 import com.productiveedge.content_mgmt_automation.flow.Flow;
 import com.productiveedge.content_mgmt_automation.flow.exception.InvalidHrefException;
@@ -22,8 +22,8 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static com.productiveedge.content_mgmt_automation.entity.Page.Status.PROCESSED;
-import static com.productiveedge.content_mgmt_automation.entity.Page.Status.REDIRECT_OR_INVALID_URL;
+import static com.productiveedge.content_mgmt_automation.entity.page.Page.Status.PROCESSED;
+import static com.productiveedge.content_mgmt_automation.entity.page.Page.Status.REDIRECT_OR_INVALID_URL;
 import static com.productiveedge.content_mgmt_automation.flow.impl.helper.GrabAllLinksHelper.generateKey;
 import static com.productiveedge.content_mgmt_automation.flow.impl.helper.GrabAllLinksHelper.isUrlValid;
 
@@ -54,7 +54,7 @@ public class GrabAllLinksFlow implements Flow {
     private final GrabAllLinksRequest request;
 
     public GrabAllLinksFlow(GrabAllLinksRequest request) {
-        pageContainer = new PageContainer();
+        pageContainer = PageContainer.getInstance();
         this.request = request;
     }
 
@@ -178,7 +178,7 @@ public class GrabAllLinksFlow implements Flow {
         startPageUrl = request.getProcessUrl();
         String key = generateKey(startPageUrl);
         Page page = new Page(startPageUrl);
-        PageContainer.putPage(key, page);
+        pageContainer.putPage(key, page);
     }
 
     private Page processPage(Page page) throws ProcessPageException {
@@ -226,8 +226,8 @@ public class GrabAllLinksFlow implements Flow {
         int processCount = request.getProcessUrlCount();
         Page page;
 
-        while (PageContainer.isUnprocessedPageExist() && PageContainer.processedCacheWebsitesCount() < processCount) {
-            Map.Entry<String, Page> unprocessedPageEntry = PageContainer.nextUnprocessedPageEntry();
+        while (pageContainer.isUnprocessedPageExist() && pageContainer.processedCacheWebsitesCount() < processCount) {
+            Map.Entry<String, Page> unprocessedPageEntry = pageContainer.nextUnprocessedPageEntry();
             String cacheKey = unprocessedPageEntry.getKey();
             page = unprocessedPageEntry.getValue();
             try {
@@ -239,7 +239,7 @@ public class GrabAllLinksFlow implements Flow {
                 page.setStatus(REDIRECT_OR_INVALID_URL);
                 page.setMessageDescription(e.getMessage());
             } finally {
-                PageContainer.putPage(cacheKey, page);
+                pageContainer.putPage(cacheKey, page);
             }
         }
     }
@@ -291,7 +291,7 @@ public class GrabAllLinksFlow implements Flow {
             } else {
                 page = new Page(href);
                 page.setParentURLs(new HashSet<>(Collections.singletonList(parentHref)));
-                PageContainer.putPage(href, page);
+                pageContainer.putPage(href, page);
             }
         }
     }
@@ -299,12 +299,12 @@ public class GrabAllLinksFlow implements Flow {
     private void putURLsToCache(Set<String> hrefs, String parentPageUrl) {
         hrefs.forEach(it -> {
             String itKey = GrabAllLinksHelper.generateKey(it);
-            boolean containsLink = PageContainer.containsLink(itKey);
+            boolean containsLink = pageContainer.containsLink(itKey);
             if (!containsLink && !parentPageUrl.equals(it)) {
                 Page website = pageContainer.getValue(it);
                 if (website == null) {
                     website = new Page(it);
-                    PageContainer.putPage(it, website);
+                    pageContainer.putPage(it, website);
                 }
             }
         });

@@ -3,7 +3,6 @@ package com.productiveedge.content_mgmt_automation.entity.tag;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -13,6 +12,7 @@ import java.util.stream.Collectors;
  */
 public class CompoundTag {
     protected List<Tag> theSameTextContentTags = new ArrayList<>();
+    private Tag reportTag;
     private String theLongestXPath;
 
     public CompoundTag(List<Tag> theSameTextContentTags) {
@@ -49,26 +49,6 @@ public class CompoundTag {
         this.theSameTextContentTags.clear();
     }
 
-
-    @Deprecated
-    public List<Tag> getElementsByTag(String tagName) {
-        List tags = new ArrayList();
-        if (this.theSameTextContentTags.size() == 0) {
-            return new ArrayList<>();
-        }
-        this.theSameTextContentTags.forEach(e -> {
-            if (e instanceof CompoundTag) {
-                CompoundTag tag = (CompoundTag) e;
-                tags.addAll(tag.getElementsByTag(tagName));
-            } else {
-                if (e.getName().equalsIgnoreCase(tagName)) {
-                    tags.add(e);
-                }
-            }
-        });
-        return tags;
-    }
-
     public String getKey() {
         return theLongestXPath;
     }
@@ -79,11 +59,6 @@ public class CompoundTag {
 
     public List<Tag> getTheSameTextContentTags() {
         return theSameTextContentTags;
-    }
-
-    @Deprecated
-    public List<Tag> getElementsByTags(Collection<String> requestTagNames) {
-        return requestTagNames.stream().map(e -> getElementsByTag(e)).flatMap(tags -> tags.stream()).collect(Collectors.toList());
     }
 
     public List<String> getPageUrls() {

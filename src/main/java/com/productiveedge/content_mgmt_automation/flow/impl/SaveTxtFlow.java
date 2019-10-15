@@ -28,8 +28,10 @@ public class SaveTxtFlow implements Flow {
     private static final Logger logger = LoggerFactory.getLogger(SaveTxtFlow.class);
 
     private final SaveTxtRequest saveTxtRequest;
+    private final PageContainer pageContainer;
 
     public SaveTxtFlow(SaveTxtRequest saveTxtRequest) {
+        this.pageContainer = PageContainer.getInstance();
         this.saveTxtRequest = saveTxtRequest;
     }
 
@@ -39,7 +41,7 @@ public class SaveTxtFlow implements Flow {
         Metadata metadata = new Metadata();
         ParseContext pcontext = new ParseContext();
         HtmlParser htmlparser = new HtmlParser();
-        PageContainer.getProcessedPageEntries().forEach(e -> {
+        pageContainer.getProcessedPageEntries().forEach(e -> {
             String pageUrl = e.getValue().getUrl();
             logger.info("Converting html and saving txt content of url: " + pageUrl);
             String htmlContent = e.getValue().getHtmlContent();

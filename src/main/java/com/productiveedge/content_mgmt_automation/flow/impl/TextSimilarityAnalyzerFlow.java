@@ -1,6 +1,6 @@
 package com.productiveedge.content_mgmt_automation.flow.impl;
 
-import com.productiveedge.content_mgmt_automation.entity.Page;
+import com.productiveedge.content_mgmt_automation.entity.page.Page;
 import com.productiveedge.content_mgmt_automation.entity.request.TextSimilarityAnalyzerRequest;
 import com.productiveedge.content_mgmt_automation.entity.tag.BaseTag;
 import com.productiveedge.content_mgmt_automation.entity.tag.Tag;
@@ -50,8 +50,8 @@ public class TextSimilarityAnalyzerFlow implements Flow {
             !tag.getName().equalsIgnoreCase(ROOT_TAG_NAME);
 
     public TextSimilarityAnalyzerFlow(TextSimilarityAnalyzerRequest textSimilarityAnalyzerRequest) {
-        this.tagContainer = new TagContainer();
-        this.pageContainer = new PageContainer();
+        this.tagContainer = TagContainer.getInstance();
+        this.pageContainer = PageContainer.getInstance();
         this.textSimilarityAnalyzerRequest = textSimilarityAnalyzerRequest;
         this.filePath = getXlsxFilePath(TAG_REPORT_NAME);
         this.report = new TextSimilarityExcelReportImp2(filePath, SHEET_NAME);
@@ -64,7 +64,7 @@ public class TextSimilarityAnalyzerFlow implements Flow {
     @Override
     public void run() {
         List<Tag> requestTagsAllPages = new ArrayList<>();
-        PageContainer.getProcessedPageEntries().forEach(e -> {
+        pageContainer.getProcessedPageEntries().forEach(e -> {
             Page page = e.getValue();
             Document doc = Jsoup.parse(page.getHtmlContent());
             List<Element> pageElements;

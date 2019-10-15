@@ -1,6 +1,6 @@
 package com.productiveedge.content_mgmt_automation.report.impl.excel;
 
-import com.productiveedge.content_mgmt_automation.entity.Page;
+import com.productiveedge.content_mgmt_automation.entity.page.Page;
 import com.productiveedge.content_mgmt_automation.report.exception.ExcelReportException;
 import org.apache.commons.io.FileUtils;
 import org.apache.poi.ss.usermodel.*;

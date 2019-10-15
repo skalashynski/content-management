@@ -1,4 +1,4 @@
-package com.productiveedge.content_mgmt_automation.entity;
+package com.productiveedge.content_mgmt_automation.entity.page;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

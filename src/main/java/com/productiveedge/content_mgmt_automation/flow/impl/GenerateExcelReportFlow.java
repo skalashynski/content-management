@@ -18,7 +18,7 @@ public class GenerateExcelReportFlow implements Flow {
 
 
     public GenerateExcelReportFlow(GenerateExcelReportRequest request) {
-        this.pageContainer = new PageContainer();
+        this.pageContainer = PageContainer.getInstance();
         this.pageExcelRepositoryImpl = new PageExcelReportImpl(request.getReportPath(), request.getReportSheetName());
     }
 

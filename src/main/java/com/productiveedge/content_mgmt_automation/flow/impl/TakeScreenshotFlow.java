@@ -32,9 +32,11 @@ public class TakeScreenshotFlow implements Flow {
 
     private WebDriver driver;
     private final TakeScreenshotRequest request;
+    private final PageContainer pageContainer;
 
     public TakeScreenshotFlow(TakeScreenshotRequest request) throws InvalidJarRequestException {
         this.request = request;
+        this.pageContainer = PageContainer.getInstance();
         System.setProperty(CHROME_PROPERTY, request.getDriverPath());
         String browser = request.getBrowserName().toUpperCase();
         switch (browser) {
@@ -58,7 +60,7 @@ public class TakeScreenshotFlow implements Flow {
 
     @Override
     public synchronized void run() {
-        PageContainer.getProcessedPageEntries().forEach(e -> {
+        pageContainer.getProcessedPageEntries().forEach(e -> {
             String url = e.getValue().getUrl();
             try {
                 driver.get(url);
