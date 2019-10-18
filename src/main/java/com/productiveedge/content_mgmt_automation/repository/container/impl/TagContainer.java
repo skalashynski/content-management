@@ -12,6 +12,11 @@ import java.util.TreeMap;
 import java.util.stream.Collectors;
 
 public final class TagContainer implements Container<String, CompoundTag> {
+
+    /**
+     * key - textContent
+     * value - tags, which have that textContent
+     */
     private static final SortedMap<String, CompoundTag> cache = new TreeMap<>();
 
 
@@ -32,6 +37,7 @@ public final class TagContainer implements Container<String, CompoundTag> {
         if (theSameTextContentTags != null) {
             theSameTextContentTags.add(tag);
         } else {
+            //тут нужно переделывать
             cache.put(tag.getTextContent(), new CompoundTag(tag));
         }
     }
@@ -51,7 +57,10 @@ public final class TagContainer implements Container<String, CompoundTag> {
 
     public Map<String, List<CompoundTag>> getSimilarityData() {
         return cache.entrySet().stream()//get tags wit the same textContent
-                .map(e -> TagSimilarityAnalyzerFlowUtil.compactGroupBasedOnTextContent(e.getValue().getTheSameTextContentTags()))
+                .map(entry -> {
+                    List<Tag> theSameTextThroughtAllPages = entry.getValue().getTheSameTextContentTags();
+                    return TagSimilarityAnalyzerFlowUtil.compactGroupBasedOnTextContent(theSameTextThroughtAllPages);
+                })
                 .flatMap(List::stream)
                 .collect(Collectors.groupingBy(CompoundTag::getCommonText));
     }

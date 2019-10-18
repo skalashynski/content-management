@@ -26,7 +26,7 @@ public class TagSimilarityAnalyzerFlowUtilTest {
 
     @Test
     public void compact() {
-        List<CompoundTag> res = TagSimilarityAnalyzerFlowUtil.compact(tags);
+        List<CompoundTag> res = TagSimilarityAnalyzerFlowUtil.groupByBlock(tags);
         Gson gson = new Gson();
         String json = gson.toJson(res);
         System.out.println(json);

@@ -3,6 +3,7 @@ package com.productiveedge.content_mgmt_automation.entity.tag;
 import org.jsoup.nodes.Element;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 public interface Tag extends Cloneable {
@@ -26,11 +27,11 @@ public interface Tag extends Cloneable {
 
     void setHtmlContent(String html);
 
-    default String validateData(String data) {
+    default Optional<String> validateData(String data) {
         if (data != null) {
-            return data.replaceAll("[\"]", "'");
+            return Optional.of(data.replaceAll("[\"]", "'"));
         }
-        return null;
+        return Optional.empty();
     }
 
     default String generateShortXpath(Element element) {

@@ -8,10 +8,10 @@ import com.productiveedge.content_mgmt_automation.flow.Flow;
 import com.productiveedge.content_mgmt_automation.flow.impl.helper.GrabAllLinksHelper;
 import com.productiveedge.content_mgmt_automation.flow.util.TagSimilarityAnalyzerFlowUtil;
 import com.productiveedge.content_mgmt_automation.report.Report;
-import com.productiveedge.content_mgmt_automation.report.exception.ExcelReportException;
-import com.productiveedge.content_mgmt_automation.report.impl.excel.TextSimilarityExcelReportImp2;
+import com.productiveedge.content_mgmt_automation.report.exception.ReportException;
+import com.productiveedge.content_mgmt_automation.report.impl.json.TestSimilarityJsonReport;
 import com.productiveedge.content_mgmt_automation.repository.container.impl.PageContainer;
-import com.productiveedge.content_mgmt_automation.repository.container.impl.TagContainer;
+import com.productiveedge.content_mgmt_automation.repository.container.impl.TagContainer2;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -26,8 +26,9 @@ import java.util.List;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
+import static com.productiveedge.content_mgmt_automation.Constant.generateDate;
+import static com.productiveedge.content_mgmt_automation.Constant.generateDateTime;
 import static com.productiveedge.content_mgmt_automation.entity.tag.Tag.*;
-import static com.productiveedge.content_mgmt_automation.flow.impl.helper.FlowHelper.generateDateFolderName;
 
 public class TextSimilarityAnalyzerFlow implements Flow {
     private static final Logger logger = LoggerFactory.getLogger(TextSimilarityAnalyzerFlow.class);
@@ -35,27 +36,26 @@ public class TextSimilarityAnalyzerFlow implements Flow {
     private static final String[] BAD_TAGS = {IFRAME_TAG_NAME, NOSCRIPT_TAG_NAME, ROOT_TAG_NAME};
 
 
-    private static final String SHEET_NAME = "similarity";
     private static final String TAG_REPORT_NAME = "text_similarity_tags_report";
 
     private final Report report;
     private final PageContainer pageContainer;
-    private final TagContainer tagContainer;
+    private final TagContainer2 tagContainer;
     private final TextSimilarityAnalyzerRequest textSimilarityAnalyzerRequest;
     private final String filePath;
 
     private final Predicate<BaseTag> badTagsFilter = tag -> !tag.getTextContent().isEmpty() && Arrays.stream(BAD_TAGS).noneMatch(e -> e.equalsIgnoreCase(tag.getName()));
 
     public TextSimilarityAnalyzerFlow(TextSimilarityAnalyzerRequest textSimilarityAnalyzerRequest) {
-        this.tagContainer = TagContainer.getInstance();
+        this.tagContainer = TagContainer2.getInstance();
         this.pageContainer = PageContainer.getInstance();
         this.textSimilarityAnalyzerRequest = textSimilarityAnalyzerRequest;
-        this.filePath = getXlsxFilePath(TAG_REPORT_NAME);
-        this.report = new TextSimilarityExcelReportImp2(filePath, SHEET_NAME);
+        this.filePath = getXlsxFilePath(TAG_REPORT_NAME + " " + generateDateTime());
+        this.report = new TestSimilarityJsonReport(filePath);
     }
 
     private String getXlsxFilePath(String pageUrl) {
-        return Paths.get(textSimilarityAnalyzerRequest.getDestinationFolder(), generateDateFolderName(), SHEET_NAME, GrabAllLinksHelper.generateNameByKey(pageUrl)) + ".xlsx";
+        return Paths.get(textSimilarityAnalyzerRequest.getDestinationFolder(), generateDate(), GrabAllLinksHelper.generateNameByKey(pageUrl)) + ".json";
     }
 
     @Override
@@ -86,10 +86,9 @@ public class TextSimilarityAnalyzerFlow implements Flow {
         tagContainer.addTags(requestTagsAllPages);
         try {
             logger.info("Data of tag-report " + filePath + " is grabbed. Saving data to report.......");
-            report.saveAll(tagContainer.getSimilarityData());
-            //new TagCsvRepository("data.csv").saveAll(requestTagsAllPages);
+            report.saveAll(tagContainer.getCache());
             logger.info("Data is saved. The tag-report" + filePath + " is created.");
-        } catch (ExcelReportException ex) {
+        } catch (ReportException ex) {
             logger.error("The tag-report" + filePath + " isn't created. " + ex.getMessage());
         }
     }

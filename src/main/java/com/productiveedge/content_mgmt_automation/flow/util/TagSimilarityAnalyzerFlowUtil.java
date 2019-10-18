@@ -11,6 +11,7 @@ import java.util.stream.Collectors;
 
 public class TagSimilarityAnalyzerFlowUtil {
 
+    private static final Comparator<Tag> descTagXpathSorting = (tag1, tag2) -> tag2.getFullTagXPath().compareTo(tag1.getFullTagXPath());
 
     /**
      * For example tag has fullTagXpath like
@@ -22,18 +23,18 @@ public class TagSimilarityAnalyzerFlowUtil {
      * @return Map<String, List < Tag>>
      */
 
-    public static List<CompoundTag> compact(List<Tag> tags) {
-        //Map<String, List<Tag>> res = new HashMap<>();
+    public static List<CompoundTag> groupByBlock(List<Tag> pageTags) {
         List<CompoundTag> res = new ArrayList<>();
-        List<Tag> sorted = tags.stream()
-                .sorted((o1, o2) -> o2.getFullTagXPath().compareTo(o1.getFullTagXPath()))
+        List<Tag> sorted = pageTags.stream()
+                .sorted(descTagXpathSorting)
                 .collect(Collectors.toList());
         int i = 0;
         do {
             List<Tag> entryValue = new ArrayList<>();
-            String key = sorted.get(i).getFullTagXPath();
+            Tag reportTag = sorted.get(i);
+            String tagXPath = sorted.get(i).getFullTagXPath();
             Tag itr = sorted.get(i);
-            while (key.contains(itr.getFullTagXPath())) {
+            while (tagXPath.contains(itr.getFullTagXPath())) {
                 entryValue.add(itr);
                 if ((i + 1) != sorted.size()) {
                     itr = sorted.get(++i);
@@ -41,8 +42,7 @@ public class TagSimilarityAnalyzerFlowUtil {
                     break;
                 }
             }
-            res.add(new CompoundTag(key, entryValue));
-            //res.put(key, entryValue);
+            res.add(new CompoundTag(reportTag, entryValue));
         } while (i + 1 < sorted.size());
         return res;
     }
@@ -53,37 +53,21 @@ public class TagSimilarityAnalyzerFlowUtil {
      * 1 page has a lot of compoundtags
      */
 
-    public static List<CompoundTag> compactGroupBasedOnTextContent(List<Tag> tags) {
-        return tags.stream()
-                .collect(Collectors.groupingBy(Tag::getPageUrl))//grouping by pageUrl
+    public static List<CompoundTag> compactGroupBasedOnTextContent(List<Tag> theSameTextTags) {
+        return groupByPageUrl(theSameTextTags)
                 .values()
-                 .stream()
-                .map(e-> compact(e))
+                .stream()
+                .map(e -> groupByBlock(e))
                 .flatMap(List::stream)
                 .collect(Collectors.toList());
     }
 
+    private static Map<String, List<Tag>> groupByPageUrl(List<Tag> tags) {
+        return tags.stream()
+                .collect(Collectors.groupingBy(Tag::getPageUrl));
+    }
 
-    /*
-            return tags.stream().collect(Collectors.groupingBy(Tag::getTextContent))
-                    .values()
-                    .stream()
-                    .map(list -> {
-                        if (list.size() > 1) {
-                            List<Tag> sorted = list.stream()
-                                    .sorted(Comparator.comparingInt((Tag aTag) -> aTag.getFullTagXPath().length()))
-                                    //.map(Tag::getFullTagXPath)
-                                    .collect(Collectors.toList());
-                            Tag minFullTanXpathLengthBaseTag = sorted.get(0);
-                            Tag maxFullTanXpathLengthBaseTag = sorted.get(sorted.size() - 1);
-                            return Arrays.asList(maxFullTanXpathLengthBaseTag);
-                        }
-                        return list;
-                    })
-                    .flatMap(List::stream)
-                    .collect(Collectors.toList());
-        }
-    */
+
     public static <T> Predicate<T> distinctByKeys(Function<? super T, ?>... keyExtractors) {
         final Map<List<?>, Boolean> seen = new ConcurrentHashMap<>();
 

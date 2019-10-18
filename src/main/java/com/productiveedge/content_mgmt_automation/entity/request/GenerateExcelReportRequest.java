@@ -8,7 +8,7 @@ import lombok.EqualsAndHashCode;
 import java.nio.file.Paths;
 import java.util.Map;
 
-import static com.productiveedge.content_mgmt_automation.flow.impl.helper.FlowHelper.generateDateFolderName;
+import static com.productiveedge.content_mgmt_automation.Constant.generateDate;
 
 @EqualsAndHashCode(callSuper = true)
 @Data
@@ -26,7 +26,7 @@ public class GenerateExcelReportRequest extends Request {
         validate(request);
         this.xlsxReportName = request.get(REQUEST_PARAMETER.XLSX_REPORT_NAME.name());
         this.reportSheetName =request.get(REQUEST_PARAMETER.REPORT_SHEET_NAME.name());
-        this.reportPath = Paths.get(request.get(REQUEST_PARAMETER.ROOT_FOLDER_PATH.name()), FolderName.REPORT.name(), generateDateFolderName(), xlsxReportName).toString();
+        this.reportPath = Paths.get(request.get(REQUEST_PARAMETER.ROOT_FOLDER_PATH.name()), FolderName.REPORT.name(), generateDate(), xlsxReportName).toString();
     }
 
     @Override

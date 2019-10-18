@@ -9,11 +9,21 @@ import java.util.stream.Collectors;
 
 /**
  * class responsible for compose tags per page which have wrap each other and have the same textContent
+ * Example:
+ * <div>
+ *     <div>
+ *         <P>
+ *             <a href ='something">Click here</a>
+ *         </P>
+ *     </div>
+ * </div>
+ *
+ * theSameTextContentTags will compose 4 elements
+ * reportTag will be ia 'a' element
  */
 public class CompoundTag {
     protected List<Tag> theSameTextContentTags = new ArrayList<>();
     private Tag reportTag;
-    private String theLongestXPath;
 
     public CompoundTag(List<Tag> theSameTextContentTags) {
         this.theSameTextContentTags = theSameTextContentTags;
@@ -24,12 +34,25 @@ public class CompoundTag {
         add(tags);
     }
 
-    public CompoundTag(String key, List<Tag> theSameTextContentTags) {
-        this.theLongestXPath = key;
+    public CompoundTag(Tag tag) {
+        add(tag);
+    }
+
+    public CompoundTag(Tag reportTag, List<Tag> theSameTextContentTags) {
+        this.reportTag = reportTag;
         this.theSameTextContentTags = theSameTextContentTags;
     }
 
     public void add(Tag... tags) {
+        for (Tag tag : tags) {
+            if (reportTag == null) {
+                reportTag = tag;
+            } else {
+                if (reportTag.getFullTagXPath().compareTo(tag.getFullTagXPath()) > 0) {
+                    reportTag = tag;
+                }
+            }
+        }
         theSameTextContentTags.addAll(Arrays.asList(tags));
     }
 
@@ -49,12 +72,8 @@ public class CompoundTag {
         this.theSameTextContentTags.clear();
     }
 
-    public String getKey() {
-        return theLongestXPath;
-    }
-
-    public void setKey(String key) {
-        this.theLongestXPath = key;
+    public String getReportTagXpath() {
+        return this.reportTag.getFullTagXPath();
     }
 
     public List<Tag> getTheSameTextContentTags() {
@@ -83,17 +102,11 @@ public class CompoundTag {
     }
 
     public String getCommonText() {
-        if (theSameTextContentTags.size() != 0) {
-            return theSameTextContentTags.get(0).getTextContent();
-        }
-        return "";
+        return reportTag.getTextContent();
     }
 
     public String getPageUrl() {
-        if (theSameTextContentTags.size() != 0) {
-            return theSameTextContentTags.get(0).getPageUrl();
-        }
-        return "";
+        return reportTag.getPageUrl();
     }
 
 

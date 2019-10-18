@@ -20,22 +20,22 @@ public class BaseTag implements Tag {
 
 
     public BaseTag(String pageUrl, String shortXPath, String fullXPath, String fullTagXPath, String tagName, String textHtml, String htmlContent) {
-        this.pageUrl = validateData(pageUrl);
-        this.shortXPath = validateData(shortXPath);
-        this.fullXPath = validateData(fullXPath);
-        this.fullTagXPath = validateData(fullTagXPath);
-        this.name = validateData(tagName);
-        this.textContent = validateData(textHtml);
-        this.htmlContent = validateData(htmlContent);
+        this.pageUrl = validateData(pageUrl).orElse("");
+        this.shortXPath = validateData(shortXPath).orElse("");
+        this.fullXPath = validateData(fullXPath).orElse("");
+        this.fullTagXPath = validateData(fullTagXPath).orElse("");
+        this.name = validateData(tagName).orElse("");
+        this.textContent = validateData(textHtml).orElse("");
+        this.htmlContent = validateData(htmlContent).orElse("");
     }
 
     public BaseTag(String pageUrl, Element domElement) {
-        this.pageUrl = validateData(pageUrl);
-        this.shortXPath = validateData(generateShortXpath(domElement));
-        this.fullXPath = validateData(generateFullXpath(domElement));
-        this.fullTagXPath = validateData(generateFullXpathBasedOnTags(domElement));
-        this.name = validateData(domElement.tagName());
-        this.textContent = validateData(domElement.text());
-        this.htmlContent = validateData(domElement.html());
+        this.pageUrl = validateData(pageUrl).orElse("");
+        this.shortXPath = validateData(generateShortXpath(domElement)).orElse("");
+        this.fullXPath = validateData(generateFullXpath(domElement)).orElse("");
+        this.fullTagXPath = validateData(generateFullXpathBasedOnTags(domElement)).orElse("");
+        this.name = validateData(domElement.tagName()).orElse("");
+        this.textContent = validateData(domElement.text()).orElse("");
+        this.htmlContent = validateData(domElement.html()).orElse("");
     }
 }
