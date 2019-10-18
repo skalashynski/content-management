@@ -18,7 +18,7 @@ public class CommandFlowStrategy {
         Queue<Flow> queue = new LinkedList<>();
         queue.add(new CreateLocalFoldersFlow(new CreateLocalFolderRequest(request)));
         queue.add(new GrabAllLinksFlow(new GrabAllLinksRequest(request)));
-        if (request.get(Command.GENERATE_REPORT.name()) != null && Boolean.valueOf(request.get(Command.GENERATE_REPORT.name()))) {
+        if (request.get(Command.GENERATE_LINKS_PER_PAGE_REPORT.name()) != null && Boolean.valueOf(request.get(Command.GENERATE_LINKS_PER_PAGE_REPORT.name()))) {
             queue.add(new GenerateExcelReportFlow(new GenerateExcelReportRequest(request)));
         }
         if (request.get(Command.SAVE_HTML.name()) != null && Boolean.valueOf(request.get(Command.SAVE_HTML.name()))) {
@@ -35,6 +35,6 @@ public class CommandFlowStrategy {
     }
 
     public enum Command {
-        SAVE_HTML, SAVE_TXT, TAKE_SCREENSHOT, GENERATE_REPORT
+        SAVE_HTML, SAVE_TXT, TAKE_SCREENSHOT, GENERATE_LINKS_PER_PAGE_REPORT
     }
 }

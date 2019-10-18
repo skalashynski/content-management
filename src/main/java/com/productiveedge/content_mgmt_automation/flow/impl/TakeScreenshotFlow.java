@@ -1,5 +1,6 @@
 package com.productiveedge.content_mgmt_automation.flow.impl;
 
+import com.productiveedge.content_mgmt_automation.Constant;
 import com.productiveedge.content_mgmt_automation.entity.FolderName;
 import com.productiveedge.content_mgmt_automation.entity.request.TakeScreenshotRequest;
 import com.productiveedge.content_mgmt_automation.flow.Flow;
@@ -20,8 +21,7 @@ import org.slf4j.LoggerFactory;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Paths;
-
-import static com.productiveedge.content_mgmt_automation.flow.impl.helper.FlowHelper.generateDateFolderName;
+import java.util.stream.Stream;
 
 public class TakeScreenshotFlow implements Flow {
     private static final Logger logger = LoggerFactory.getLogger(TakeScreenshotFlow.class);
@@ -29,6 +29,11 @@ public class TakeScreenshotFlow implements Flow {
     private static final String CHROME_PROPERTY = "webdriver.chrome.driver";
     private static final String WINDOW_SCROLL_BY_JS_COMMAND = "window.scrollBy(0,?)";
     private static final String RETURN_DOCUMENT_BODY_SCROLL_HEIGHT_JS_COMMAND = "return document.body.scrollHeight";
+    private static final String[] CHROME_ARGUMENT_OPTIONS = {
+            "--incognito",
+            "--start-maximized",
+            "--kiosk"
+    };
 
     private WebDriver driver;
     private final TakeScreenshotRequest request;
@@ -42,9 +47,7 @@ public class TakeScreenshotFlow implements Flow {
         switch (browser) {
             case "CHROME":
                 ChromeOptions options = new ChromeOptions();
-                options.addArguments("--incognito");
-                options.addArguments("--start-maximized");
-                options.addArguments("--kiosk");
+                Stream.of(CHROME_ARGUMENT_OPTIONS).forEach(options::addArguments);
                 DesiredCapabilities capabilities = DesiredCapabilities.chrome();
                 capabilities.setCapability(ChromeOptions.CAPABILITY, options);
                 driver = new ChromeDriver(options);
@@ -70,7 +73,7 @@ public class TakeScreenshotFlow implements Flow {
                     int pageHeight = Integer.parseInt(jsDriver.executeScript(RETURN_DOCUMENT_BODY_SCROLL_HEIGHT_JS_COMMAND).toString());
                     int pageScrollValue = Integer.valueOf(request.getPageScrollValue());
                     int amountScreens = pageHeight / pageScrollValue + 1;
-                    String dateFolderName = generateDateFolderName();
+                    String dateFolderName = Constant.generateDate();
                     String domainFolderName = GrabAllLinksHelper.generateNameByKey(e.getKey());
                     for (int i = 0; i < amountScreens; i++) {
                         File source = ts.getScreenshotAs(OutputType.FILE);

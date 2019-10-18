@@ -2,7 +2,7 @@ package com.productiveedge.content_mgmt_automation.report.impl.excel;
 
 import com.productiveedge.content_mgmt_automation.entity.tag.BaseTag;
 import com.productiveedge.content_mgmt_automation.entity.tag.Tag;
-import com.productiveedge.content_mgmt_automation.report.exception.ExcelReportException;
+import com.productiveedge.content_mgmt_automation.report.exception.ReportException;
 import org.apache.commons.io.FileUtils;
 import org.apache.poi.ss.usermodel.Row;
 import org.slf4j.Logger;
@@ -29,7 +29,7 @@ public class TagExcelReportImpl extends ExcelReport<List<Tag>> {
     }
 
     @Override
-    public void saveAll(List<Tag> tags) throws ExcelReportException {
+    public void saveAll(List<Tag> tags) throws ReportException {
         List<String> columns = getHeaderNames();
 
         createColumnHeaders(columns);
@@ -50,7 +50,7 @@ public class TagExcelReportImpl extends ExcelReport<List<Tag>> {
             workbook.write(fileOut);
             logger.info("Workbook is saved.");
         } catch (IOException e) {
-            throw new ExcelReportException("Error of saving xslx file to system." + e.getMessage(), e);
+            throw new ReportException("Error of saving xslx file to system." + e.getMessage(), e);
         } finally {
             if (workbook != null) {
                 try {

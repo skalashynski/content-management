@@ -1,7 +1,7 @@
 package com.productiveedge.content_mgmt_automation.report.impl.excel;
 
 import com.productiveedge.content_mgmt_automation.entity.page.Page;
-import com.productiveedge.content_mgmt_automation.report.exception.ExcelReportException;
+import com.productiveedge.content_mgmt_automation.report.exception.ReportException;
 import org.apache.commons.io.FileUtils;
 import org.apache.poi.ss.usermodel.*;
 import org.slf4j.Logger;
@@ -48,7 +48,7 @@ public class PageExcelReportImpl extends ExcelReport<List<Page>> {
     }
 
     @Override
-    public void saveAll(List<Page> pages) throws ExcelReportException {
+    public void saveAll(List<Page> pages) throws ReportException {
 
         List<String> columns = getHeaderNames();
 
@@ -68,7 +68,7 @@ public class PageExcelReportImpl extends ExcelReport<List<Page>> {
         try (FileOutputStream fileOut = FileUtils.openOutputStream(this.file)) {
             workbook.write(fileOut);
         } catch (IOException e) {
-            throw new ExcelReportException("Error of saving " + xlsxReportFilePath + " file to system. " + e.getMessage(), e);
+            throw new ReportException("Error of saving " + xlsxReportFilePath + " file to system. " + e.getMessage(), e);
         } finally {
             if (workbook != null) {
                 try {

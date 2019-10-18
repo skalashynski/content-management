@@ -22,7 +22,7 @@ public class MainTest {
 
                     "process_url=https://www.workfusion.com/careers/",
                     "max_process_urls_value=10",
-                    "generate_report=false",
+                    "generate_links_per_page_report=false",
                     "xlsx_report_name=today_report.xlsx",
                     "report_sheet_name=report",
                     "save_html=false",
