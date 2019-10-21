@@ -3,6 +3,7 @@ package com.productiveedge.content_mgmt_automation.report.impl.csv;
 import com.productiveedge.content_mgmt_automation.entity.tag.Tag;
 import com.productiveedge.content_mgmt_automation.report.Report;
 import com.productiveedge.content_mgmt_automation.report.exception.ReportException;
+import org.apache.commons.io.IOUtils;
 
 import java.io.FileWriter;
 import java.io.IOException;
@@ -27,7 +28,7 @@ public class TagCsvRepository implements Report<List<Tag>> {
             try (FileWriter csvWriter = new FileWriter(testFileName)) {
                 for (int j = startItr; j < lastIrt; j++) {
                     csvWriter.append(String.join(",", quote(elements.get(j).getPageUrl()), quote(elements.get(j).getShortXPath()), quote(elements.get(j).getFullXPath()), quote(elements.get(j).getFullTagXPath()), quote(elements.get(j).getName()), quote(elements.get(j).getTextContent())));
-                    csvWriter.append("\n");
+                    csvWriter.append(IOUtils.LINE_SEPARATOR);
                 }
                 csvWriter.flush();
             } catch (IOException e) {

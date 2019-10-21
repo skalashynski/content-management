@@ -19,7 +19,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
@@ -60,7 +59,6 @@ public class TextSimilarityAnalyzerFlow implements Flow {
 
     @Override
     public void run() {
-        List<Tag> requestTagsAllPages = new ArrayList<>();
         pageContainer.getProcessedPageEntries().forEach(e -> {
             Page page = e.getValue();
             Document doc = Jsoup.parse(page.getHtmlContent());
@@ -81,9 +79,7 @@ public class TextSimilarityAnalyzerFlow implements Flow {
                     .filter(TagSimilarityAnalyzerFlowUtil.distinctByKeys(Tag::getTextContent, Tag::getFullXPath, Tag::getShortXPath, Tag::getName))
                     .collect(Collectors.toList());
             tagContainer.addTags(pageRequestTagWithNotEmptyContent);
-            requestTagsAllPages.addAll(pageRequestTagWithNotEmptyContent);
         });
-        tagContainer.addTags(requestTagsAllPages);
         try {
             logger.info("Data of tag-report " + filePath + " is grabbed. Saving data to report.......");
             report.saveAll(tagContainer.getCache());

@@ -8,6 +8,7 @@ import com.productiveedge.content_mgmt_automation.flow.exception.InvalidJarReque
 import com.productiveedge.content_mgmt_automation.flow.impl.helper.GrabAllLinksHelper;
 import com.productiveedge.content_mgmt_automation.repository.container.impl.PageContainer;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.OutputType;
 import org.openqa.selenium.TakesScreenshot;
@@ -87,7 +88,7 @@ public class TakeScreenshotFlow implements Flow {
                     logger.error("Driver can't takes screenshots. Please, change to another one driver type.");
                 }
             } catch (IOException ex) {
-                logger.error("Can't take screenshot by processUrl " + url + ".\n" + ex.getMessage());
+                logger.error("Can't take screenshot by processUrl " + url + "." + IOUtils.LINE_SEPARATOR + ex.getMessage());
             }
         });
         driver.quit();

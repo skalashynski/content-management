@@ -4,12 +4,12 @@ import com.productiveedge.content_mgmt_automation.Constant;
 import com.productiveedge.content_mgmt_automation.entity.request.SaveHtmlRequest;
 import com.productiveedge.content_mgmt_automation.flow.Flow;
 import com.productiveedge.content_mgmt_automation.flow.impl.helper.GrabAllLinksHelper;
+import com.productiveedge.content_mgmt_automation.report.FileWriter;
 import com.productiveedge.content_mgmt_automation.repository.container.impl.PageContainer;
-import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Paths;
 
@@ -28,11 +28,10 @@ public class SaveHtmlFlow implements Flow {
     public void run() {
         pageContainer.getProcessedPageEntries().forEach(e -> {
             String filePath = Paths.get(saveHtmlRequest.getDestinationFolder(), Constant.generateDate(), GrabAllLinksHelper.generateNameByKey(e.getKey())).toString() + ".html";
-            File destinationFile = new File(filePath);
             try {
-                FileUtils.writeStringToFile(destinationFile, e.getValue().getHtmlContent(), "UTF8");
+                FileWriter.write(filePath, e.getValue().getHtmlContent());
             } catch (IOException ex) {
-                logger.error("Can't save html file of processUrl " + e.getValue().getUrl() + ".\n" + ex.getMessage());
+                logger.error("Can't save html file of processUrl " + e.getValue().getUrl() + "." + IOUtils.LINE_SEPARATOR + ex.getMessage());
             }
         });
     }

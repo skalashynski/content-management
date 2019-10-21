@@ -11,6 +11,7 @@ import com.productiveedge.content_mgmt_automation.flow.impl.helper.GrabAllLinksH
 import com.productiveedge.content_mgmt_automation.repository.container.impl.PageContainer;
 import com.productiveedge.content_mgmt_automation.service.ApacheHttpClient;
 import com.productiveedge.content_mgmt_automation.service.exception.ApacheHttpClientException;
+import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -117,7 +118,7 @@ public class GrabAllLinksFlow implements Flow {
                                     String daughterDomain = GrabAllLinksHelper.getDomain(it);
                                     return parentDomain.equals(daughterDomain);
                                 } catch (InvalidHrefException e) {
-                                    logger.warn("Can't extract domain from url " + it + ".\n" + e.getMessage());
+                                    logger.warn("Can't extract domain from url " + it + "." + IOUtils.LINE_SEPARATOR + e.getMessage());
                                     return false;
                                 }
                             }
@@ -214,7 +215,7 @@ public class GrabAllLinksFlow implements Flow {
             logger.info("Page " + page.getUrl() + "is processed successfully");
             return page;
         } catch (ApacheHttpClientException e) {
-            throw new ProcessPageException("Can't execute http-get request to url " + webPageUrl + ".\n" + e.getMessage(), e);
+            throw new ProcessPageException("Can't execute http-get request to url " + webPageUrl + "." + IOUtils.LINE_SEPARATOR + e.getMessage(), e);
         }
 
     }
@@ -268,7 +269,7 @@ public class GrabAllLinksFlow implements Flow {
                             try {
                                 return convertDaughterHref(daughterHref, pageUrl);
                             } catch (InvalidHrefException e) {
-                                logger.warn("Can't convert href " + daughterHref + " located on " + pageUrl + ".\n" + e.getMessage());
+                                logger.warn("Can't convert href " + daughterHref + " located on " + pageUrl + "." + IOUtils.LINE_SEPARATOR + e.getMessage());
                                 return null;
                             }
                         }

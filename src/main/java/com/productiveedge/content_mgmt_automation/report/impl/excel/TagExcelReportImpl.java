@@ -16,6 +16,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Deprecated
 public class TagExcelReportImpl extends ExcelReport<List<Tag>> {
     private static final Logger logger = LoggerFactory.getLogger(TagExcelReportImpl.class);
 

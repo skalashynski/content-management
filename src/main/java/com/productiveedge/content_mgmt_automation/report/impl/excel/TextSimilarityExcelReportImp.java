@@ -1,8 +1,9 @@
 package com.productiveedge.content_mgmt_automation.report.impl.excel;
 
-import com.productiveedge.content_mgmt_automation.entity.tag.CompoundTag;
+import com.productiveedge.content_mgmt_automation.entity.page.Page;
 import com.productiveedge.content_mgmt_automation.report.exception.ReportException;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 import org.apache.poi.ss.usermodel.Row;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,7 +16,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 @Deprecated
-public class TextSimilarityExcelReportImp extends ExcelReport<Map<String, List<CompoundTag>>> {
+public class TextSimilarityExcelReportImp extends ExcelReport<Map<String, List<Page.PageArea>>> {
     private static final Logger logger = LoggerFactory.getLogger(TextSimilarityExcelReportImp.class);
     private static final List<String> COLUMN_HEADER_NAMES;
 
@@ -28,7 +29,7 @@ public class TextSimilarityExcelReportImp extends ExcelReport<Map<String, List<C
     }
 
     @Override
-    public void saveAll(Map<String, List<CompoundTag>> elements) throws ReportException {
+    public void saveAll(Map<String, List<Page.PageArea>> elements) throws ReportException {
         List<String> columns = getHeaderNames();
 
         createColumnHeaders(columns);
@@ -36,7 +37,7 @@ public class TextSimilarityExcelReportImp extends ExcelReport<Map<String, List<C
         int rowNum = 1;
 
         logger.info("Completing workbook rows by data.");
-        for (Map.Entry<String, List<CompoundTag>> theSameTextEntry : elements.entrySet()) {
+        for (Map.Entry<String, List<Page.PageArea>> theSameTextEntry : elements.entrySet()) {
             Row row = sheet.createRow(rowNum++);
             completeRow(row, theSameTextEntry);
         }
@@ -72,12 +73,12 @@ public class TextSimilarityExcelReportImp extends ExcelReport<Map<String, List<C
         return COLUMN_HEADER_NAMES;
     }
 
-    private void completeRow(Row row, Map.Entry<String, List<CompoundTag>> entry) {
+    private void completeRow(Row row, Map.Entry<String, List<Page.PageArea>> entry) {
         row.createCell(0)
                 .setCellValue(entry.getKey());
         row.createCell(1)
-                .setCellValue(entry.getValue().stream().map(CompoundTag::getPageUrl).collect(Collectors.joining("\n")));
+                .setCellValue(entry.getValue().stream().map(Page.PageArea::getPageUrl).collect(Collectors.joining(IOUtils.LINE_SEPARATOR)));
         row.createCell(2)
-                .setCellValue(entry.getValue().stream().map(CompoundTag::getReportTagXpath).collect(Collectors.joining("\n")));
+                .setCellValue(entry.getValue().stream().map(Page.PageArea::getReportTagXpath).collect(Collectors.joining(IOUtils.LINE_SEPARATOR)));
     }
 }
