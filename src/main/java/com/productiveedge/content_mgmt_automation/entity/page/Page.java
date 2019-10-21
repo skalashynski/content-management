@@ -78,22 +78,7 @@ public class Page {
         return Objects.hash(url);
     }
 
-    /**
-     * class responsible for compose tags per page which have wrap each other and have the same textContent
-     * Example:
-     * <div>
-     * <div>
-     * <p>
-     * <a href ='something">Click here</a>
-     * </P>
-     * </div>
-     * </div>
-     * <p>
-     * theSameTextContentTags will compose 4 elements
-     * reportTag will be ia 'a' element
-     */
 
-    //нужно заменить название класса на PageArea
     public static class PageArea {
         private List<Tag> theSameTextContentTags = new ArrayList<>();
         private Tag reportTag;

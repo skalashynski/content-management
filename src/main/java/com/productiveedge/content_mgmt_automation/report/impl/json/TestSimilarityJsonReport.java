@@ -14,8 +14,9 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
+import java.util.Set;
 
-public class TestSimilarityJsonReport implements Report<Map<String, Map<String, Map<String, Page.PageArea>>>> {
+public class TestSimilarityJsonReport implements Report<Map<String, Set<Page>>> {
     private static final Logger logger = LoggerFactory.getLogger(TestSimilarityJsonReport.class);
     private final File reportFile;
     private final String reportFilePath;
@@ -28,26 +29,29 @@ public class TestSimilarityJsonReport implements Report<Map<String, Map<String, 
 
 
     @Override
-    public void saveAll(Map<String, Map<String, Map<String, Page.PageArea>>> elements) throws ReportException {
+    public void saveAll(Map<String, Set<Page>> elements) throws ReportException {
         JsonArray groups = new JsonArray();
         elements.forEach((textKey, pages) -> {
             JsonObject arrayElement = new JsonObject();
             arrayElement.addProperty("text", textKey);
             JsonArray pagesJson = new JsonArray();
             //for-each trough pages
-            pages.forEach((pageUrl, textXPathMap) -> {
-                JsonObject page = new JsonObject();
-                page.addProperty("page", pageUrl);
-                JsonObject xpathTags = new JsonObject();
-                Page.PageArea pageArea = textXPathMap.get(textKey);
-                xpathTags.addProperty("xpath", pageArea.getReportTagXpath());
-                page.add("xpaths", xpathTags);
-                pagesJson.add(page);
+            pages.forEach(page -> {
+                JsonObject pageJson = new JsonObject();
+                pageJson.addProperty("url", page.getUrl());
+                JsonArray xpathTags = new JsonArray();
+                Set<Page.PageArea> areas = page.getTextAreas().get(textKey);
+                if (areas != null) {
+                    areas.forEach(area -> {
+                        xpathTags.add(area.getReportTagXpath());
+                    });
+                    pageJson.add("xpaths", xpathTags);
+                }
+                pagesJson.add(pageJson);
             });
             arrayElement.add("pages", pagesJson);
             groups.add(arrayElement);
         });
-
 
         try {
             logger.info("Saving {} records to json file " + reportFilePath, groups.size());

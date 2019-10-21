@@ -8,11 +8,6 @@ import java.util.stream.Collectors;
 
 public interface Tag extends Cloneable {
 
-    //это антипаттерн
-    String ROOT_TAG_NAME = "#root";
-    String IFRAME_TAG_NAME = "iframe";
-    String NOSCRIPT_TAG_NAME = "noscript";
-
     String getShortXPath();
 
     String getTextContent();
@@ -133,7 +128,7 @@ public interface Tag extends Cloneable {
         String itElementXpath = "";
         Element parent = element.parent();
         while (parent != null) {
-            if (!parent.tagName().equalsIgnoreCase(ROOT_TAG_NAME)) {
+            if (!parent.tagName().equalsIgnoreCase(Constant.ROOT_TAG_NAME)) {
                 final String elementTagName = element.tagName();
                 itElementXpath = "//" + elementTagName;
                 List<Element> theSameTagNameElementsOnTheLayer = parent.children().stream()

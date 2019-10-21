@@ -58,15 +58,4 @@ public final class TextContainer implements Container<String, Set<Page>> {
     private static class SingletonHolder {
         private static TextContainer instance = new TextContainer();
     }
-
-    //          text    pageUrl         text        pageArea
-/*    public Map<String, Map<String, Map<String, Page.PageArea>>> getData() {
-         cache.entrySet().stream()
-                .map(entry -> entry.getValue().stream()
-                        .map(page -> page.getTextAreas())
-                )
-                 .flatMap()
-                .collect(Collectors.toList());
-        return null;
-    }*/
 }
