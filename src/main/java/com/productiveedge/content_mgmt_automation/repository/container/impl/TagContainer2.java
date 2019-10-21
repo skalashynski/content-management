@@ -1,12 +1,12 @@
 package com.productiveedge.content_mgmt_automation.repository.container.impl;
 
-import com.productiveedge.content_mgmt_automation.entity.tag.CompoundTag;
+import com.productiveedge.content_mgmt_automation.entity.page.Page;
 import com.productiveedge.content_mgmt_automation.entity.tag.Tag;
 import com.productiveedge.content_mgmt_automation.repository.container.Container;
 
 import java.util.*;
 
-public final class TagContainer2 implements Container<String, Map<String, Map<String, CompoundTag>>> {
+public final class TagContainer2 implements Container<String, Map<String, Map<String, Page.PageArea>>> {
 
     /**
      * key - textContent
@@ -15,9 +15,9 @@ public final class TagContainer2 implements Container<String, Map<String, Map<St
      * text_value
      * pageUrl
      * text_value
-     * List<CompoundTag>
+     * List<PageArea>
      */
-    private static final SortedMap<String, Map<String, Map<String, CompoundTag>>> cache = new TreeMap<>();
+    private static final SortedMap<String, Map<String, Map<String, Page.PageArea>>> cache = new TreeMap<>();
 
 
     private TagContainer2() {
@@ -31,25 +31,25 @@ public final class TagContainer2 implements Container<String, Map<String, Map<St
     public void putTag(Tag tag) {
         String tagText = tag.getTextContent();
         String pageUrl = tag.getPageUrl();
-        Map<String, Map<String, CompoundTag>> pages = cache.get(tagText);
+        Map<String, Map<String, Page.PageArea>> pages = cache.get(tagText);
         if (pages != null) {
-            Map<String, CompoundTag> page = pages.get(pageUrl);
+            Map<String, Page.PageArea> page = pages.get(pageUrl);
             if (page != null) {
-                CompoundTag tagGroupPerText = page.get(tagText);
+                Page.PageArea tagGroupPerText = page.get(tagText);
                 if (tagGroupPerText != null) {
                     tagGroupPerText.add(tag);
                 } else {
-                    page.put(tagText, new CompoundTag(tag));
+                    page.put(tagText, new Page.PageArea(tag));
                 }
             } else {
-                pages.put(pageUrl, new HashMap<String, CompoundTag>() {{
-                    put(tagText, new CompoundTag(tag));
+                pages.put(pageUrl, new HashMap<String, Page.PageArea>() {{
+                    put(tagText, new Page.PageArea(tag));
                 }});
             }
         } else {
-            cache.put(tagText, new HashMap<String, Map<String, CompoundTag>>() {{
-                put(pageUrl, new HashMap<String, CompoundTag>() {{
-                    put(tagText, new CompoundTag(tag));
+            cache.put(tagText, new HashMap<String, Map<String, Page.PageArea>>() {{
+                put(pageUrl, new HashMap<String, Page.PageArea>() {{
+                    put(tagText, new Page.PageArea(tag));
                 }});
             }});
         }
@@ -60,12 +60,12 @@ public final class TagContainer2 implements Container<String, Map<String, Map<St
     }
 
     @Override
-    public Map<String, Map<String, Map<String, CompoundTag>>> getCache() {
+    public Map<String, Map<String, Map<String, Page.PageArea>>> getCache() {
         return cache;
     }
 
     @Override
-    public Map<String, Map<String, CompoundTag>> getValue(String key) {
+    public Map<String, Map<String, Page.PageArea>> getValue(String key) {
         return cache.get(key);
     }
 

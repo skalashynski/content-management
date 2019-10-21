@@ -25,7 +25,7 @@ TAKE_SCREENSHOT=true
 PAGE_SCREEN_SPACE_VALUE=550
 
 
-# dont't chanhe this parameters. They've not tested yet.
+# don't change this parameters. They've not tested yet.
 BROWSER_NAME=chrome
 PROCESS_STRANGE_URLS=false
 PROCESS_STRATEGY=true

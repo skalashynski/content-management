@@ -1,8 +1,8 @@
 package com.productiveedge.content_mgmt_automation.flow.util;
 
 import com.google.gson.Gson;
+import com.productiveedge.content_mgmt_automation.entity.page.Page;
 import com.productiveedge.content_mgmt_automation.entity.tag.BaseTag;
-import com.productiveedge.content_mgmt_automation.entity.tag.CompoundTag;
 import com.productiveedge.content_mgmt_automation.entity.tag.Tag;
 import org.junit.Before;
 import org.junit.Test;
@@ -26,7 +26,7 @@ public class TagSimilarityAnalyzerFlowUtilTest {
 
     @Test
     public void compact() {
-        List<CompoundTag> res = TagSimilarityAnalyzerFlowUtil.groupByBlock(tags);
+        List<Page.PageArea> res = TagSimilarityAnalyzerFlowUtil.groupByBlock(tags);
         Gson gson = new Gson();
         String json = gson.toJson(res);
         System.out.println(json);

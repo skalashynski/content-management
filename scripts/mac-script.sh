@@ -24,6 +24,8 @@ TAKE_SCREENSHOT=true
 # screen height
 PAGE_SCREEN_SPACE_VALUE=550
 
+TAGS_TO_ANALYZE=ALL
+
 
 # dont't chanhe this parameters. They've not tested yet.
 BROWSER_NAME=chrome
@@ -37,4 +39,5 @@ max_process_urls_value=$MAX_PROCESS_URLS_VALUE generate_report=$GENERATE_REPORT 
 process_strange_urls=$PROCESS_STRANGE_URLS xlsx_report_name=$XLSX_REPORT_NAME \
 report_sheet_name=$REPORT_SHEET_NAME save_html=$SAVE_HTML save_txt=$SAVE_TXT \
 take_screenshot=$TAKE_SCREENSHOT page_screen_space_value=$PAGE_SCREEN_SPACE_VALUE \
-browser_name=$BROWSER_NAME driver_path=$DRIVER_PATH
+browser_name=$BROWSER_NAME driver_path=$DRIVER_PATH \
+tags_to_analyze=$TAGS_TO_ANALYZE

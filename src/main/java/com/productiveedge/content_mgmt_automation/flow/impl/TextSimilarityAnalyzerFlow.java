@@ -9,9 +9,10 @@ import com.productiveedge.content_mgmt_automation.flow.impl.helper.GrabAllLinksH
 import com.productiveedge.content_mgmt_automation.flow.util.TagSimilarityAnalyzerFlowUtil;
 import com.productiveedge.content_mgmt_automation.report.Report;
 import com.productiveedge.content_mgmt_automation.report.exception.ReportException;
-import com.productiveedge.content_mgmt_automation.report.impl.json.TestSimilarityJsonReport;
+import com.productiveedge.content_mgmt_automation.report.impl.json.TestSimilarityJsonReport2;
 import com.productiveedge.content_mgmt_automation.repository.container.impl.PageContainer;
 import com.productiveedge.content_mgmt_automation.repository.container.impl.TagContainer2;
+import com.productiveedge.content_mgmt_automation.repository.container.impl.TextContainer;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -40,6 +41,7 @@ public class TextSimilarityAnalyzerFlow implements Flow {
     private final Report report;
     private final PageContainer pageContainer;
     private final TagContainer2 tagContainer;
+    private final TextContainer textContainer;
     private final TextSimilarityAnalyzerRequest textSimilarityAnalyzerRequest;
     private final String filePath;
 
@@ -48,9 +50,10 @@ public class TextSimilarityAnalyzerFlow implements Flow {
     public TextSimilarityAnalyzerFlow(TextSimilarityAnalyzerRequest textSimilarityAnalyzerRequest) {
         this.tagContainer = TagContainer2.getInstance();
         this.pageContainer = PageContainer.getInstance();
+        this.textContainer = TextContainer.getInstance();
         this.textSimilarityAnalyzerRequest = textSimilarityAnalyzerRequest;
         this.filePath = getXlsxFilePath(TAG_REPORT_NAME + " " + generateDateTime());
-        this.report = new TestSimilarityJsonReport(filePath);
+        this.report = new TestSimilarityJsonReport2(filePath);
     }
 
     private String getXlsxFilePath(String pageUrl) {
@@ -78,11 +81,13 @@ public class TextSimilarityAnalyzerFlow implements Flow {
                     .filter(badTagsFilter)
                     .filter(TagSimilarityAnalyzerFlowUtil.distinctByKeys(Tag::getTextContent, Tag::getFullXPath, Tag::getShortXPath, Tag::getName))
                     .collect(Collectors.toList());
+            pageRequestTagWithNotEmptyContent.forEach(tag -> textContainer.putTag(tag.getTextContent(), tag));
             tagContainer.addTags(pageRequestTagWithNotEmptyContent);
         });
         try {
             logger.info("Data of tag-report " + filePath + " is grabbed. Saving data to report.......");
-            report.saveAll(tagContainer.getCache());
+            //FileWriter.write("report2.json", new Gson().toJson(textContainer.getCache().toString()));
+            report.saveAll(textContainer.getCache());
             logger.info("Data is saved. The tag-report" + filePath + " is created.");
         } catch (ReportException ex) {
             logger.error("The tag-report" + filePath + " isn't created. " + ex.getMessage());

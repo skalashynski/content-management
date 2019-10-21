@@ -7,6 +7,8 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 public interface Tag extends Cloneable {
+
+    //это антипаттерн
     String ROOT_TAG_NAME = "#root";
     String IFRAME_TAG_NAME = "iframe";
     String NOSCRIPT_TAG_NAME = "noscript";

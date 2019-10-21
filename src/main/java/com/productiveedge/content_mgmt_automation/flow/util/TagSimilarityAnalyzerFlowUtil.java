@@ -1,6 +1,6 @@
 package com.productiveedge.content_mgmt_automation.flow.util;
 
-import com.productiveedge.content_mgmt_automation.entity.tag.CompoundTag;
+import com.productiveedge.content_mgmt_automation.entity.page.Page;
 import com.productiveedge.content_mgmt_automation.entity.tag.Tag;
 
 import java.util.*;
@@ -23,8 +23,8 @@ public class TagSimilarityAnalyzerFlowUtil {
      * @return Map<String, List < Tag>>
      */
 
-    public static List<CompoundTag> groupByBlock(List<Tag> pageTags) {
-        List<CompoundTag> res = new ArrayList<>();
+    public static List<Page.PageArea> groupByBlock(List<Tag> pageTags) {
+        List<Page.PageArea> res = new ArrayList<>();
         List<Tag> sorted = pageTags.stream()
                 .sorted(descTagXpathSorting)
                 .collect(Collectors.toList());
@@ -42,7 +42,7 @@ public class TagSimilarityAnalyzerFlowUtil {
                     break;
                 }
             }
-            res.add(new CompoundTag(reportTag, entryValue));
+            res.add(new Page.PageArea(reportTag, entryValue));
         } while (i + 1 < sorted.size());
         return res;
     }
@@ -53,7 +53,7 @@ public class TagSimilarityAnalyzerFlowUtil {
      * 1 page has a lot of compoundtags
      */
 
-    public static List<CompoundTag> compactGroupBasedOnTextContent(List<Tag> theSameTextTags) {
+    public static List<Page.PageArea> compactGroupBasedOnTextContent(List<Tag> theSameTextTags) {
         return groupByPageUrl(theSameTextTags)
                 .values()
                 .stream()
