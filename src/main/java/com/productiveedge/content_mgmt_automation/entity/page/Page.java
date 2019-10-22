@@ -50,19 +50,34 @@ public class Page {
         textAreas = new TreeMap<>();
     }
 
+    public static Set<PageArea> findAreaByTagXpath(Set<PageArea> areas, Tag tag) {
+        return areas.stream()
+                .filter(e -> e.isRelevantTag(tag))
+                .collect(Collectors.toSet());
+    }
+
     public void addTag(Tag tag) {
-        Set<PageArea> pageArea = textAreas.get(tag.getTextContent());
-        String tagXpath = tag.getFullTagXPath();
-        if (pageArea != null) {
-            Set<PageArea> areas = pageArea.stream().filter(e -> {
-                String eTagXPath = e.getTagXPath();
-                //need to think how what is correct condition
-                return eTagXPath.startsWith(tagXpath) || tagXpath.startsWith(eTagXPath);
-            }).collect(Collectors.toSet());
-            areas.forEach(e -> e.add(tag));
+        putTagToArea(tag);
+    }
+
+    private void putTagToArea(Tag tag) {
+        Optional<Set<PageArea>> theSameTextContentAreas = getAreasWithTheSameTextContents(tag.getTextContent());
+        if (theSameTextContentAreas.isPresent()) {
+            Set<PageArea> theSameXpathAreas = findAreaByTagXpath(theSameTextContentAreas.get(), tag);
+            if (theSameXpathAreas.size() > 0) {
+                theSameXpathAreas.forEach(e -> e.add(tag));
+            } else {
+                this.textAreas.get(tag.getTextContent()).add(new PageArea(tag));
+            }
         } else {
-            this.textAreas.put(tag.getTextContent(), new HashSet<>(Arrays.asList(new PageArea(tag))));
+            Set<PageArea> set = new TreeSet<>(Comparator.comparing(PageArea::getReportTagXpath));
+            set.add(new PageArea(tag));
+            this.textAreas.put(tag.getTextContent(), set);
         }
+    }
+
+    private Optional<Set<PageArea>> getAreasWithTheSameTextContents(String text) {
+        return Optional.ofNullable(textAreas.get(text));
     }
 
     @Override
@@ -79,7 +94,13 @@ public class Page {
     }
 
 
-    public static class PageArea {
+    public static class PageArea implements Comparable<PageArea> {
+
+        @Override
+        public int compareTo(PageArea o) {
+            return this.reportTag.getFullTagXPath().compareTo(o.reportTag.getFullTagXPath());
+        }
+
         private List<Tag> theSameTextContentTags = new ArrayList<>();
         private Tag reportTag;
 
@@ -106,6 +127,11 @@ public class Page {
             theSameTextContentTags.addAll(Arrays.asList(tags));
         }
 
+        public boolean isRelevantTag(Tag tag) {
+            return reportTag.getFullTagXPath().startsWith(tag.getFullTagXPath()) || tag.getFullTagXPath().startsWith(reportTag.getFullTagXPath());
+        }
+
+
         public String getReportTagXpath() {
             return this.reportTag.getFullTagXPath();
         }
@@ -116,6 +142,28 @@ public class Page {
 
         public String getTagXPath() {
             return reportTag.getFullTagXPath();
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+            PageArea pageArea = (PageArea) o;
+            return Objects.equals(theSameTextContentTags, pageArea.theSameTextContentTags) &&
+                    Objects.equals(reportTag, pageArea.reportTag);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(theSameTextContentTags, reportTag);
+        }
+
+        @Override
+        public String toString() {
+            return "PageArea{" +
+                    "theSameTextContentTags=" + theSameTextContentTags +
+                    ", reportTag=" + reportTag +
+                    '}';
         }
     }
 }

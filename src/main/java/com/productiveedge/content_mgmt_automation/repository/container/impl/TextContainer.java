@@ -36,12 +36,12 @@ public final class TextContainer implements Container<String, Set<Page>> {
                 optionalPage.ifPresent(e -> e.addTag(tag));
             } else {
                 Page page = pageContainer.getValue(pageUrl);
-                page.getTextAreas().put(text, new HashSet<>(Arrays.asList(new Page.PageArea(tag))));
+                page.getTextAreas().put(text, new TreeSet<>(Arrays.asList(new Page.PageArea(tag))));
                 pages.add(page);
             }
         } else {
             Page page = pageContainer.getValue(pageUrl);
-            page.getTextAreas().put(text, new HashSet<>(Arrays.asList(new Page.PageArea(tag))));
+            page.getTextAreas().put(text, new TreeSet<>(Arrays.asList(new Page.PageArea(tag))));
             cache.put(text, new HashSet<>(Arrays.asList(page)));
         }
     }
