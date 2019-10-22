@@ -1,6 +1,6 @@
 package com.productiveedge.content_mgmt_automation.report.impl.json;
 
-import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.productiveedge.content_mgmt_automation.entity.page.Page;
@@ -55,7 +55,7 @@ public class TestSimilarityJsonReport implements Report<Map<String, Set<Page>>> 
 
         try {
             logger.info("Saving {} records to json file " + reportFilePath, groups.size());
-            FileUtils.write(this.reportFile, new Gson().toJson(groups), StandardCharsets.UTF_8);
+            FileUtils.write(this.reportFile, new GsonBuilder().setPrettyPrinting().create().toJson(groups), StandardCharsets.UTF_8);
             logger.info("The data successfully saved to file " + reportFilePath);
         } catch (IOException e) {
             throw new ReportException("Error of saving json report. ", e);
