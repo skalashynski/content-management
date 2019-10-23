@@ -9,9 +9,14 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
+/**
+ * the implementation was rewrote. See Page.PageArea class
+ */
+
+@Deprecated
 public class TagSimilarityAnalyzerFlowUtil {
 
-    private static final Comparator<Tag> descTagXpathSorting = (tag1, tag2) -> tag2.getFullTagXPath().compareTo(tag1.getFullTagXPath());
+    private static final Comparator<Tag> descTagXpathSorting = Comparator.comparing(Tag::getFullTagXPath);
 
     /**
      * For example tag has fullTagXpath like
@@ -26,7 +31,7 @@ public class TagSimilarityAnalyzerFlowUtil {
     public static List<Page.PageArea> groupByBlock(List<Tag> pageTags) {
         List<Page.PageArea> res = new ArrayList<>();
         List<Tag> sorted = pageTags.stream()
-                .sorted(descTagXpathSorting)
+                .sorted(descTagXpathSorting.reversed())
                 .collect(Collectors.toList());
         int i = 0;
         do {
@@ -57,7 +62,7 @@ public class TagSimilarityAnalyzerFlowUtil {
         return groupByPageUrl(theSameTextTags)
                 .values()
                 .stream()
-                .map(e -> groupByBlock(e))
+                .map(TagSimilarityAnalyzerFlowUtil::groupByBlock)
                 .flatMap(List::stream)
                 .collect(Collectors.toList());
     }

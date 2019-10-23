@@ -3,30 +3,28 @@ package com.productiveedge.content_mgmt_automation.repository.container.impl;
 
 import com.productiveedge.content_mgmt_automation.entity.page.Page;
 import com.productiveedge.content_mgmt_automation.repository.container.Container;
-import lombok.Data;
 
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static com.productiveedge.content_mgmt_automation.flow.impl.helper.GrabAllLinksHelper.generateKey;
+import static com.productiveedge.content_mgmt_automation.flow.impl.helper.PageInfoCollectorHelper.generateKey;
 
-@Data
+/**
+ * This is singleton implementation
+ */
+
 public final class PageContainer implements Container<String, Page> {
+
+    private static final SortedMap<String, Page> cache = new TreeMap<>();
 
 
     private PageContainer() {
 
     }
 
-    public static PageContainer getInstance() {
-        return SingletonHolder.instance;
-    }
-
     public long processedCacheWebsitesCount() {
         return cache.entrySet().stream().filter(e -> e.getValue().isProcessed()).count();
     }
-
-    private static final SortedMap<String, Page> cache = new TreeMap<>();
 
     public long unprocessedCacheWebsitesCount() {
         return cache.entrySet().stream().filter(e -> !e.getValue().isProcessed()).count();
@@ -79,7 +77,12 @@ public final class PageContainer implements Container<String, Page> {
         return cache;
     }
 
+    public static PageContainer getInstance() {
+        return SingletonHolder.instance;
+    }
+
     private static class SingletonHolder {
+
         private static PageContainer instance = new PageContainer();
     }
 }

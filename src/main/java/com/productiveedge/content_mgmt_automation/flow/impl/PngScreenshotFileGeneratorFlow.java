@@ -5,7 +5,7 @@ import com.productiveedge.content_mgmt_automation.entity.FolderName;
 import com.productiveedge.content_mgmt_automation.entity.request.TakeScreenshotRequest;
 import com.productiveedge.content_mgmt_automation.flow.Flow;
 import com.productiveedge.content_mgmt_automation.flow.exception.InvalidJarRequestException;
-import com.productiveedge.content_mgmt_automation.flow.impl.helper.GrabAllLinksHelper;
+import com.productiveedge.content_mgmt_automation.flow.impl.helper.PageInfoCollectorHelper;
 import com.productiveedge.content_mgmt_automation.repository.container.impl.PageContainer;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
@@ -24,8 +24,8 @@ import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.stream.Stream;
 
-public class TakeScreenshotFlow implements Flow {
-    private static final Logger logger = LoggerFactory.getLogger(TakeScreenshotFlow.class);
+public class PngScreenshotFileGeneratorFlow implements Flow {
+    private static final Logger logger = LoggerFactory.getLogger(PngScreenshotFileGeneratorFlow.class);
 
     private static final String CHROME_PROPERTY = "webdriver.chrome.driver";
     private static final String WINDOW_SCROLL_BY_JS_COMMAND = "window.scrollBy(0,?)";
@@ -40,7 +40,7 @@ public class TakeScreenshotFlow implements Flow {
     private final TakeScreenshotRequest request;
     private final PageContainer pageContainer;
 
-    public TakeScreenshotFlow(TakeScreenshotRequest request) throws InvalidJarRequestException {
+    public PngScreenshotFileGeneratorFlow(TakeScreenshotRequest request) throws InvalidJarRequestException {
         this.request = request;
         this.pageContainer = PageContainer.getInstance();
         System.setProperty(CHROME_PROPERTY, request.getDriverPath());
@@ -75,7 +75,7 @@ public class TakeScreenshotFlow implements Flow {
                     int pageScrollValue = Integer.valueOf(request.getPageScrollValue());
                     int amountScreens = pageHeight / pageScrollValue + 1;
                     String dateFolderName = Constant.generateDate();
-                    String domainFolderName = GrabAllLinksHelper.generateNameByKey(e.getKey());
+                    String domainFolderName = PageInfoCollectorHelper.generateNameByKey(e.getKey());
                     for (int i = 0; i < amountScreens; i++) {
                         File source = ts.getScreenshotAs(OutputType.FILE);
                         String fileName = (i + 1) + ".png";

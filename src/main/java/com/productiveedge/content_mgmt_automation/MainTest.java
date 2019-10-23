@@ -19,23 +19,23 @@ public class MainTest {
             String[] a = {
                     "root_folder_path=C://folder",
                     "driver_path=C://folder//chromedriver.exe",
+                    "page_domain_url=https://www.workfusion.com/careers/",
+                    "max_process_urls_value=200",
 
-                    "process_url=https://www.workfusion.com/careers/",
-                    "max_process_urls_value=10",
-                    "generate_links_per_page_report=false",
-                    "xlsx_report_name=today_report.xlsx",
-                    "report_sheet_name=report",
+                    "generate_links_per_page_report=true",
                     "save_html=false",
                     "save_txt=false",
                     "take_screenshot=false",
-                    "page_screen_space_value=550",
 
+                    "page_screen_space_value=550",
                     "browser_name=chrome",
                     "process_strange_urls=false",
-                    "process_strategy=true",
-                    "TAGS_TO_ANALYZE=ALL"
-                    //"operation_system=MAC",
-                    //"browser_path=path",
+
+                    /* her you can set particular tags comma separated.
+                        for example {div, a, p}
+                        ro set value 'ALL'
+                    * */
+                    "TAGS_TO_ANALYZE=all"
             };
 
             Map<String, String> request = makeRequest(a);

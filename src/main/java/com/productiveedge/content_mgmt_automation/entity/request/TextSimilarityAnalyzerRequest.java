@@ -6,11 +6,11 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 import java.nio.file.Paths;
-import java.util.Arrays;
-import java.util.Collection;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @EqualsAndHashCode(callSuper = true)
 @Data
@@ -22,14 +22,15 @@ public class TextSimilarityAnalyzerRequest extends Request {
 
     public TextSimilarityAnalyzerRequest(Map<String, String> request) throws InvalidJarRequestException {
         validate(request);
-        this.processUrl = request.get(TextSimilarityAnalyzerRequest.REQUEST_PARAMETER.PROCESS_URL.name());
+        this.processUrl = request.get(TextSimilarityAnalyzerRequest.REQUEST_PARAMETER.PAGE_DOMAIN_URL.name());
         this.destinationFolder = Paths.get(request.get(TextSimilarityAnalyzerRequest.REQUEST_PARAMETER.ROOT_FOLDER_PATH.name()), FolderName.REPORT.name()).toString();
         String tagsToAnalyzeParameter = request.get(TextSimilarityAnalyzerRequest.REQUEST_PARAMETER.TAGS_TO_ANALYZE.name());
         if ("ALL".equalsIgnoreCase(tagsToAnalyzeParameter)) {
             analyzeAllTags = true;
+            this.tagsToAnalyze = new HashSet<>();
         } else {
-            Collection<String> tags = Arrays.asList(request.get(TextSimilarityAnalyzerRequest.REQUEST_PARAMETER.TAGS_TO_ANALYZE.name()).split(","));
-            this.tagsToAnalyze = tags.stream().map(String::trim).collect(Collectors.toSet());
+            analyzeAllTags = false;
+            this.tagsToAnalyze = Stream.of(request.get(TextSimilarityAnalyzerRequest.REQUEST_PARAMETER.TAGS_TO_ANALYZE.name()).split(",")).map(String::trim).collect(Collectors.toSet());
         }
     }
 
@@ -45,6 +46,6 @@ public class TextSimilarityAnalyzerRequest extends Request {
     }
 
     public enum REQUEST_PARAMETER {
-        ROOT_FOLDER_PATH, TAGS_TO_ANALYZE, PROCESS_URL
+        ROOT_FOLDER_PATH, TAGS_TO_ANALYZE, PAGE_DOMAIN_URL
     }
 }

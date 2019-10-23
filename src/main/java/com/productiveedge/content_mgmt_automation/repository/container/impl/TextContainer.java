@@ -6,11 +6,14 @@ import com.productiveedge.content_mgmt_automation.repository.container.Container
 
 import java.util.*;
 
+/**
+ * This is singleton implementation
+ */
 public final class TextContainer implements Container<String, Set<Page>> {
 
     /**
      * key - textContent
-     * value - page, which have that textContent
+     * value - Set<Page>, which have that textContent
      */
     private static final SortedMap<String, Set<Page>> cache = new TreeMap<>();
     private PageContainer pageContainer;
@@ -18,10 +21,6 @@ public final class TextContainer implements Container<String, Set<Page>> {
 
     private TextContainer() {
         pageContainer = PageContainer.getInstance();
-    }
-
-    public static TextContainer getInstance() {
-        return TextContainer.SingletonHolder.instance;
     }
 
     public void putTag(String text, Tag tag) {
@@ -57,5 +56,9 @@ public final class TextContainer implements Container<String, Set<Page>> {
 
     private static class SingletonHolder {
         private static TextContainer instance = new TextContainer();
+    }
+
+    public static TextContainer getInstance() {
+        return TextContainer.SingletonHolder.instance;
     }
 }

@@ -16,24 +16,22 @@ import java.nio.charset.StandardCharsets;
 import java.util.Map;
 import java.util.Set;
 
-public class TestSimilarityJsonReport implements Report<Map<String, Set<Page>>> {
-    private static final Logger logger = LoggerFactory.getLogger(TestSimilarityJsonReport.class);
+public class TextUniquenessJsonReport implements Report<Map<String, Set<Page>>> {
+    private static final Logger logger = LoggerFactory.getLogger(TextUniquenessJsonReport.class);
     private final File reportFile;
     private final String reportFilePath;
 
-    public TestSimilarityJsonReport(String filePath) {
+    public TextUniquenessJsonReport(String filePath) {
         //need to be checked
         this.reportFilePath = filePath;
         this.reportFile = new File(this.reportFilePath);
     }
 
-
-    @Override
-    public void saveAll(Map<String, Set<Page>> elements) throws ReportException {
-        JsonArray groups = new JsonArray();
+    public static String toJson(Map<String, Set<Page>> elements) {
+        JsonArray records = new JsonArray();
         elements.forEach((textKey, pages) -> {
-            JsonObject arrayElement = new JsonObject();
-            arrayElement.addProperty("text", textKey);
+            JsonObject record = new JsonObject();
+            record.addProperty("text", textKey);
             JsonArray pagesJson = new JsonArray();
             //for-each trough pages
             pages.forEach(page -> {
@@ -42,23 +40,25 @@ public class TestSimilarityJsonReport implements Report<Map<String, Set<Page>>> 
                 JsonArray xpathTags = new JsonArray();
                 Set<Page.PageArea> areas = page.getTextAreas().get(textKey);
                 if (areas != null) {
-                    areas.forEach(area -> {
-                        xpathTags.add(area.getReportTagXpath());
-                    });
+                    areas.forEach(area -> xpathTags.add(area.getReportTagXpath()));
                     pageJson.add("xpaths", xpathTags);
                 }
                 pagesJson.add(pageJson);
             });
-            arrayElement.add("pages", pagesJson);
-            groups.add(arrayElement);
+            record.add("pages", pagesJson);
+            records.add(record);
         });
+        return new GsonBuilder().setPrettyPrinting().create().toJson(records);
+    }
 
+    @Override
+    public void saveAll(Map<String, Set<Page>> elements) throws ReportException {
         try {
-            logger.info("Saving {} records to json file " + reportFilePath, groups.size());
-            FileUtils.write(this.reportFile, new GsonBuilder().setPrettyPrinting().create().toJson(groups), StandardCharsets.UTF_8);
-            logger.info("The data successfully saved to file " + reportFilePath);
+            logger.info("Saving {} records to json the file " + reportFilePath, elements.size());
+            FileUtils.write(this.reportFile, toJson(elements), StandardCharsets.UTF_8);
+            logger.info("The data successfully saved to the file " + reportFilePath);
         } catch (IOException e) {
-            throw new ReportException("Error of saving json report. ", e);
+            throw new ReportException("Error of saving the json report. ", e);
         }
     }
 }

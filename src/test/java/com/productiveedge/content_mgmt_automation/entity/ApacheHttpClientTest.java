@@ -18,7 +18,7 @@ public class ApacheHttpClientTest {
         String url = "https://www.productiveedge.com/blog";
         Map<String, String> headers = new HashMap<>();
         headers.put("allow_redirect", "false");
-        ApacheHttpClient.sendGet(url, headers);
+        //ApacheHttpClient.sendGet(url, headers);
     }
 
     @Test()

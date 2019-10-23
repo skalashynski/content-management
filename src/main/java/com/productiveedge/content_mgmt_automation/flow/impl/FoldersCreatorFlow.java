@@ -10,14 +10,19 @@ import org.slf4j.LoggerFactory;
 import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Arrays;
+import java.util.stream.Stream;
 
-public class CreateLocalFoldersFlow implements Flow {
+import static com.productiveedge.content_mgmt_automation.entity.FolderName.*;
+
+public class FoldersCreatorFlow implements Flow {
     private static final Logger logger = LoggerFactory.getLogger(CreateLocalFolderRequest.class);
+
+    private static final FolderName[] FOLDERS = {HTML, SCREEN, TXT, REPORT};
+
 
     private final CreateLocalFolderRequest request;
 
-    public CreateLocalFoldersFlow(CreateLocalFolderRequest request) {
+    public FoldersCreatorFlow(CreateLocalFolderRequest request) {
         this.request = request;
     }
 
@@ -28,13 +33,12 @@ public class CreateLocalFoldersFlow implements Flow {
                 logger.info("Folder " + folderPath + " is created.");
             }
         } else {
-            System.out.println(folderPath);
             logger.info("Folder " + folderPath + " already exist.");
         }
     }
 
     @Override
     public void run() {
-        Arrays.stream(FolderName.values()).forEach(e -> createFolder(Paths.get(request.getRootFolderPath(), e.name())));
+        Stream.of(FOLDERS).forEach(e -> createFolder(Paths.get(request.getRootFolderPath(), e.name())));
     }
 }

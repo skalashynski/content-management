@@ -80,6 +80,9 @@ public class Page {
         return Optional.ofNullable(textAreas.get(text));
     }
 
+    /**
+     * The Customised method in order to be safely saved to Set
+     */
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -88,6 +91,11 @@ public class Page {
         return Objects.equals(url, page.url);
     }
 
+    /**
+     * The Customised method in order to be safely saved to Set
+     *
+     * */
+
     @Override
     public int hashCode() {
         return Objects.hash(url);
@@ -95,6 +103,8 @@ public class Page {
 
 
     public static class PageArea implements Comparable<PageArea> {
+
+        private static final Comparator<Tag> TAG_COMPARATOR_BY_FULL_TAG_XPATH = Comparator.comparing(Tag::getFullTagXPath);
 
         @Override
         public int compareTo(PageArea o) {
@@ -118,8 +128,7 @@ public class Page {
                 if (this.reportTag == null) {
                     this.reportTag = tag;
                 } else {
-                    // нужно подумать, как всё-таки тут сравнивать теги
-                    if (this.reportTag.getFullTagXPath().compareTo(tag.getFullTagXPath()) > 0) {
+                    if (TAG_COMPARATOR_BY_FULL_TAG_XPATH.compare(this.reportTag, tag) > 0) {
                         this.reportTag = tag;
                     }
                 }
@@ -138,10 +147,6 @@ public class Page {
 
         public String getPageUrl() {
             return reportTag.getPageUrl();
-        }
-
-        public String getTagXPath() {
-            return reportTag.getFullTagXPath();
         }
 
         @Override

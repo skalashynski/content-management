@@ -9,23 +9,20 @@ import org.slf4j.LoggerFactory;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
-public class PageExcelReportImpl extends ExcelReport<List<Page>> {
-    private static final Logger logger = LoggerFactory.getLogger(PageExcelReportImpl.class);
+public class PageInfoExcelReportImpl extends ExcelReport<List<Page>> {
+    private static final Logger logger = LoggerFactory.getLogger(PageInfoExcelReportImpl.class);
 
 
-    public PageExcelReportImpl(String xlsxReportFilePath, String sheetName) {
+    public PageInfoExcelReportImpl(String xlsxReportFilePath, String sheetName) {
         super(xlsxReportFilePath, sheetName);
     }
 
     @Override
     public List<String> getHeaderNames() {
-        return Arrays.stream(Page.class.getDeclaredFields()).map(Field::getName).collect(Collectors.toList());
-
+        return Arrays.asList("url", "status", "messageDescription", "emailHrefs", "externalHrefs", "internalHrefs", "pdfHrefs", "pngHrefs", "parentURLs");
     }
 
     public void createColumnHeaders(List<String> columns) {

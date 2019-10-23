@@ -7,9 +7,10 @@ import com.productiveedge.content_mgmt_automation.flow.Flow;
 import com.productiveedge.content_mgmt_automation.flow.exception.InvalidHrefException;
 import com.productiveedge.content_mgmt_automation.flow.exception.InvalidJarRequestException;
 import com.productiveedge.content_mgmt_automation.flow.exception.ProcessPageException;
-import com.productiveedge.content_mgmt_automation.flow.impl.helper.GrabAllLinksHelper;
+import com.productiveedge.content_mgmt_automation.flow.impl.helper.PageInfoCollectorHelper;
 import com.productiveedge.content_mgmt_automation.repository.container.impl.PageContainer;
 import com.productiveedge.content_mgmt_automation.service.ApacheHttpClient;
+import com.productiveedge.content_mgmt_automation.service.HttpHeader;
 import com.productiveedge.content_mgmt_automation.service.exception.ApacheHttpClientException;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
@@ -25,11 +26,11 @@ import java.util.stream.Stream;
 
 import static com.productiveedge.content_mgmt_automation.entity.page.Page.Status.PROCESSED;
 import static com.productiveedge.content_mgmt_automation.entity.page.Page.Status.REDIRECT_OR_INVALID_URL;
-import static com.productiveedge.content_mgmt_automation.flow.impl.helper.GrabAllLinksHelper.generateKey;
-import static com.productiveedge.content_mgmt_automation.flow.impl.helper.GrabAllLinksHelper.isUrlValid;
+import static com.productiveedge.content_mgmt_automation.flow.impl.helper.PageInfoCollectorHelper.generateKey;
+import static com.productiveedge.content_mgmt_automation.flow.impl.helper.PageInfoCollectorHelper.isUrlValid;
 
-public class GrabAllLinksFlow implements Flow {
-    private static final Logger logger = LoggerFactory.getLogger(GrabAllLinksFlow.class);
+public class PageInfoCollectorFlowImpl implements Flow {
+    private static final Logger logger = LoggerFactory.getLogger(PageInfoCollectorFlowImpl.class);
 
     private static final String ANCHOR_SYMBOL = "#";
     private static final String QUESTION_SYMBOL = "?";
@@ -50,13 +51,18 @@ public class GrabAllLinksFlow implements Flow {
     private static final Predicate<String> isPdfHref = href -> href.contains(PDF_HREF);
     private static final Predicate<String> isPictureHref = href -> Stream.of(PNG_HREF, GIF_HREF, JPEG_HREF, ZIP_HREF).anyMatch(href::endsWith);
 
+    private final Map<HttpHeader, String> HTML_HEADERS;
 
-    private PageContainer pageContainer;
+    private final PageContainer pageContainer;
     private final GrabAllLinksRequest request;
 
-    public GrabAllLinksFlow(GrabAllLinksRequest request) {
+    public PageInfoCollectorFlowImpl(GrabAllLinksRequest request) {
         pageContainer = PageContainer.getInstance();
         this.request = request;
+        HTML_HEADERS = new HashMap<HttpHeader, String>() {{
+            put(HttpHeader.ALLOW_REDIRECT, request.getAllowRedirect());
+        }};
+
     }
 
 
@@ -110,12 +116,12 @@ public class GrabAllLinksFlow implements Flow {
 
     private Set<String> filterInternalHrefs(Set<String> daughterHrefs, String parentUrl) throws ProcessPageException {
         try {
-            final String parentDomain = GrabAllLinksHelper.getDomain(parentUrl);
+            final String parentDomain = PageInfoCollectorHelper.getDomain(parentUrl);
             return daughterHrefs
                     .stream()
                     .filter(it -> {
                                 try {
-                                    String daughterDomain = GrabAllLinksHelper.getDomain(it);
+                                    String daughterDomain = PageInfoCollectorHelper.getDomain(it);
                                     return parentDomain.equals(daughterDomain);
                                 } catch (InvalidHrefException e) {
                                     logger.warn("Can't extract domain from url " + it + "." + IOUtils.LINE_SEPARATOR + e.getMessage());
@@ -174,7 +180,7 @@ public class GrabAllLinksFlow implements Flow {
                 .collect(Collectors.toSet());
     }
 
-    private void initPageContainer() throws InvalidJarRequestException {
+    private void initPageContainer() {
         String startPageUrl;
         startPageUrl = request.getProcessUrl();
         String key = generateKey(startPageUrl);
@@ -212,7 +218,7 @@ public class GrabAllLinksFlow implements Flow {
                     .setPngHrefs(pngHrefSet)
                     .setHtmlContent(htmlContent)
                     .build();
-            logger.info("Page " + page.getUrl() + "is processed successfully");
+            logger.info("Page №{} {} is processed successfully", pageContainer.processedCacheWebsitesCount(), page.getUrl());
             return page;
         } catch (ApacheHttpClientException e) {
             throw new ProcessPageException("Can't execute http-get request to url " + webPageUrl + "." + IOUtils.LINE_SEPARATOR + e.getMessage(), e);
@@ -248,21 +254,12 @@ public class GrabAllLinksFlow implements Flow {
         }
     }
 
-    //нужно пофиксать
-    //bad piece of code
-    private Map<String, String> generateHttpHeaders() {
-        return new HashMap<String, String>() {{
-            put("allow_redirect", request.getAllowRedirect());
-        }};
-
-    }
-
     private String getHtmlPageContent(String url) throws ApacheHttpClientException {
-        return ApacheHttpClient.sendGet(url, generateHttpHeaders());
+        return ApacheHttpClient.sendGet(url, HTML_HEADERS);
     }
 
     private Set<String> extractHrefsFromWebsite(String htmlContent, String pageUrl) {
-        Set<String> hrefs = GrabAllLinksHelper.extractHtmlHrefs(htmlContent);
+        Set<String> hrefs = PageInfoCollectorHelper.extractHtmlHrefs(htmlContent);
         return hrefs
                 .stream()
                 .map(daughterHref -> {
@@ -302,7 +299,7 @@ public class GrabAllLinksFlow implements Flow {
 
     private void putURLsToCache(Set<String> hrefs, String parentPageUrl) {
         hrefs.forEach(it -> {
-            String itKey = GrabAllLinksHelper.generateKey(it);
+            String itKey = PageInfoCollectorHelper.generateKey(it);
             boolean containsLink = pageContainer.containsLink(itKey);
             if (!containsLink && !parentPageUrl.equals(it)) {
                 Page website = pageContainer.getValue(it);

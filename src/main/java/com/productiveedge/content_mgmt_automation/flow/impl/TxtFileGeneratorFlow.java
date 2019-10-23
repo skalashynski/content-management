@@ -3,7 +3,7 @@ package com.productiveedge.content_mgmt_automation.flow.impl;
 import com.productiveedge.content_mgmt_automation.Constant;
 import com.productiveedge.content_mgmt_automation.entity.request.SaveTxtRequest;
 import com.productiveedge.content_mgmt_automation.flow.Flow;
-import com.productiveedge.content_mgmt_automation.flow.impl.helper.GrabAllLinksHelper;
+import com.productiveedge.content_mgmt_automation.flow.impl.helper.PageInfoCollectorHelper;
 import com.productiveedge.content_mgmt_automation.report.FileWriter;
 import com.productiveedge.content_mgmt_automation.repository.container.impl.PageContainer;
 import lombok.Data;
@@ -22,13 +22,13 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Paths;
 
 @Data
-public class SaveTxtFlow implements Flow {
-    private static final Logger logger = LoggerFactory.getLogger(SaveTxtFlow.class);
+public class TxtFileGeneratorFlow implements Flow {
+    private static final Logger logger = LoggerFactory.getLogger(TxtFileGeneratorFlow.class);
 
     private final SaveTxtRequest saveTxtRequest;
     private final PageContainer pageContainer;
 
-    public SaveTxtFlow(SaveTxtRequest saveTxtRequest) {
+    public TxtFileGeneratorFlow(SaveTxtRequest saveTxtRequest) {
         this.pageContainer = PageContainer.getInstance();
         this.saveTxtRequest = saveTxtRequest;
     }
@@ -43,7 +43,7 @@ public class SaveTxtFlow implements Flow {
             String pageUrl = e.getValue().getUrl();
             logger.info("Converting html and saving txt content of url: " + pageUrl);
             String htmlContent = e.getValue().getHtmlContent();
-            String destinationTxtFilePath = Paths.get(saveTxtRequest.getDestinationFolder(), Constant.generateDate(), GrabAllLinksHelper.generateNameByKey(e.getKey())).toString();
+            String destinationTxtFilePath = Paths.get(saveTxtRequest.getDestinationFolder(), Constant.generateDate(), PageInfoCollectorHelper.generateNameByKey(e.getKey())).toString();
             try {
                 htmlparser.parse(IOUtils.toInputStream(htmlContent, StandardCharsets.UTF_8), handler, metadata, pcontext);
                 saveTxtContent(destinationTxtFilePath + ".txt", handler.toString(), pageUrl);

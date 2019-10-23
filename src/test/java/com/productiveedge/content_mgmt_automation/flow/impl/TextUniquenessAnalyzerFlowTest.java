@@ -13,7 +13,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.function.Predicate;
 
-public class TextSimilarityAnalyzerFlowTest {
+public class TextUniquenessAnalyzerFlowTest {
 
     private List<Tag> tags = new ArrayList<>();
     private static final String IFRAME_TAG_NAME = "iframe";

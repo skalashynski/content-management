@@ -13,7 +13,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-public class GrabAllLinksHelper {
+public class PageInfoCollectorHelper {
     private static final String A_TAG_REGEX = "<a[^>]* href=\"([^\"]*)\"";
     private static final Pattern A_TAG_PATTERN = Pattern.compile(A_TAG_REGEX);
     private static final String EXTRACT_DOMAIN_REGEX = "^(?:https?:\\/\\/)?(?:[^@\\/\\n]+@)?(?:www\\.)?([^:\\/?\\n]+)";
@@ -90,6 +90,6 @@ public class GrabAllLinksHelper {
     }
 
     public static String generateNameByKey(String key) {
-        return key.replaceAll("\\.", "_").replaceAll("/", "_");
+        return key.replaceAll("[./:]", "_");
     }
 }

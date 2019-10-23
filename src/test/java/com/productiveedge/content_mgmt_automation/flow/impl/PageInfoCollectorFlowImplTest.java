@@ -3,11 +3,10 @@ package com.productiveedge.content_mgmt_automation.flow.impl;
 
 import com.productiveedge.content_mgmt_automation.entity.request.GrabAllLinksRequest;
 import com.productiveedge.content_mgmt_automation.flow.exception.InvalidJarRequestException;
-import com.productiveedge.content_mgmt_automation.flow.impl.helper.GrabAllLinksHelper;
+import com.productiveedge.content_mgmt_automation.flow.impl.helper.PageInfoCollectorHelper;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
-
 
 import java.util.HashMap;
 import java.util.Map;
@@ -15,9 +14,9 @@ import java.util.Map;
 import static org.junit.Assert.assertEquals;
 
 @Ignore
-public class GrabAllLinksFlowTest {
+public class PageInfoCollectorFlowImplTest {
 
-    private GrabAllLinksFlow flow;
+    private PageInfoCollectorFlowImpl flow;
 
     @Before
     public void init() throws InvalidJarRequestException {
@@ -30,7 +29,7 @@ public class GrabAllLinksFlowTest {
         headers.put("processUrl", "https://www.productiveedge.com/");
 
 
-        flow = new GrabAllLinksFlow(new GrabAllLinksRequest(headers));
+        flow = new PageInfoCollectorFlowImpl(new GrabAllLinksRequest(headers));
     }
 
     @Test
@@ -63,7 +62,7 @@ public class GrabAllLinksFlowTest {
                 {"https://www.instagram.com/friends/1#message", "instagram.com/friends/1"},
         };
         for (String[] datum : data) {
-            String res = GrabAllLinksHelper.createHomePageUrl(datum[0], datum[1], datum[2], datum[3]);
+            String res = PageInfoCollectorHelper.createHomePageUrl(datum[0], datum[1], datum[2], datum[3]);
             assertEquals(res, datum[1]);
         }
     }
@@ -81,7 +80,7 @@ public class GrabAllLinksFlowTest {
         };
 
         for (int i = 0; i < data.length; i++) {
-            //String res = GrabAllLinksFlow.convertInternalHref.apply(data[i][0], parentHref);
+            //String res = PageInfoCollectorFlowImpl.convertInternalHref.apply(data[i][0], parentHref);
             // System.out.println(res);
             // assertEquals("" + i, res, data[i][1]);
         }
@@ -101,7 +100,7 @@ public class GrabAllLinksFlowTest {
                 //{"https://www.instagram.com/friends/overal/", "../pretty/1", "https://www.instagram.com/friends/pretty/1"},
         };
         for (int i = 0; i < data.length; i++) {
-            //URL res = GrabAllLinksFlow.concatURLs(data[i][0], data[i][1]);
+            //URL res = PageInfoCollectorFlowImpl.concatURLs(data[i][0], data[i][1]);
             //System.out.println(res.toString());
             //assertEquals("" + i, res.toString(), data[i][2]);
         }
@@ -117,7 +116,7 @@ public class GrabAllLinksFlowTest {
                 {"https://www.instagram.com/friends/overal#message", "https://www.instagram.com/friends/overal"},
         };
         for (int i = 0; i < data.length; i++) {
-           // String res = GrabAllLinksFlow.cutOffURLParameters(data[i][0]);
+            // String res = PageInfoCollectorFlowImpl.cutOffURLParameters(data[i][0]);
             //System.out.println(res);
            // assertEquals("" + i, res, data[i][1]);
         }
@@ -132,7 +131,7 @@ public class GrabAllLinksFlowTest {
                 {"/pretty/1"},
         };
         for (String[] datum : data) {
-            //System.out.println(GrabAllLinksFlow.isAbsoluteHref(datum[0]));
+            //System.out.println(PageInfoCollectorFlowImpl.isAbsoluteHref(datum[0]));
         }
     }
 
