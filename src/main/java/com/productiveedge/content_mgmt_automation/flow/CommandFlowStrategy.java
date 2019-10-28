@@ -22,9 +22,6 @@ public class CommandFlowStrategy {
         Queue<Flow> queue = new LinkedList<>();
         queue.add(new FoldersCreatorFlow(new CreateLocalFolderRequest(request)));
         queue.add(new PageInfoCollectorFlowImpl(new GrabAllLinksRequest(request)));
-        if (fun.test(request, Command.GENERATE_LINKS_PER_PAGE_REPORT)) {
-            queue.add(new PageInfoReportGeneratorFlow(new GenerateExcelReportRequest(request)));
-        }
         if (fun.test(request, Command.SAVE_HTML)) {
             queue.add(new HtmlFileGeneratorFlow(new SaveHtmlRequest(request)));
         }
@@ -33,6 +30,9 @@ public class CommandFlowStrategy {
         }
         if (fun.test(request, Command.TAKE_SCREENSHOT)) {
             queue.add(new PngScreenshotFileGeneratorFlow(new TakeScreenshotRequest(request)));
+        }
+        if (fun.test(request, Command.GENERATE_LINKS_PER_PAGE_REPORT)) {
+            queue.add(new PageInfoReportGeneratorFlow(new GenerateExcelReportRequest(request)));
         }
         queue.add(new TextUniquenessAnalyzerFlow(new TextSimilarityAnalyzerRequest(request)));
         return queue;

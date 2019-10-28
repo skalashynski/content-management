@@ -9,11 +9,26 @@ import org.slf4j.LoggerFactory;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 public class PageInfoExcelReportImpl extends ExcelReport<List<Page>> {
     private static final Logger logger = LoggerFactory.getLogger(PageInfoExcelReportImpl.class);
+    private static final String[] EXCEL_HEADERS = {
+            "url",
+            "is_processed",
+            "status",
+            "messageDescription",
+            "emailHrefs",
+            "externalHrefs",
+            "internalHrefs",
+            "pdfHrefs",
+            "pngHrefs",
+            "parentURLs",
+            "screen folder"
+    };
 
 
     public PageInfoExcelReportImpl(String xlsxReportFilePath, String sheetName) {
@@ -22,7 +37,7 @@ public class PageInfoExcelReportImpl extends ExcelReport<List<Page>> {
 
     @Override
     public List<String> getHeaderNames() {
-        return Arrays.asList("url", "status", "messageDescription", "emailHrefs", "externalHrefs", "internalHrefs", "pdfHrefs", "pngHrefs", "parentURLs");
+        return Arrays.asList(EXCEL_HEADERS);
     }
 
     public void createColumnHeaders(List<String> columns) {
@@ -102,5 +117,7 @@ public class PageInfoExcelReportImpl extends ExcelReport<List<Page>> {
                 .setCellValue(page.getPngHrefs().toString());
         row.createCell(9)
                 .setCellValue(page.getParentURLs().toString());
+        row.createCell(10)
+                .setCellValue(Optional.ofNullable(page.getScreensFolderPath()).map(Path::toString).orElse(""));
     }
 }

@@ -20,12 +20,12 @@ public class MainTest {
                     "root_folder_path=C://folder",
                     "driver_path=C://folder//chromedriver.exe",
                     "page_domain_url=https://www.workfusion.com/careers/",
-                    "max_process_urls_value=200",
+                    "max_process_urls_value=1",
 
                     "generate_links_per_page_report=true",
                     "save_html=false",
                     "save_txt=false",
-                    "take_screenshot=false",
+                    "take_screenshot=true",
 
                     "page_screen_space_value=550",
                     "browser_name=chrome",

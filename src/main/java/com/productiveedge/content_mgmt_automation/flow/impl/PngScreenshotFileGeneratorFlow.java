@@ -21,6 +21,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.stream.Stream;
 
@@ -64,6 +65,7 @@ public class PngScreenshotFileGeneratorFlow implements Flow {
 
     @Override
     public synchronized void run() {
+        String dateFolderName = Constant.generateDate();
         pageContainer.getProcessedPageEntries().forEach(e -> {
             String url = e.getValue().getUrl();
             try {
@@ -74,21 +76,23 @@ public class PngScreenshotFileGeneratorFlow implements Flow {
                     int pageHeight = Integer.parseInt(jsDriver.executeScript(RETURN_DOCUMENT_BODY_SCROLL_HEIGHT_JS_COMMAND).toString());
                     int pageScrollValue = Integer.valueOf(request.getPageScrollValue());
                     int amountScreens = pageHeight / pageScrollValue + 1;
-                    String dateFolderName = Constant.generateDate();
-                    String domainFolderName = PageInfoCollectorHelper.generateNameByKey(e.getKey());
+                    Path screenFolderPath = Paths.get(request.getRootFolderPath(), FolderName.SCREEN.name(), dateFolderName, PageInfoCollectorHelper.generateNameByKey(e.getKey()));
                     for (int i = 0; i < amountScreens; i++) {
                         File source = ts.getScreenshotAs(OutputType.FILE);
                         String fileName = (i + 1) + ".png";
-                        File destination = new File(Paths.get(request.getRootFolderPath(), FolderName.SCREEN.name(), dateFolderName, domainFolderName, fileName).toString());
+                        File destination = new File(screenFolderPath.resolve(fileName).toString());
                         FileUtils.copyFile(source, destination);
                         jsDriver.executeScript(WINDOW_SCROLL_BY_JS_COMMAND.replaceFirst("[?]", request.getPageScrollValue()));
                     }
+                    e.getValue().setScreensFolderPath(screenFolderPath);
                     logger.info("Screenshots of site " + e.getValue().getUrl() + " are taken");
                 } else {
                     logger.error("Driver can't takes screenshots. Please, change to another one driver type.");
                 }
             } catch (IOException ex) {
-                logger.error("Can't take screenshot by processUrl " + url + "." + IOUtils.LINE_SEPARATOR + ex.getMessage());
+                String errorMessage = "Can't take screenshot by processUrl " + url + "." + IOUtils.LINE_SEPARATOR + ex.getMessage();
+                logger.error(errorMessage);
+                e.getValue().setMessageDescription(errorMessage);
             }
         });
         driver.quit();

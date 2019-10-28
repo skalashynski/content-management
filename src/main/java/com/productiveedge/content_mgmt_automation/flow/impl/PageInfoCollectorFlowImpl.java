@@ -191,6 +191,7 @@ public class PageInfoCollectorFlowImpl implements Flow {
     private Page processPage(Page page) throws ProcessPageException {
         logger.info("Processing page " + page.getUrl());
         String webPageUrl = page.getUrl();
+
         try {
             String htmlContent = getHtmlPageContent(webPageUrl);
             Set<String> allValidHrefSet = extractHrefsFromWebsite(htmlContent, webPageUrl);

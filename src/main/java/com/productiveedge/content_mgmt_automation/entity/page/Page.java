@@ -4,7 +4,9 @@ import com.productiveedge.content_mgmt_automation.entity.tag.Tag;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.apache.commons.io.IOUtils;
 
+import java.nio.file.Path;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -26,6 +28,7 @@ public class Page {
     private Set<String> pdfHrefs;
     private Set<String> pngHrefs;
     private Set<String> parentURLs;
+    private Path screensFolderPath;
     private String htmlContent;
     private String txtContent;
     private Map<String, Set<PageArea>> textAreas;
@@ -48,6 +51,14 @@ public class Page {
         htmlContent = null;
         txtContent = null;
         textAreas = new TreeMap<>();
+    }
+
+    public void setMessageDescription(String message) {
+        if (this.messageDescription.isEmpty()) {
+            this.messageDescription = message;
+        } else {
+            this.messageDescription += IOUtils.LINE_SEPARATOR + message;
+        }
     }
 
     public static Set<PageArea> findAreaByTagXpath(Set<PageArea> areas, Tag tag) {

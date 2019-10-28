@@ -1,5 +1,6 @@
 package com.productiveedge.content_mgmt_automation.entity.page;
 
+import java.nio.file.Path;
 import java.util.Set;
 
 public class PageBuilder {
@@ -66,6 +67,12 @@ public class PageBuilder {
     public PageBuilder setTxtContent(String txtContent) {
         page.setTxtContent(txtContent);
         return this;
+    }
+
+    public PageBuilder setScreenFolderPath(Path path) {
+        page.setScreensFolderPath(path);
+        return this;
+
     }
 
     public Page build() {
