@@ -18,7 +18,8 @@ public class MainTest {
         try {
             String[] a = {
                     "root_folder_path=C://folder",
-                    "driver_path=C://folder//chromedriver.exe",
+                    //"driver_path=C://folder//chromedriver.exe",
+                    "driver_path=C://folder//IEDriverServer.exe",
                     "page_domain_url=https://www.workfusion.com/careers/",
                     "max_process_urls_value=1",
 
@@ -28,7 +29,8 @@ public class MainTest {
                     "take_screenshot=true",
 
                     "page_screen_space_value=550",
-                    "browser_name=chrome",
+                    //"browser_name=chrome",
+                    "browser_name=EXPLORER",
                     "process_strange_urls=false",
 
                     /* her you can set particular tags comma separated.

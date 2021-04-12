@@ -11,7 +11,7 @@ import java.util.function.BiPredicate;
 
 public class CommandFlowStrategy {
 
-    private static BiPredicate<Map<String, String>, Command> fun = (request, command) -> request.get(command.name()) != null && Boolean.valueOf(request.get(command.name()));
+    private static final BiPredicate<Map<String, String>, Command> fun = (request, command) -> request.get(command.name()) != null && Boolean.valueOf(request.get(command.name()));
 
 
     private CommandFlowStrategy() {
@@ -29,7 +29,7 @@ public class CommandFlowStrategy {
             queue.add(new TxtFileGeneratorFlow(new SaveTxtRequest(request)));
         }
         if (fun.test(request, Command.TAKE_SCREENSHOT)) {
-            queue.add(new PngScreenshotFileGeneratorFlow(new TakeScreenshotRequest(request)));
+            queue.add(new PngScreenshotFileGeneratorFlow2(new TakeScreenshotRequest(request)));
         }
         if (fun.test(request, Command.GENERATE_LINKS_PER_PAGE_REPORT)) {
             queue.add(new PageInfoReportGeneratorFlow(new GenerateExcelReportRequest(request)));
