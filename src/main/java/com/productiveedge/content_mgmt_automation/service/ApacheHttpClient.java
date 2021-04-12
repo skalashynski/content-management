@@ -15,24 +15,20 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.Map;
 
-import static com.productiveedge.content_mgmt_automation.service.ApacheHttpClient.HttpHeader.ALLOW_REDIRECT;
+import static com.productiveedge.content_mgmt_automation.service.HttpHeader.ALLOW_REDIRECT;
 
 public class ApacheHttpClient {
     private static final Logger logger = LoggerFactory.getLogger(ApacheHttpClient.class);
 
     private static final String USER_AGENT_VALUE = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/56.0.2924.87 Safari/537.36";
 
-    public enum HttpHeader {
-        ALLOW_REDIRECT
-    }
 
-
-    public static String sendGet(String url, Map<String, String> headers) throws ApacheHttpClientException {
+    public static String sendGet(String url, Map<HttpHeader, String> headers) throws ApacheHttpClientException {
         try {
             HttpGet request = new HttpGet(url);
             HttpClientBuilder builder = HttpClientBuilder.create();
             if (headers != null) {
-                String allowRedirect = headers.get(ALLOW_REDIRECT.name().toLowerCase());
+                String allowRedirect = headers.get(ALLOW_REDIRECT);
                 if (allowRedirect != null && !Boolean.valueOf(allowRedirect)) {
                     builder.disableRedirectHandling();
                 }
@@ -60,8 +56,8 @@ public class ApacheHttpClient {
 
     }
 
-    private static void addRequestHeaders(HttpRequestBase requestBase, Map<String, String> headers) {
+    private static void addRequestHeaders(HttpRequestBase requestBase, Map<HttpHeader, String> headers) {
         requestBase.addHeader(org.apache.http.HttpHeaders.USER_AGENT, USER_AGENT_VALUE);
-        headers.forEach(requestBase::addHeader);
+        headers.forEach((k, v) -> requestBase.addHeader(k.name().toLowerCase(), v));
     }
 }

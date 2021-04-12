@@ -2,31 +2,39 @@ package com.productiveedge.content_mgmt_automation.entity.request;
 
 import com.productiveedge.content_mgmt_automation.entity.FolderName;
 import com.productiveedge.content_mgmt_automation.flow.exception.InvalidJarRequestException;
+import com.productiveedge.content_mgmt_automation.flow.impl.helper.PageInfoCollectorHelper;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 import java.nio.file.Paths;
 import java.util.Map;
 
-import static com.productiveedge.content_mgmt_automation.flow.impl.helper.FlowHelper.generateDateFolderName;
+import static com.productiveedge.content_mgmt_automation.Constant.generateDate;
+import static com.productiveedge.content_mgmt_automation.Constant.generateDateTime;
 
 @EqualsAndHashCode(callSuper = true)
 @Data
 public class GenerateExcelReportRequest extends Request {
 
-    public enum REQUEST_PARAMETER {
-        ROOT_FOLDER_PATH, XLSX_REPORT_NAME, REPORT_SHEET_NAME
+    public static final String REPORT_SHEET_NAME = "Info";
+
+    public GenerateExcelReportRequest(Map<String, String> request) throws InvalidJarRequestException {
+        validate(request);
+        this.xlsxReportName = generateDateTime() + " " + PageInfoCollectorHelper.generateNameByKey(request.get(REQUEST_PARAMETER.PAGE_DOMAIN_URL.name())) + ".xlsx";
+        //request.get(REQUEST_PARAMETER.XLSX_REPORT_NAME.name());
+
+        this.reportSheetName = REPORT_SHEET_NAME;
+        //request.get(REQUEST_PARAMETER.REPORT_SHEET_NAME.name());
+
+        this.reportPath = Paths.get(request.get(REQUEST_PARAMETER.ROOT_FOLDER_PATH.name()), FolderName.REPORT.name(), generateDate(), FolderName.EXCEL.name(), xlsxReportName).toString();
     }
 
     private String reportPath;
     private String xlsxReportName;
     private String reportSheetName;
 
-    public GenerateExcelReportRequest(Map<String, String> request) throws InvalidJarRequestException {
-        validate(request);
-        this.xlsxReportName = request.get(REQUEST_PARAMETER.XLSX_REPORT_NAME.name());
-        this.reportSheetName =request.get(REQUEST_PARAMETER.REPORT_SHEET_NAME.name());
-        this.reportPath = Paths.get(request.get(REQUEST_PARAMETER.ROOT_FOLDER_PATH.name()), FolderName.REPORT.name(), generateDateFolderName(), xlsxReportName).toString();
+    public enum REQUEST_PARAMETER {
+        ROOT_FOLDER_PATH, PAGE_DOMAIN_URL//XLSX_REPORT_NAME, REPORT_SHEET_NAME
     }
 
     @Override
